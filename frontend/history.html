@@ -15,6 +15,7 @@ body{font-family:'Archivo',sans-serif;background:linear-gradient(180deg,#FFFFFF 
 .page-title{font-size:38px;font-weight:900;margin-bottom:6px;}
 .page-subtitle{font-size:15px;color:var(--text-muted);}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
+.stats-grid .stat-card:last-child{grid-column:span 1;}
 .stat-card{background:white;border:1px solid var(--border);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#10B981,#6366F1);opacity:0;transition:opacity .25s;}
 .stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.08);}
@@ -116,7 +117,6 @@ body{font-family:'Archivo',sans-serif;background:linear-gradient(180deg,#FFFFFF 
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn" onclick="loadUserData()">🔄 Refresh</button>
-        <button class="btn btn-danger" onclick="clearHistory()">🗑️ Clear History</button>
       </div>
     </div>
 
@@ -128,7 +128,6 @@ body{font-family:'Archivo',sans-serif;background:linear-gradient(180deg,#FFFFFF 
       <div class="stat-card"><div class="stat-label">Latest ATS Score</div><div class="stat-value" id="latestAtsScore">—</div><div class="stat-icon">📊</div></div>
       <div class="stat-card"><div class="stat-label">Avg ATS Score</div><div class="stat-value" id="avgAtsScore">—</div><div class="stat-icon">📈</div></div>
       <div class="stat-card"><div class="stat-label">Best ATS Score</div><div class="stat-value" id="bestAtsScore">—</div><div class="stat-icon">🏆</div></div>
-      <div class="stat-card"><div class="stat-label">Readiness Score</div><div class="stat-value" id="readinessScore">—</div><div class="stat-icon">🎯</div></div>
       <div class="stat-card"><div class="stat-label">Resume Uploads</div><div class="stat-value" id="resumeUploads">—</div><div class="stat-icon">📤</div></div>
     </div>
 
