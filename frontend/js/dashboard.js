@@ -1,6 +1,6 @@
 // dashboard.js — reads ALL feature data from localStorage + backend
 
-const API_BASE = "http://localhost:5000/api";
+// API_BASE set globally by config.js
 
 window.onload = loadDashboard;
 

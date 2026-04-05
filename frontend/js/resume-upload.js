@@ -15,7 +15,7 @@ const parseClaudeResponse = parseAIResponse;
 // Resume Upload Frontend
 // =============================================
 
-const API_BASE = "http://localhost:5000/api";
+// API_BASE set globally by config.js
 
 document.getElementById("uploadBtn").addEventListener("click", async () => {
     const fileInput = document.getElementById("resumeFile");

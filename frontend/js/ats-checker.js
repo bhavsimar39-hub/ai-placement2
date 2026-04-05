@@ -3,7 +3,7 @@
 // Handles: file upload → API → results display → NLP cards
 // =============================================================
 
-const API_BASE = 'http://localhost:5000/api';
+// API_BASE set globally by config.js
 const CIRCUMFERENCE = 2 * Math.PI * 90; // matches r="90" in SVG
 
 let currentResumeText = '';   // kept for JD matcher
@@ -400,7 +400,7 @@ window.runJDMatcher = async function() {
         let bertResult = null;
         if (token) {
             try {
-                const bertRes = await fetch('http://localhost:5000/api/skills/bert-jd-match', {
+                const bertRes = await fetch(API_BASE + '/skills/bert-jd-match', {
                     method:  'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body:    JSON.stringify({ resumeText: resumeTxt, jdText }),

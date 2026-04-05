@@ -365,7 +365,7 @@ function analyzeGap() {
             const requiredNames = required.map(s => s.name);
             const knownNames    = knownRaw.split(',').map(s => s.trim()).filter(Boolean);
             try {
-                const bertRes = await fetch('http://localhost:5000/api/skills/gap', {
+                const bertRes = await fetch(API_BASE + '/skills/gap', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

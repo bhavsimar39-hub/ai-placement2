@@ -5,7 +5,7 @@
 // ✅ FIXED: Clear History now properly clears ALL history including ATS
 // ─────────────────────────────────────────────────────────────────
 
-const API   = "http://localhost:5000/api";
+// API set globally by config.js
 const token = localStorage.getItem("token");
 if (!token) window.location.href = "/login.html";
 

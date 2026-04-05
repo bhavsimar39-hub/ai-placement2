@@ -1,6 +1,6 @@
 // frontend/js/login.js - Fixed to save token
 
-const API_BASE = "http://localhost:5000/api";
+// API_BASE set globally by config.js
 
 async function handleLogin(event) {
     event.preventDefault();

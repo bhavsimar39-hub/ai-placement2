@@ -3,7 +3,7 @@
 // Company-Level Accuracy & Unique Features
 // =============================================
 
-const API_BASE = "http://localhost:5000/api";
+// API_BASE set globally by config.js
 
 let salaryChart = null;
 let careerData = null;

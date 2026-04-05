@@ -380,7 +380,7 @@ async function runPersonalisedMatch(skills) {
         </div>`;
 
     try {
-        const res = await fetch('http://localhost:5000/api/match/match', {
+        const res = await fetch(API_BASE + '/match/match', {
             method: 'POST',
             headers: {
                 'Content-Type':  'application/json',

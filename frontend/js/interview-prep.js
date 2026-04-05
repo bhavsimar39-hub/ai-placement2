@@ -1,6 +1,6 @@
 // frontend/js/interview-prep.js
 
-const API_BASE = "http://localhost:5000/api";
+// API_BASE set globally by config.js
 
 let userAnswers = {};
 let currentRole = "Full Stack Developer";

@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api';
+// API_BASE set globally by config.js
 let careerData = null;
 
 async function analyzeCareerDNA(event) {
@@ -287,7 +287,7 @@ function parseDnaResponse(data) {
 
 async function callDnaGroq(prompt) {
     const token = localStorage.getItem('token') || '';
-    const res = await fetch('http://localhost:5000/api/nlp/claude', {
+    const res = await fetch(API_BASE + '/nlp/claude', {
         method: 'POST',
         headers: {
             'Content-Type':  'application/json',

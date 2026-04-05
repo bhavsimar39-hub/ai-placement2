@@ -2,7 +2,7 @@
 // Single source of truth for the Activity History page
 // Fetches from /api/history/my-history (historyController)
 
-const API_BASE = "http://localhost:5000/api";
+// API_BASE set globally by config.js
 let historyData  = null;
 
 // ═══════════════════════════════════════════════════════════════

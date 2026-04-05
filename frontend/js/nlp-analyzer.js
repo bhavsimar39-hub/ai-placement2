@@ -4,8 +4,9 @@
 // Version 2.0 - Production Ready
 // =============================================
 
-const API_BASE = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000/api'
+// API_BASE set globally by config.js
+// 
+
     : '/api'; // Production
 
 const CONFIG = {
