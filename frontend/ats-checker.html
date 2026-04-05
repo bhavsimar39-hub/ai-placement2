@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Checker • AI Placement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+            color: #111827;
+            min-height: 100vh;
+        }
+
+        .content {
+            margin-left: 300px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            border: 1px solid #E5E7EB;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .page-header h1 {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #10B981, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            color: #6B7280;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Upload Section */
+        #uploadSection {
+            background: rgba(255,255,255,0.98);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #E5E7EB;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        #uploadArea {
+            background: rgba(16, 185, 129, 0.03);
+            border: 3px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 60px 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #uploadArea:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        #uploadArea.dragover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .upload-subtext {
+            color: #9CA3AF;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #fileName {
+            margin-top: 20px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        #analyzeBtn {
+            display: none;
+            margin: 20px auto 0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        #analyzeBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 32px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Loading */
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        #loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 64px;
+            height: 64px;
+            border: 5px solid rgba(16, 185, 129, 0.15);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        #results {
+            display: none;
+        }
+
+        #results.active {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .score-card {
+            background: rgba(255,255,255,0.98);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #E5E7EB;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .score-circle-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 24px;
+        }
+
+        .score-circle {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: rgba(16, 185, 129, 0.15);
+            stroke-width: 12;
+        }
+
+        .score-circle-progress {
+            fill: none;
+            stroke: #10b981;
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-dasharray: 565.48;
+            stroke-dashoffset: 565.48;
+            transition: stroke-dashoffset 1.5s ease;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        #scoreValue {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #10B981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #scoreStatus {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .metrics-card {
+            background: rgba(255,255,255,0.98);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .metric {
+            margin-bottom: 24px;
+        }
+
+        .metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .metric-bar-bg {
+            background: #E5E7EB;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .metric-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            width: 0;
+            transition: width 1s ease;
+            border-radius: 10px;
+        }
+
+        /* Issues & Recommendations */
+        .section {
+            background: rgba(255,255,255,0.98);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #E5E7EB;
+            margin-bottom: 24px;
+        }
+
+        .section h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 24px;
+        }
+
+        .issue-card {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 14px;
+            border-left: 4px solid #10B981;
+            margin-bottom: 16px;
+        }
+
+        .issue-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 10px;
+        }
+
+        .issue-badge.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .issue-badge.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        .issue-badge.info {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .issue-message {
+            color: #6B7280;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        .issue-fix {
+            color: #10b981;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .keyword-tag {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .keyword-tag.missing {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+            .content { padding: 14px; }
+            .page-header { padding: 24px 20px; border-radius: 16px; }
+            .page-header h1 { font-size: 22px; }
+            .page-header p  { font-size: 13px; }
+            .results-grid { grid-template-columns: 1fr; }
+            .nlp-ats-header { padding: 16px 18px; gap: 10px; }
+            .nlp-ats-body   { padding: 18px; }
+            .nlp-ats-title  { font-size: 15px; }
+            .syn-row { flex-wrap: wrap; gap: 6px; }
+            .syn-found { margin-left: 0; }
+            .jd-match-num { font-size: 48px; }
+        }
+
+        @media (max-width: 400px) {
+            .page-header h1 { font-size: 18px; }
+            .nlp-ats-icon { width: 36px; height: 36px; font-size: 16px; }
+        }
+
+        /* ══ NLP ATS CARDS ══ */
+        .nlp-ats-section { display:none; margin-top:24px; }
+        .nlp-ats-section.active { display:block; }
+
+        .nlp-ats-card {
+            background: rgba(255,255,255,0.98);
+            border: 1px solid #E5E7EB;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .nlp-ats-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 22px 32px; border-bottom: 1px solid #E5E7EB;
+            background: #F9FAFB;
+        }
+        .nlp-ats-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .nlp-ats-title { font-size: 18px; font-weight: 800; color: #111827; }
+        .nlp-ats-sub   { font-size: 12px; color: #6B7280; margin-top: 2px; }
+        .nlp-ats-body  { padding: 28px 32px; }
+
+        /* Spinner */
+        .nlp-mini-spin {
+            display: inline-block; width: 18px; height: 18px;
+            border: 2px solid rgba(16,185,129,0.2);
+            border-top-color: #10B981; border-radius: 50%;
+            animation: nlpSpin .7s linear infinite;
+            vertical-align: middle; margin-right: 8px;
+        }
+        @keyframes nlpSpin { to { transform:rotate(360deg); } }
+
+        /* Synonym rows */
+        .syn-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 14px; border-radius: 10px;
+            background: #F9FAFB; border: 1px solid #E5E7EB;
+            margin-bottom: 8px; font-size: 13px;
+        }
+        .syn-keyword  { font-weight: 700; color: #10B981; font-family: monospace; }
+        .syn-equals   { color: #9CA3AF; font-size: 11px; }
+        .syn-matches  { color: #6B7280; font-size: 12px; }
+        .syn-found    { margin-left:auto; font-size:11px; font-weight:700;
+                        padding:3px 10px; border-radius:6px; }
+        .syn-found.yes { background:rgba(16,185,129,0.1); color:#059669; }
+        .syn-found.no  { background:rgba(239,68,68,0.1);  color:#DC2626; }
+
+        /* Bullet rewriter */
+        .bullet-pair {
+            border: 1px solid #E5E7EB; border-radius: 12px;
+            overflow: hidden; margin-bottom: 14px;
+        }
+        .bullet-original {
+            padding: 14px 16px; background: rgba(239,68,68,0.04);
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 13px; color: #6B7280; line-height: 1.6;
+        }
+        .bullet-original-label {
+            font-size: 10px; font-weight: 700; color: #EF4444;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+        }
+        .bullet-improved {
+            padding: 14px 16px; background: rgba(16,185,129,0.04);
+            font-size: 13px; color: #111827; line-height: 1.6;
+        }
+        .bullet-improved-label {
+            font-size: 10px; font-weight: 700; color: #10B981;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+        }
+
+        /* JD matcher */
+        .jd-textarea {
+            width: 100%; padding: 16px; border: 1.5px solid #E5E7EB;
+            border-radius: 12px; font-size: 14px; font-family: inherit;
+            resize: vertical; min-height: 140px; outline: none;
+            transition: border-color .2s;
+            color: #111827; background: #fff;
+        }
+        .jd-textarea:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+        .jd-analyze-btn {
+            margin-top: 14px; padding: 13px 28px;
+            background: linear-gradient(135deg,#10B981,#059669);
+            border: none; border-radius: 12px; color: #fff;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            transition: all .3s; box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+        }
+        .jd-analyze-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.4); }
+        .jd-analyze-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+        .jd-match-score {
+            text-align: center; padding: 24px;
+            background: rgba(16,185,129,0.05);
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 14px; margin: 20px 0 16px;
+        }
+        .jd-match-num {
+            font-size: 64px; font-weight: 900;
+            background: linear-gradient(135deg,#10B981,#6366F1);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; line-height: 1;
+        }
+        .jd-match-label { font-size: 13px; color: #6B7280; margin-top: 6px; font-weight: 600; }
+
+        .jd-item {
+            display: flex; gap: 12px; padding: 12px 14px;
+            border-radius: 10px; margin-bottom: 8px;
+            border: 1px solid; font-size: 13px; line-height: 1.55;
+        }
+        .jd-item.match   { background:rgba(16,185,129,0.05); border-color:rgba(16,185,129,0.2); color:#065F46; }
+        .jd-item.missing { background:rgba(239,68,68,0.05);  border-color:rgba(239,68,68,0.2);  color:#991B1B; }
+        .jd-item.suggest { background:rgba(99,102,241,0.05); border-color:rgba(99,102,241,0.2); color:#3730A3; }
+
+    </style>
+</head>
+<body>
+
+<div id="sidebar-container"></div>
+
+<div class="content">
+    <div class="page-header">
+        <h1>ATS Resume Checker</h1>
+        <p>Get your resume analyzed against Applicant Tracking Systems. Improve your chances of getting past automated screening.</p>
+    </div>
+
+    <!-- UPLOAD SECTION -->
+    <div id="uploadSection">
+        <label for="resumeFile" id="uploadArea" style="display:block;cursor:pointer;">
+            <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.webp,.bmp,.tiff">
+            <div class="upload-icon" id="uploadIcon">📄</div>
+            <div class="upload-text" id="uploadText">Drop your resume here</div>
+            <div class="upload-subtext" id="uploadSubtext">or <span style="color:#10b981;font-weight:700;text-decoration:underline;">click to browse</span> &nbsp;•&nbsp; PDF, DOCX, TXT &nbsp;•&nbsp; Max 15MB</div>
+        </label>
+        <div id="fileName"></div>
+        <button id="analyzeBtn" style="display:none;">🚀 Analyze Resume</button>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div style="color: #10B981; font-size: 20px; font-weight: 700;">Analyzing your resume...</div>
+        <div style="color: #6B7280; font-size: 14px; margin-top: 8px;">This may take a few seconds</div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results">
+        <div class="results-grid">
+            <!-- Score Card -->
+            <div class="score-card">
+                <h2 style="color: #111827; margin-bottom: 24px;">Overall Score</h2>
+                <div class="score-circle-container">
+                    <svg class="score-circle" width="200" height="200">
+                        <circle class="score-circle-bg" cx="100" cy="100" r="90"></circle>
+                        <circle class="score-circle-progress" id="scoreCircle" cx="100" cy="100" r="90"></circle>
+                    </svg>
+                    <div class="score-text">
+                        <div id="scoreValue">0</div>
+                        <div id="scoreStatus">Analyzing...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Card -->
+            <div class="metrics-card">
+                <h2 style="color: #111827; margin-bottom: 24px;">Detailed Metrics</h2>
+                
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">Format Score</span>
+                        <span class="metric-value"><span id="formatScore">0</span>/100</span>
+                    </div>
+                    <div class="metric-bar-bg">
+                        <div class="metric-bar" id="formatBar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">Keyword Optimization</span>
+                        <span class="metric-value"><span id="keywordScore">0</span>/100</span>
+                    </div>
+                    <div class="metric-bar-bg">
+                        <div class="metric-bar" id="keywordBar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">Structure</span>
+                        <span class="metric-value"><span id="structureScore">0</span>/100</span>
+                    </div>
+                    <div class="metric-bar-bg">
+                        <div class="metric-bar" id="structureBar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">Content Quality</span>
+                        <span class="metric-value"><span id="contentScore">0</span>/100</span>
+                    </div>
+                    <div class="metric-bar-bg">
+                        <div class="metric-bar" id="contentBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues -->
+        <div class="section">
+            <h2>📋 Issues Found</h2>
+            <div id="issuesList"></div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="section">
+            <h2>🔑 Keyword Analysis</h2>
+            <h3 style="color: #111827; margin-bottom: 12px; font-size: 16px;">✅ Optimized Keywords</h3>
+            <div id="optimizedKeywords" style="margin-bottom: 24px; color:#111827;"></div>
+            
+            <h3 style="color: #111827; margin-bottom: 12px; font-size: 16px;">⚠️ Missing Keywords</h3>
+            <div id="missingKeywords"></div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="section">
+            <h2>💡 Recommendations</h2>
+            <div id="recommendationsList"></div>
+        </div>
+    </div>
+
+    <!-- ══ NLP ATS SECTION — appears after existing results ══ -->
+    <div class="nlp-ats-section" id="nlpAtsSection">
+
+        <!-- Card 1: Smart Keyword Matcher -->
+        <div class="nlp-ats-card">
+            <div class="nlp-ats-header">
+                <div class="nlp-ats-icon" style="background:linear-gradient(135deg,#10B981,#059669);">🔄</div>
+                <div>
+                    <div class="nlp-ats-title">Smart Keyword Matcher</div>
+                    <div class="nlp-ats-sub">NLP synonym detection — "built" = "developed" = "engineered"</div>
+                </div>
+            </div>
+            <div class="nlp-ats-body" id="nlpSynonymBody">
+                <div style="color:#6B7280;text-align:center;padding:20px;">
+                    <span class="nlp-mini-spin"></span> Analyzing keyword synonyms...
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: AI Bullet Rewriter -->
+        <div class="nlp-ats-card">
+            <div class="nlp-ats-header">
+                <div class="nlp-ats-icon" style="background:linear-gradient(135deg,#6366F1,#4F46E5);">✍️</div>
+                <div>
+                    <div class="nlp-ats-title">AI Bullet Point Rewriter</div>
+                    <div class="nlp-ats-sub">Rewrites weak bullets to be ATS-friendly and impactful</div>
+                </div>
+            </div>
+            <div class="nlp-ats-body" id="nlpBulletBody">
+                <div style="color:#6B7280;text-align:center;padding:20px;">
+                    <span class="nlp-mini-spin"></span> Rewriting bullet points...
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: JD Matcher -->
+        <div class="nlp-ats-card">
+            <div class="nlp-ats-header">
+                <div class="nlp-ats-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706);">📋</div>
+                <div>
+                    <div class="nlp-ats-title">Job Description Matcher</div>
+                    <div class="nlp-ats-sub">Paste any JD — AI scores your resume match instantly</div>
+                </div>
+            </div>
+            <div class="nlp-ats-body">
+                <textarea class="jd-textarea" id="jdTextarea"
+                    placeholder="Paste the job description here...&#10;&#10;Example: We are looking for a Software Engineer with 3+ years of experience in React, Node.js, and AWS..."></textarea>
+                <button class="jd-analyze-btn" id="jdAnalyzeBtn" onclick="runJDMatcher()">
+                    🎯 Match My Resume to This JD
+                </button>
+                <div id="jdResults" style="display:none;margin-top:8px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+// Load sidebar
+fetch('/sidebar.html')
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('#sidebar-container script').forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    })
+    .catch(e => console.error('Sidebar error:', e));
+</script>
+
+<script src="/js/ats-checker.js"></script>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     UNIVERSAL IMAGE / RESUME ANALYZER ENGINE
+     Intercepts image uploads → Claude Vision → extracts content
+     Stores in window.__resumeText for all downstream scripts
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+
+  /* ── Config ── */
+  const IMAGE_TYPES = ['image/jpeg','image/jpg','image/png','image/webp','image/bmp','image/tiff','image/gif'];
+
+  const CLAUDE_MODEL  = 'claude-sonnet-4-20250514';
+  const CLAUDE_PROMPT = `You are an expert resume parser with vision capabilities.
+
+Carefully examine this image. It may be:
+- A photo or scan of a resume / CV
+- A screenshot of a resume
+- A professional profile image with resume content
+- An image containing text, skills, experience data
+
+Extract ALL of the following in a structured JSON format:
+{
+  "name": "candidate full name or empty string",
+  "email": "email if visible or empty",
+  "phone": "phone if visible or empty",
+  "summary": "professional summary or objective in full",
+  "skills": ["list", "of", "all", "technical", "and", "soft", "skills"],
+  "experience": [
+    {
+      "title": "Job Title",
+      "company": "Company Name",
+      "duration": "Date range",
+      "description": "Key responsibilities and achievements"
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree/Certification",
+      "institution": "Institution Name",
+      "year": "Year"
+    }
+  ],
+  "certifications": ["list of certifications"],
+  "projects": ["list of notable projects"],
+  "languages": ["spoken languages"],
+  "raw_text": "Complete verbatim text extracted from the image, preserving all details"
+}
+
+If this is not a resume image, return:
+{"error": "Not a resume image", "raw_text": "describe what you see"}
+
+Return ONLY valid JSON. No markdown, no explanation.`;
+
+  /* ── Global state ── */
+  window.__resumeText      = '';   // plain text for skill matching
+  window.__resumeData      = null; // full parsed object
+  window.__isImageResume   = false;
+  window.__imageAnalysisDone = false;
+
+  /* ── Helpers ── */
+  function isImage(file) {
+    return IMAGE_TYPES.includes(file.type) ||
+      /\.(jpg|jpeg|png|webp|bmp|tiff|gif)$/i.test(file.name);
+  }
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showImageBanner(msg, type) {
+    // Remove any existing banner
+    const old = document.getElementById('__img-banner');
+    if (old) old.remove();
+
+    const colors = {
+      loading: { bg:'rgba(79,70,229,0.08)', border:'rgba(79,70,229,0.25)', text:'#4F46E5' },
+      success: { bg:'rgba(16,185,129,0.08)', border:'rgba(16,185,129,0.25)', text:'#059669' },
+      error:   { bg:'rgba(239,68,68,0.08)',  border:'rgba(239,68,68,0.25)',  text:'#DC2626' },
+      info:    { bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.25)', text:'#D97706' },
+    };
+    const c = colors[type] || colors.info;
+
+    const banner = document.createElement('div');
+    banner.id = '__img-banner';
+    banner.style.cssText = `
+      position: fixed; top: 80px; right: 24px; z-index: 9999;
+      background: ${c.bg}; border: 1px solid ${c.border};
+      border-radius: 12px; padding: 14px 20px;
+      font-family: 'Archivo','Inter',sans-serif;
+      font-size: 14px; font-weight: 600; color: ${c.text};
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      display: flex; align-items: center; gap: 10px;
+      max-width: 360px; line-height: 1.4;
+      animation: __slideIn .3s ease;
+      backdrop-filter: blur(12px);
+    `;
+
+    const icons = { loading:'⏳', success:'✅', error:'❌', info:'🖼️' };
+    banner.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+
+    if (!document.getElementById('__img-anim')) {
+      const style = document.createElement('style');
+      style.id = '__img-anim';
+      style.textContent = `
+        @keyframes __slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes __pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+        #__img-banner.loading span:first-child { animation: __pulse 1.2s ease-in-out infinite; }
+      `;
+      document.head.appendChild(style);
+    }
+
+    if (type === 'loading') banner.classList.add('loading');
+    document.body.appendChild(banner);
+
+    if (type !== 'loading') {
+      setTimeout(() => { if (banner.parentNode) banner.remove(); }, 5000);
+    }
+  }
+
+  /* ── Core: send image to Claude Vision ── */
+  async function analyzeImageWithClaude(file) {
+    showImageBanner('🖼️ Image detected — running AI vision analysis…', 'loading');
+    window.__isImageResume   = true;
+    window.__imageAnalysisDone = false;
+
+    try {
+      const base64 = await toBase64(file);
+      const mimeType = file.type || 'image/png';
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: CLAUDE_MODEL,
+          max_tokens: 2000,
+          messages: [{
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: { type: 'base64', media_type: mimeType, data: base64 }
+              },
+              { type: 'text', text: CLAUDE_PROMPT }
+            ]
+          }]
+        })
+      });
+
+      if (!response.ok) throw new Error(`API error ${response.status}`);
+
+      const data = await response.json();
+      const raw  = data?.content?.[0]?.text || '{}';
+
+      let parsed;
+      try {
+        parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+      } catch {
+        parsed = { raw_text: raw, skills: [], error: 'Parse error' };
+      }
+
+      window.__resumeData = parsed;
+
+      // Build plain text for skill matching engines
+      const parts = [
+        parsed.name || '',
+        parsed.summary || '',
+        (parsed.skills || []).join(' '),
+        (parsed.experience || []).map(e => `${e.title} ${e.company} ${e.description}`).join(' '),
+        (parsed.education || []).map(e => `${e.degree} ${e.institution}`).join(' '),
+        (parsed.certifications || []).join(' '),
+        (parsed.projects || []).join(' '),
+        parsed.raw_text || ''
+      ];
+
+      window.__resumeText = parts.join(' ').toLowerCase();
+      window.__imageAnalysisDone = true;
+
+      if (parsed.error && !parsed.raw_text) {
+        showImageBanner('Could not extract resume content from this image.', 'error');
+        return false;
+      }
+
+      const skillCount = (parsed.skills || []).length;
+      showImageBanner(
+        `Vision analysis complete — ${skillCount} skill${skillCount!==1?'s':''} extracted from image.`,
+        'success'
+      );
+
+      // Patch file.name for downstream filename-based extractors
+      // so they see the extracted content instead
+      Object.defineProperty(file, '__extractedText', {
+        value: window.__resumeText,
+        configurable: true
+      });
+
+      return true;
+
+    } catch (err) {
+      console.error('[ImageAnalyzer]', err);
+      showImageBanner('Vision analysis failed. Continuing with filename-based analysis.', 'error');
+      window.__imageAnalysisDone = true;
+      return false;
+    }
+  }
+
+  /* ── Patch all file inputs on the page ── */
+  function patchFileInput(input) {
+    if (input.__imgPatched) return;
+    input.__imgPatched = true;
+
+    input.addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (isImage(file)) {
+        // Disable any analyze/submit buttons while processing
+        document.querySelectorAll(
+          'button[id*="upload"],button[id*="analyze"],button[id*="check"],button[id*="submit"]'
+        ).forEach(b => { b.disabled = true; b.__wasDisabled = b.disabled; });
+
+        const ok = await analyzeImageWithClaude(file);
+
+        // Re-enable buttons
+        document.querySelectorAll(
+          'button[id*="upload"],button[id*="analyze"],button[id*="check"],button[id*="submit"]'
+        ).forEach(b => { b.disabled = false; });
+
+      } else {
+        // Non-image file — reset state
+        window.__isImageResume     = false;
+        window.__imageAnalysisDone = false;
+        window.__resumeText        = '';
+        window.__resumeData        = null;
+        const old = document.getElementById('__img-banner');
+        if (old) old.remove();
+      }
+    }, true); // capture phase so we run BEFORE existing handlers
+  }
+
+  /* ── Monkey-patch downstream skill extractors ── */
+  // Override String.prototype.includes for the scope where file.name is checked
+  // Instead: expose a global helper that tools can use
+  window.__getResumeText = function(file) {
+    if (window.__isImageResume && window.__resumeText) {
+      return window.__resumeText;
+    }
+    return file ? file.name.toLowerCase() : '';
+  };
+
+  window.__getSkillsFromImage = function() {
+    return window.__resumeData ? (window.__resumeData.skills || []) : [];
+  };
+
+  window.__getResumeJSON = function() {
+    return window.__resumeData || null;
+  };
+
+  /* ── Auto-patch any existing inputs + observe future ones ── */
+  function patchAll() {
+    document.querySelectorAll('input[type="file"]').forEach(patchFileInput);
+  }
+
+  // Patch on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', patchAll);
+  } else {
+    patchAll();
+  }
+
+  // Also watch for dynamically added inputs
+  const obs = new MutationObserver(() => patchAll());
+  obs.observe(document.body || document.documentElement, { childList:true, subtree:true });
+
+  /* ── Patch drag-drop zones ── */
+  document.addEventListener('DOMContentLoaded', function() {
+    const zones = document.querySelectorAll('[id*="drop"],[id*="zone"],[class*="drop"],[class*="upload-wrapper"]');
+    zones.forEach(zone => {
+      if (zone.__dropPatched) return;
+      zone.__dropPatched = true;
+
+      zone.addEventListener('drop', async function(e) {
+        const file = e.dataTransfer?.files?.[0];
+        if (file && isImage(file)) {
+          document.querySelectorAll(
+            'button[id*="upload"],button[id*="analyze"],button[id*="check"],button[id*="submit"]'
+          ).forEach(b => { b.disabled = true; });
+
+          await analyzeImageWithClaude(file);
+
+          document.querySelectorAll(
+            'button[id*="upload"],button[id*="analyze"],button[id*="check"],button[id*="submit"]'
+          ).forEach(b => { b.disabled = false; });
+        }
+      }, true);
+    });
+  });
+
+  console.log('[ImageAnalyzer] Universal image engine loaded ✓');
+
+})();
+</script>
+
+</body>
+</html>

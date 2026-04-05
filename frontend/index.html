@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Placement • Enterprise Career Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #D1FAE5;
+            --accent: #6366F1;
+            --accent-light: #EEF2FF;
+            --bg-white: #FFFFFF;
+            --bg-light: #F9FAFB;
+            --bg-lighter: #F3F4F6;
+            --text-dark: #111827;
+            --text-gray: #4B5563;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* offset for fixed navbar (~72px height) */
+        section[id] {
+            scroll-margin-top: 80px;
+        }
+
+            background: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* NAVIGATION */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-cta {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-dark);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10rem 2rem 6rem;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .hero-gradient {
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 1200px;
+            height: 1200px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.06), transparent 70%);
+            animation: float 25s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-40px, 40px) rotate(3deg); }
+        }
+        
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+        
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary-light), #ECFDF5);
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2.5rem;
+        }
+        
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+        
+        .hero-title {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.8rem;
+            color: var(--text-dark);
+            letter-spacing: -2.5px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-description {
+            font-size: 22px;
+            color: var(--text-gray);
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-actions {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            margin-bottom: 5rem;
+        }
+        
+        /* TRUST INDICATORS */
+        .trust-section {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+        }
+        
+        .trust-item {
+            text-align: center;
+            padding: 1.5rem;
+            border-right: 1px solid var(--border);
+        }
+        
+        .trust-item:last-child {
+            border-right: none;
+        }
+        
+        .trust-icon {
+            font-size: 36px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .trust-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .trust-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+        
+        /* FEATURES */
+        .features {
+            padding: 8rem 2rem;
+            background: white;
+        }
+        
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+        
+        .section-badge {
+            display: inline-block;
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 52px;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 1.2rem;
+            letter-spacing: -1.5px;
+        }
+        
+        .section-description {
+            font-size: 20px;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+        
+        .feature-card {
+            background: var(--bg-light);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            transition: all 0.4s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(16, 185, 129, 0.12);
+            background: white;
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+        }
+        
+        .feature-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-description {
+            font-size: 16px;
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+        
+        /* CTA */
+        .cta {
+            padding: 8rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -15%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 70%);
+        }
+        
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-title {
+            font-size: 56px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+        }
+        
+        .cta-description {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+        
+        .btn-white {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            padding: 1rem 2.5rem;
+        }
+        
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* FOOTER */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+        
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-brand {
+            max-width: 350px;
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+        
+        .footer-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 15px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+        
+        /* CONTACT */
+        .contact-section {
+            padding: 8rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 5rem;
+            align-items: start;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .contact-info-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 24px;
+            padding: 3rem;
+            color: white;
+        }
+
+        .contact-info-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 0.6rem;
+        }
+
+        .contact-info-sub {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 1.8rem;
+        }
+
+        .contact-detail-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .contact-detail-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 4px;
+        }
+
+        .contact-detail-value {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .contact-social {
+            display: flex;
+            gap: 10px;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .social-btn {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .social-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+        }
+
+        .contact-form-card {
+            display: none; /* removed */
+        }
+
+        /* BLOG CARDS (inside contact grid) */
+        .blog-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .blog-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1.6rem 1.8rem;
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .blog-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 32px rgba(16,185,129,0.1);
+            transform: translateY(-3px);
+        }
+
+        .blog-card-emoji {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .blog-card-body {
+            flex: 1;
+        }
+
+        .blog-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .blog-card-tag {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+
+        .blog-card-date {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .blog-card-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .blog-card-desc {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .blog-card-arrow {
+            font-size: 18px;
+            color: var(--primary);
+            align-self: center;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .blog-card:hover .blog-card-arrow {
+            transform: translateX(4px);
+        }
+
+        /* skeleton shimmer */
+        @keyframes shimmer {
+            0%   { background-position: -600px 0; }
+            100% { background-position:  600px 0; }
+        }
+
+        .blog-skeleton { pointer-events: none; cursor: default; }
+        .blog-skeleton:hover { transform: none; box-shadow: none; border-color: var(--border); }
+
+        .skel-box {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 600px 100%;
+            animation: shimmer 1.4s infinite linear;
+            flex-shrink: 0;
+        }
+
+        .blog-error {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-light);
+            font-size: 14px;
+            background: white;
+            border-radius: 18px;
+            border: 1px dashed var(--border);
+        }
+
+        .blog-error-icon { font-size: 36px; margin-bottom: 0.8rem; }
+        .blog-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .live-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .trust-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .trust-item {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .trust-item:nth-child(3), .trust-item:nth-child(4) {
+                border-bottom: none;
+            }
+            
+            .footer-top {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 44px;
+            }
+            
+            .hero-description {
+                font-size: 18px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .trust-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .trust-item {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .trust-item:last-child {
+                border-bottom: none;
+            }
+            
+            .footer-top {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 38px;
+            }
+            
+            .cta-title {
+                font-size: 38px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            /* ── NAVBAR ── */
+            .nav-container {
+                padding: 1rem 1.2rem;
+            }
+            .nav-cta {
+                gap: 0.5rem;
+            }
+            .nav-cta .btn-outline {
+                display: none;
+            }
+            .nav-cta .btn-primary {
+                padding: 0.6rem 1rem;
+                font-size: 13px;
+            }
+
+            /* ── HERO ── */
+            .hero {
+                padding: 7rem 1.2rem 4rem;
+            }
+            .hero-badge {
+                font-size: 11px;
+                padding: 8px 16px;
+            }
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.8rem;
+                margin-bottom: 3rem;
+            }
+            .hero-actions .btn {
+                width: 100%;
+                max-width: 320px;
+                justify-content: center;
+            }
+
+            /* ── TRUST ── */
+            .trust-grid {
+                padding: 1.5rem;
+                gap: 0;
+            }
+            .trust-item {
+                padding: 1rem;
+            }
+            .trust-value {
+                font-size: 26px;
+            }
+
+            /* ── SECTIONS ── */
+            .features {
+                padding: 5rem 1.2rem;
+            }
+            .section-title {
+                font-size: 32px;
+            }
+            .section-description {
+                font-size: 16px;
+            }
+            .section-header {
+                margin-bottom: 3rem;
+            }
+            .feature-card {
+                padding: 2rem;
+            }
+
+            /* ── CTA ── */
+            .cta {
+                padding: 5rem 1.5rem;
+            }
+            .cta-title {
+                font-size: 30px;
+            }
+            .cta-description {
+                font-size: 17px;
+            }
+
+            /* ── CONTACT ── */
+            .contact-section {
+                padding: 5rem 1.2rem;
+            }
+            .contact-info-card {
+                padding: 2rem;
+            }
+            .contact-social {
+                flex-wrap: wrap;
+            }
+
+            /* ── BLOG ── */
+            .blog-card {
+                padding: 1.2rem;
+                gap: 0.8rem;
+            }
+            .blog-card-emoji {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+
+            /* ── FOOTER ── */
+            .footer-container {
+                padding: 3rem 1.5rem 1.5rem;
+            }
+            .footer-top {
+                gap: 2rem;
+            }
+        }
+
+        /* ── EXTRA SMALL (360px and below) ── */
+        @media (max-width: 400px) {
+            .hero-title {
+                font-size: 34px;
+                letter-spacing: -1px;
+            }
+            .hero-description {
+                font-size: 15px;
+            }
+            .section-title {
+                font-size: 28px;
+            }
+            .cta-title {
+                font-size: 26px;
+            }
+            .logo span {
+                font-size: 20px;
+            }
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+            .feature-card {
+                padding: 1.5rem;
+            }
+            .contact-info-card {
+                padding: 1.5rem;
+            }
+            .blog-card-title {
+                font-size: 13px;
+            }
+            .blog-card-desc {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">🎯</div>
+                <span>AI Placement</span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            
+            <div class="nav-cta">
+                <a href="/login.html" class="btn btn-outline">Sign In</a>
+                <a href="/signup.html" class="btn btn-primary">Get Started →</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="hero-gradient"></div>
+            <div class="hero-pattern"></div>
+        </div>
+        
+        <div class="hero-container">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                AI-Powered Career Intelligence
+            </div>
+            
+            <h1 class="hero-title">
+                Your Career Journey, <span class="gradient-text">Supercharged by AI</span>
+            </h1>
+            
+            <p class="hero-description">
+                Professional career analytics platform that transforms your resume into actionable insights, 
+                optimizes for opportunities, and guides your path to success with enterprise-grade AI technology.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="/signup.html" class="btn btn-primary">Start Your Journey →</a>
+                <a href="#features" class="btn btn-outline">Explore Platform</a>
+            </div>
+            
+            <!-- TRUST INDICATORS -->
+            <div class="trust-section">
+                <div class="trust-grid">
+                    <div class="trust-item">
+                        <span class="trust-icon">🎯</span>
+                        <div class="trust-value">95%</div>
+                        <div class="trust-label">Resume Accuracy</div>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">⚡</span>
+                        <div class="trust-value">< 3s</div>
+                        <div class="trust-label">Analysis Speed</div>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">🔒</span>
+                        <div class="trust-value">100%</div>
+                        <div class="trust-label">Data Security</div>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">✨</span>
+                        <div class="trust-value">24/7</div>
+                        <div class="trust-label">AI Available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-badge">PLATFORM CAPABILITIES</div>
+                <h2 class="section-title">Everything You Need to Succeed</h2>
+                <p class="section-description">
+                    Comprehensive suite of professional tools designed to accelerate 
+                    your career growth and unlock new opportunities
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧬</div>
+                    <h3 class="feature-title">Career DNA Analysis</h3>
+                    <p class="feature-description">
+                        Comprehensive AI analysis of your professional profile including skills, 
+                        experience, achievements, and career trajectory with actionable recommendations
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">ATS Optimization</h3>
+                    <p class="feature-description">
+                        Ensure your resume passes Applicant Tracking Systems with intelligent 
+                        parsing, keyword optimization, and formatting recommendations
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Career Readiness</h3>
+                    <p class="feature-description">
+                        Complete assessment of your professional preparedness with personalized 
+                        improvement plans and skill gap analysis
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💼</div>
+                    <h3 class="feature-title">Job Intelligence</h3>
+                    <p class="feature-description">
+                        AI-powered job matching that identifies opportunities perfectly aligned 
+                        with your skills, experience, and career aspirations
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Salary Insights</h3>
+                    <p class="feature-description">
+                        Market-based compensation analysis and salary benchmarking to help 
+                        you negotiate with confidence and maximize earnings
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Growth Roadmap</h3>
+                    <p class="feature-description">
+                        Strategic career planning with personalized development paths, 
+                        milestone tracking, and continuous progress monitoring
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SOLUTIONS -->
+    <section class="features" id="solutions" style="background: var(--bg-white);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-badge">INDUSTRY SOLUTIONS</div>
+                <h2 class="section-title">Tailored for Every Professional</h2>
+                <p class="section-description">
+                    Specialized solutions designed for different career stages and industries
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3 class="feature-title">Students &amp; Graduates</h3>
+                    <p class="feature-description">
+                        Launch your career with confidence. Get resume optimization, interview prep, 
+                        and personalized job recommendations for entry-level positions
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💼</div>
+                    <h3 class="feature-title">Mid-Career Professionals</h3>
+                    <p class="feature-description">
+                        Advance your career trajectory. Access salary insights, skill gap analysis, 
+                        and strategic guidance for your next big move
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h3 class="feature-title">Enterprise Teams</h3>
+                    <p class="feature-description">
+                        Empower your organization. Bulk resume analysis, talent intelligence, 
+                        and workforce development tools for HR teams
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">Career Switchers</h3>
+                    <p class="feature-description">
+                        Navigate career transitions smoothly. Identify transferable skills, 
+                        discover new opportunities, and map your transition path
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌟</div>
+                    <h3 class="feature-title">Executive Leadership</h3>
+                    <p class="feature-description">
+                        Position yourself strategically. Executive resume optimization, 
+                        board positioning, and C-suite opportunity intelligence
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Freelancers &amp; Consultants</h3>
+                    <p class="feature-description">
+                        Build your personal brand. Portfolio optimization, rate benchmarking, 
+                        and client acquisition strategies powered by AI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ABOUT -->
+    <section class="features" id="about">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-badge">ABOUT US</div>
+                <h2 class="section-title">Transforming Careers with AI</h2>
+                <p class="section-description">
+                    We're on a mission to democratize career intelligence and make professional 
+                    growth accessible to everyone through cutting-edge AI technology
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Our Mission</h3>
+                    <p class="feature-description">
+                        To empower every professional with AI-driven insights and tools that 
+                        accelerate career growth, unlock opportunities, and maximize potential
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3 class="feature-title">Our Vision</h3>
+                    <p class="feature-description">
+                        A world where every career decision is data-informed, every opportunity 
+                        is within reach, and professional success is achievable for all
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3 class="feature-title">Our Values</h3>
+                    <p class="feature-description">
+                        Integrity, innovation, and inclusivity drive everything we do. 
+                        We're committed to transparency, privacy, and ethical AI practices
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3 class="feature-title">Our Technology</h3>
+                    <p class="feature-description">
+                        Built on advanced machine learning models, natural language processing, 
+                        and enterprise-grade infrastructure ensuring accuracy and reliability
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3 class="feature-title">Global Impact</h3>
+                    <p class="feature-description">
+                        Serving professionals across 50+ countries with localized insights, 
+                        market intelligence, and culturally relevant career guidance
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Proven Results</h3>
+                    <p class="feature-description">
+                        95% accuracy in resume analysis, 3-second processing time, and thousands 
+                        of professionals achieving their career goals with our platform
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CONTACT -->
+    <section class="contact-section" id="contact">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-badge">GET IN TOUCH</div>
+                <h2 class="section-title">Contact Us</h2>
+                <p class="section-description">
+                    Have a question, partnership idea, or just want to say hello? 
+                    We'd love to hear from you.
+                </p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Left: info card -->
+                <div class="contact-info-card">
+                    <div class="contact-info-title">Let's Talk 👋</div>
+                    <p class="contact-info-sub">
+                        Our team is here to help you get the most out of AI Placement. 
+                        Reach out through any channel below.
+                    </p>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon">📧</div>
+                        <div>
+                            <div class="contact-detail-label">Email</div>
+                            <div class="contact-detail-value">bhavsimar39&#64;gmail.com</div>
+                            <div class="contact-detail-value">tripathipadma070&#64;gmail.com</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon">📞</div>
+                        <div>
+                            <div class="contact-detail-label">Phone</div>
+                            <div class="contact-detail-value">+91 88275 15895</div>
+                            <div class="contact-detail-value">+91 87263 56264</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon">⏰</div>
+                        <div>
+                            <div class="contact-detail-label">Support Hours</div>
+                            <div class="contact-detail-value">Mon – Fri, 9 AM – 6 PM IST</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-social">
+                        <a href="https://www.linkedin.com/in/bhav-simar-b4a647331" target="_blank" rel="noopener" class="social-btn" title="Bhav Simar – LinkedIn">💼</a>
+                        <a href="https://www.linkedin.com/in/padma-tripathi-a07523326" target="_blank" rel="noopener" class="social-btn" title="Padma Tripathi – LinkedIn">💼</a>
+                        <a href="https://github.com/bhavsimar39-hub" target="_blank" rel="noopener" class="social-btn" title="Bhav Simar – GitHub">🔗</a>
+                        <a href="https://github.com/padma-tr" target="_blank" rel="noopener" class="social-btn" title="Padma Tripathi – GitHub">🔗</a>
+                    </div>
+                </div>
+
+                <!-- Right: live blog posts -->
+                <div class="blog-stack" id="blogStack">
+                    <!-- skeleton cards shown while loading -->
+                    <div class="blog-card blog-skeleton"><div class="blog-card-emoji skel-box" style="width:52px;height:52px;border-radius:14px;"></div><div class="blog-card-body"><div class="skel-box" style="width:60%;height:12px;border-radius:6px;margin-bottom:10px;"></div><div class="skel-box" style="width:90%;height:16px;border-radius:6px;margin-bottom:8px;"></div><div class="skel-box" style="width:80%;height:12px;border-radius:6px;"></div></div></div>
+                    <div class="blog-card blog-skeleton"><div class="blog-card-emoji skel-box" style="width:52px;height:52px;border-radius:14px;"></div><div class="blog-card-body"><div class="skel-box" style="width:55%;height:12px;border-radius:6px;margin-bottom:10px;"></div><div class="skel-box" style="width:85%;height:16px;border-radius:6px;margin-bottom:8px;"></div><div class="skel-box" style="width:75%;height:12px;border-radius:6px;"></div></div></div>
+                    <div class="blog-card blog-skeleton"><div class="blog-card-emoji skel-box" style="width:52px;height:52px;border-radius:14px;"></div><div class="blog-card-body"><div class="skel-box" style="width:65%;height:12px;border-radius:6px;margin-bottom:10px;"></div><div class="skel-box" style="width:88%;height:16px;border-radius:6px;margin-bottom:8px;"></div><div class="skel-box" style="width:70%;height:12px;border-radius:6px;"></div></div></div>
+                    <div class="blog-card blog-skeleton"><div class="blog-card-emoji skel-box" style="width:52px;height:52px;border-radius:14px;"></div><div class="blog-card-body"><div class="skel-box" style="width:50%;height:12px;border-radius:6px;margin-bottom:10px;"></div><div class="skel-box" style="width:92%;height:16px;border-radius:6px;margin-bottom:8px;"></div><div class="skel-box" style="width:78%;height:12px;border-radius:6px;"></div></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-container">
+            <h2 class="cta-title">Ready to Transform Your Career?</h2>
+            <p class="cta-description">
+                Join professionals leveraging AI to accelerate growth, discover opportunities, 
+                and achieve career goals faster than ever before
+            </p>
+            <a href="/signup.html" class="btn btn-white">Get Started Today →</a>
+        </div>
+    </section>
+    
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-icon" style="width: 32px; height: 32px; font-size: 16px;">🎯</div>
+                        AI Placement
+                    </div>
+                    <p class="footer-description">
+                        Enterprise-grade career intelligence platform powered by advanced 
+                        artificial intelligence to transform professional development
+                    </p>
+                </div>
+                
+                <div>
+                    <div class="footer-title">Product</div>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#solutions">Solutions</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title">Company</div>
+                    <ul class="footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title">Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                        <li><a href="#security">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                © 2026 AI Placement. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ── LIVE BLOGS — fetches from DEV.to public API ─────────────
+    // Project-relevant tags: AI, career, resume, jobs, ML, placement
+    const TAG_EMOJIS = {
+        career: "💼", resume: "📄", interview: "🎯", javascript: "🟨",
+        webdev: "🌐", ai: "🤖", productivity: "⚡", programming: "💻",
+        beginners: "🌱", python: "🐍", tutorial: "📖", career_switch: "🔄",
+        salary: "📈", job: "🔍", hiring: "🏢", machinelearning: "🧠",
+        artificialintelligence: "🤖", llm: "🧠", placement: "🎯",
+        jobs: "🔍", deeplearning: "🔬", nlp: "💬", default: "✨"
+    };
+
+    function tagEmoji(tags) {
+        if (!tags || !tags.length) return TAG_EMOJIS.default;
+        for (const t of tags) {
+            const key = t.toLowerCase().replace(/[^a-z_]/g, "");
+            if (TAG_EMOJIS[key]) return TAG_EMOJIS[key];
+        }
+        return TAG_EMOJIS.default;
+    }
+
+    function fmtDate(iso) {
+        return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    function truncate(str, n) {
+        return str && str.length > n ? str.substring(0, n).trimEnd() + "…" : (str || "");
+    }
+
+    // Fisher-Yates shuffle — randomises array in place
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function renderBlogs(articles) {
+        const stack = document.getElementById("blogStack");
+        if (!articles || !articles.length) {
+            stack.innerHTML = `<div class="blog-error"><div class="blog-error-icon">📭</div>No articles found right now. Check back soon!</div>`;
+            return;
+        }
+
+        // Shuffle the pool so every refresh shows different articles
+        const picked = shuffle([...articles]).slice(0, 4);
+
+        stack.innerHTML =
+            `<div class="blog-live-badge"><div class="live-dot"></div> Live from DEV Community</div>` +
+            picked.map(a => {
+                const emoji = tagEmoji(a.tag_list);
+                const tag   = a.tag_list?.[0] ? a.tag_list[0].replace(/_/g," ") : "Article";
+                const date  = fmtDate(a.published_at);
+                const mins  = a.reading_time_minutes || "?";
+                const desc  = truncate(a.description || a.title, 110);
+                const title = truncate(a.title, 72);
+                const url   = a.url || "#";
+                return `
+                <a href="${url}" target="_blank" rel="noopener" class="blog-card">
+                    <div class="blog-card-emoji">${emoji}</div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-card-tag">${tag}</span>
+                            <span class="blog-card-date">${date} · ${mins} min read</span>
+                        </div>
+                        <div class="blog-card-title">${title}</div>
+                        <div class="blog-card-desc">${desc}</div>
+                    </div>
+                    <div class="blog-card-arrow">→</div>
+                </a>`;
+            }).join("");
+    }
+
+    async function fetchLiveBlogs() {
+        // Fetch from multiple project-relevant tag queries in parallel
+        // and merge into one big pool, then shuffle to pick 4
+        const queries = [
+            "https://dev.to/api/articles?tag=career&per_page=30",
+            "https://dev.to/api/articles?tag=resume&per_page=30",
+            "https://dev.to/api/articles?tag=ai&per_page=30",
+            "https://dev.to/api/articles?tag=machinelearning&per_page=30",
+            "https://dev.to/api/articles?tag=interview&per_page=30",
+            "https://dev.to/api/articles?tag=jobs&per_page=30",
+            "https://dev.to/api/articles?tag=artificialintelligence&per_page=30",
+            "https://dev.to/api/articles?tag=deeplearning&per_page=30",
+            "https://dev.to/api/articles?tag=placement&per_page=30",
+            "https://dev.to/api/articles?tag=hiring&per_page=30",
+        ];
+
+        try {
+            // Fire all requests at the same time
+            const results = await Promise.allSettled(queries.map(u => fetch(u).then(r => r.json())));
+
+            // Collect all articles into one pool, remove duplicates by id
+            const seen = new Set();
+            const pool = [];
+            for (const r of results) {
+                if (r.status === "fulfilled" && Array.isArray(r.value)) {
+                    for (const article of r.value) {
+                        if (!seen.has(article.id)) {
+                            seen.add(article.id);
+                            pool.push(article);
+                        }
+                    }
+                }
+            }
+
+            if (pool.length >= 1) {
+                renderBlogs(pool); // shuffle happens inside renderBlogs
+                return;
+            }
+        } catch (_) { /* fall through to error */ }
+
+        // All failed — show friendly error
+        document.getElementById("blogStack").innerHTML =
+            `<div class="blog-error"><div class="blog-error-icon">📭</div>Could not load articles right now. Check back soon!</div>`;
+    }
+
+    fetchLiveBlogs();
+    </script>
+</body>
+</html>

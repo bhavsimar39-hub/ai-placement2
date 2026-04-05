@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Gap Analysis • AI Placement</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<style>
+:root{
+  --primary:#10B981;--primary-dark:#059669;--primary-light:#D1FAE5;
+  --accent:#6366F1;--accent-cyan:#06B6D4;
+  --bg:#FFFFFF;--bg-darker:#F9FAFB;
+  --surface:#FFFFFF;--surface2:#FFFFFF;--surface3:rgba(0,0,0,0.02);
+  --border:#E5E7EB;--border2:#D1D5DB;
+  --text:#111827;--text-muted:#6B7280;--text-soft:#4B5563;
+  --red:#EF4444;--amber:#F59E0B;--green:#10B981;
+  --mono:'JetBrains Mono',monospace;--sans:'Archivo',-apple-system,sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(circle at 20% 30%,rgba(16,185,129,0.05) 0%,transparent 50%),
+             radial-gradient(circle at 80% 70%,rgba(99,102,241,0.04) 0%,transparent 50%);}
+
+.content{margin-left:300px;padding:40px;position:relative;z-index:1;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn  {from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn {from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes spin    {to{transform:rotate(360deg)}}
+@keyframes pulse   {0%,100%{opacity:1;box-shadow:0 0 12px var(--primary)}50%{opacity:.5;box-shadow:0 0 4px var(--primary)}}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:24px;padding:40px 48px;margin-bottom:32px;
+  position:relative;overflow:hidden;backdrop-filter:blur(20px);
+  animation:fadeIn .6s ease;
+}
+.page-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#10B981,#6366F1,#06B6D4);}
+.ph-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;}
+.ph-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.ph-dot{width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 12px var(--primary);animation:pulse 2.4s ease-in-out infinite;}
+.ph-label{font-family:var(--mono);font-size:11px;color:var(--primary);letter-spacing:2.5px;text-transform:uppercase;}
+.ph-title{font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-1.5px;margin-bottom:8px;}
+.ph-title span{background:linear-gradient(135deg,#10B981,#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ph-sub{font-size:15px;color:var(--text-muted);line-height:1.65;max-width:540px;}
+.ph-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;padding-top:24px;border-top:1px solid rgba(0,0,0,0.08);}
+.ph-stat{display:flex;align-items:center;gap:10px;padding:12px 18px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.18);border-radius:12px;font-size:14px;font-weight:600;color:var(--primary);}
+.ph-stat-ico{font-size:18px;}
+
+/* ── LAYOUT ── */
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;}
+
+/* ── LEFT: FORM CARD ── */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;backdrop-filter:blur(20px);animation:fadeIn .6s ease .1s both;}
+.card-header{display:flex;align-items:center;gap:14px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid rgba(0,0,0,0.08);}
+.card-icon{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 20px rgba(16,185,129,0.3);flex-shrink:0;}
+.card-title{font-size:20px;font-weight:800;letter-spacing:-.5px;}
+.card-sub{font-size:13px;color:var(--text-muted);margin-top:3px;}
+
+.form-group{margin-bottom:22px;}
+.form-label{display:block;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+.form-input{width:100%;padding:14px 16px;background:#FFFFFF;border:1.5px solid #E5E7EB;border-radius:12px;font-size:14px;font-family:var(--sans);color:#111827;outline:none;transition:border-color .2s,box-shadow .2s;}
+.form-input::placeholder{color:#9CA3AF;}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(16,185,129,0.12);}
+textarea.form-input{resize:vertical;min-height:100px;line-height:1.6;}
+select.form-input{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%2310B981'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;}
+select.form-input option{background:#FFFFFF;color:#111827;}
+.form-hint{font-size:12px;margin-top:7px;min-height:18px;font-family:var(--mono);}
+
+/* Skill tags input display */
+.tags-display{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;min-height:10px;}
+.stag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--primary);}
+
+.analyze-btn{width:100%;padding:17px;background:linear-gradient(135deg,#10B981,#059669);border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:var(--sans);color:#fff;cursor:pointer;margin-top:8px;transition:all .3s;box-shadow:0 6px 24px rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;gap:10px;}
+.analyze-btn:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(16,185,129,0.45);}
+.analyze-btn:active{transform:translateY(-1px);}
+.analyze-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+
+/* ── RIGHT: SCORE PANEL ── */
+.score-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;text-align:center;animation:fadeIn .6s ease .15s both;backdrop-filter:blur(20px);position:sticky;top:24px;}
+.score-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#10B981,#6366F1);}
+.score-ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 20px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(0,0,0,0.08);stroke-width:10;}
+.ring-fill{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502;transition:stroke-dashoffset 1.4s cubic-bezier(.34,1.1,.64,1);}
+.ring-idle{stroke:rgba(0,0,0,0.12);}
+.ring-low{stroke:#EF4444;}
+.ring-avg{stroke:#F59E0B;}
+.ring-good{stroke:#10B981;}
+.ring-great{stroke:url(#ringGrad);}
+.score-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;}
+.score-num{font-family:var(--mono);font-size:44px;font-weight:800;color:var(--text);letter-spacing:-2px;line-height:1;}
+.score-num.idle{font-size:36px;opacity:.3;}
+.score-pct{font-family:var(--mono);font-size:14px;color:var(--text-muted);display:none;}
+.score-pct.show{display:block;}
+.score-label{font-family:var(--mono);font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
+.readiness-pill{display:inline-block;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:700;font-family:var(--mono);margin-bottom:20px;}
+.pill-idle{background:rgba(0,0,0,0.04);color:var(--text-muted);}
+.pill-low{background:rgba(239,68,68,0.12);color:#EF4444;border:1px solid rgba(239,68,68,0.25);}
+.pill-average{background:rgba(245,158,11,0.12);color:#F59E0B;border:1px solid rgba(245,158,11,0.25);}
+.pill-good{background:rgba(16,185,129,0.12);color:#10B981;border:1px solid rgba(16,185,129,0.25);}
+.pill-great{background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.25);}
+
+/* Company badge */
+.company-badge{display:none;align-items:center;gap:12px;padding:14px 16px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:12px;margin-bottom:16px;text-align:left;}
+.co-emoji{font-size:28px;flex-shrink:0;}
+.co-name{font-size:14px;font-weight:700;}
+.co-track{font-size:11px;color:var(--text-muted);font-family:var(--mono);margin-top:2px;}
+
+/* Stats row in panel */
+.panel-stats{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0;}
+.pstat{background:rgba(0,0,0,0.02);border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:12px;text-align:center;}
+.pstat-num{font-family:var(--mono);font-size:22px;font-weight:800;line-height:1;margin-bottom:3px;}
+.pstat-label{font-family:var(--mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;}
+.pstat.c-green .pstat-num{color:#10B981;}
+.pstat.c-red .pstat-num{color:#EF4444;}
+.pstat.c-blue .pstat-num{color:#60a5fa;}
+.pstat.c-amber .pstat-num{color:#F59E0B;}
+
+/* ── RESULTS SECTION ── */
+.results-section{display:none;margin-top:28px;animation:slideUp .5s ease;}
+.results-section.active{display:block;}
+
+.results-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px;backdrop-filter:blur(20px);}
+.results-card::before{content:'';display:block;height:2px;margin:-32px -32px 28px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#10B981,#059669);}
+.rc-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+.rc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ico-green{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);}
+.ico-amber{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.22);}
+.ico-blue{background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.22);}
+.rc-title{font-size:18px;font-weight:800;letter-spacing:-.5px;}
+.rc-sub{font-size:13px;color:var(--text-muted);margin-top:2px;}
+
+/* Tag grids */
+.tag-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:600;transition:all .2s;}
+.tag-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.tag-have{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#10B981;}
+.tag-have .tag-dot{background:#10B981;}
+.tag-have:hover{background:rgba(16,185,129,0.18);}
+.tag-miss{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.22);color:#f87171;}
+.tag-miss .tag-dot{background:#EF4444;}
+.tag-miss:hover{background:rgba(239,68,68,0.18);}
+
+/* Skill bars */
+.skill-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
+.skill-row:last-child{border-bottom:none;}
+.skill-row-left{display:flex;flex-direction:column;gap:6px;}
+.skill-name-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;}
+.core-badge{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:2px 7px;border-radius:4px;background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.2);}
+.skill-track{height:4px;background:rgba(0,0,0,0.08);border-radius:2px;overflow:hidden;width:100%;}
+.skill-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.fill-have{background:linear-gradient(90deg,#10B981,#06B6D4);}
+.fill-miss{background:rgba(239,68,68,0.4);}
+.skill-status{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0;}
+.s-have{background:rgba(16,185,129,0.1);color:#10B981;border:1px solid rgba(16,185,129,0.2);}
+.s-miss{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+
+/* Section labels */
+.section-lbl{font-family:var(--mono);font-size:10px;font-weight:800;color:rgba(0,0,0,0.4);text-transform:uppercase;letter-spacing:1.8px;margin:20px 0 12px;}
+.section-lbl:first-child{margin-top:0;}
+
+/* Recommendations */
+.rec-row{display:flex;gap:14px;padding:14px 16px;background:rgba(0,0,0,0.02);border:1px solid rgba(0,0,0,0.08);border-left:3px solid var(--primary);border-radius:10px;margin-bottom:10px;transition:background .2s;}
+.rec-row:hover{background:rgba(16,185,129,0.04);}
+.rec-num{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px;}
+.rec-text{font-size:14px;color:var(--text-soft);line-height:1.65;}
+.rec-text strong{color:var(--text);font-weight:700;}
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay{position:fixed;inset:0;z-index:999;background:rgba(10,14,19,0.88);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+.loading-overlay.active{display:flex;}
+.spinner{width:52px;height:52px;border-radius:50%;border:4px solid rgba(16,185,129,0.15);border-top-color:#10B981;animation:spin .7s linear infinite;}
+.loading-text{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text-muted);letter-spacing:1px;}
+.loading-steps{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.lstep{font-size:12px;color:rgba(0,0,0,0.45);font-family:var(--mono);display:flex;align-items:center;gap:8px;transition:color .3s;}
+.lstep.active{color:#10B981;}
+.lstep-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+/* ── EMPTY STATE ── */
+.empty-panel{text-align:center;padding:60px 20px;background:rgba(0,0,0,0.02);border:2px dashed rgba(0,0,0,0.1);border-radius:16px;}
+.empty-ico{font-size:52px;margin-bottom:14px;opacity:.3;}
+.empty-title{font-weight:700;font-size:16px;color:var(--text-muted);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:rgba(0,0,0,0.4);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){.main-grid{grid-template-columns:1fr;}.score-panel{position:static;}}
+@media(max-width:768px){.content{margin-left:0;padding:24px;}.page-header{padding:28px 24px;}.form-card{padding:24px;}}
+
+/* ── MOBILE ── */
+@media(max-width:480px){
+  .content{padding:14px;padding-top:70px;}
+  .page-header{padding:20px 16px;border-radius:16px;}
+  .form-card{padding:18px;border-radius:14px;}
+  .score-panel{padding:20px;}
+}
+@media(max-width:360px){
+  .content{padding:10px;padding-top:66px;}
+}
+</style>
+</head>
+<body>
+
+<div id="sidebar-container"></div>
+<script>fetch('/sidebar.html')
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('#sidebar-container script').forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    })
+    .catch(e => console.error('Sidebar error:', e));</script>
+
+<div class="content">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="ph-top">
+      <div>
+        <div class="ph-brand"><div class="ph-dot"></div><span class="ph-label">AI Placement · Skill Intelligence</span></div>
+        <h1 class="ph-title">Skill Gap <span>Analysis</span></h1>
+        <p class="ph-sub">Discover exactly which skills you need for your target company. Get a precise readiness score and personalized action plan.</p>
+      </div>
+    </div>
+    <div class="ph-stats">
+      <div class="ph-stat"><span class="ph-stat-ico">🏢</span>30+ Companies Mapped</div>
+      <div class="ph-stat"><span class="ph-stat-ico">🎯</span>10 Career Tracks</div>
+      <div class="ph-stat"><span class="ph-stat-ico">⚡</span>Instant Analysis</div>
+      <div class="ph-stat" style="background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);color:#818cf8;"><span class="ph-stat-ico">🧠</span>AI-Powered</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT: FORM -->
+    <div>
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon">🔍</div>
+          <div><div class="card-title">Gap Analyzer</div><div class="card-sub">Enter your target company and current skills</div></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Target Company</label>
+          <input type="text" class="form-input" id="companyInput" placeholder="e.g. Google, Amazon, TCS, Razorpay…" oninput="updateCompanyHint()">
+          <div class="form-hint" id="companyHint"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Career Track (Override)</label>
+          <select class="form-input" id="trackOverride">
+            <option value="">Auto-detect from company</option>
+            <option value="web-development">🌐 Web Development</option>
+            <option value="backend">🖥️ Backend Engineering</option>
+            <option value="machine-learning">🤖 Machine Learning / AI</option>
+            <option value="data-science">📊 Data Science</option>
+            <option value="devops">⚙️ DevOps / SRE</option>
+            <option value="cloud">☁️ Cloud Engineering</option>
+            <option value="app-development">📱 Mobile App Development</option>
+            <option value="cybersecurity">🔐 Cybersecurity</option>
+            <option value="ui-ux">🎨 UI / UX Design</option>
+            <option value="digital-marketing">📢 Digital Marketing</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Skills You Already Know</label>
+          <textarea class="form-input" id="knownSkills" placeholder="e.g. Python, React, SQL, Docker, Git, AWS… (comma-separated)" oninput="updateTagPreview()"></textarea>
+          <div class="tags-display" id="tagsDisplay"></div>
+        </div>
+
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeGap()">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
+          Analyze Skill Gap
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: SCORE PANEL -->
+    <div>
+      <div class="score-panel">
+        <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#6366F1"/></linearGradient></defs></svg>
+
+        <div class="score-ring-wrap">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle class="ring-bg" cx="90" cy="90" r="78"/>
+            <circle class="ring-fill ring-idle" id="ringProgress" cx="90" cy="90" r="78"/>
+          </svg>
+          <div class="score-center">
+            <div class="score-num idle" id="matchPct">—</div>
+            <div class="score-pct" id="matchSub">% Match</div>
+          </div>
+        </div>
+
+        <div class="score-label">Readiness Score</div>
+        <div class="readiness-pill pill-idle" id="readinessPill">Not Analysed</div>
+
+        <div class="company-badge" id="companyBadgeWrap">
+          <div class="co-emoji" id="companyEmoji">🏢</div>
+          <div>
+            <div class="co-name" id="companyNameDisplay">—</div>
+            <div class="co-track" id="trackDisplay">—</div>
+          </div>
+        </div>
+
+        <div class="panel-stats" id="panelStats" style="display:none">
+          <div class="pstat c-green"><div class="pstat-num" id="statHave">0</div><div class="pstat-label">You Have</div></div>
+          <div class="pstat c-red"><div class="pstat-num" id="statMiss">0</div><div class="pstat-label">Missing</div></div>
+          <div class="pstat c-blue"><div class="pstat-num" id="statTotal">0</div><div class="pstat-label">Required</div></div>
+          <div class="pstat c-amber"><div class="pstat-num" id="statTime">—</div><div class="pstat-label">Est. Time</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-grid -->
+
+  <!-- RESULTS (full width below grid) -->
+  <div class="results-section" id="resultsSection">
+
+    <!-- Skill Breakdown Card -->
+    <div class="results-card" id="skillBreakdownCard" style="display:none">
+      <div class="rc-header">
+        <div class="rc-icon ico-green">📊</div>
+        <div><div class="rc-title" id="breakdownTitle">Skill Breakdown</div><div class="rc-sub">Visual analysis of required vs. your current skills</div></div>
+      </div>
+      <div id="skillBreakdownBody"></div>
+    </div>
+
+    <!-- Recommendations Card -->
+    <div class="results-card" id="recsCard" style="display:none">
+      <div class="rc-header">
+        <div class="rc-icon ico-amber">🎯</div>
+        <div><div class="rc-title">Action Plan</div><div class="rc-sub">Your personalized roadmap to close the gap</div></div>
+      </div>
+      <div id="recsList"></div>
+    </div>
+
+    <!-- Empty placeholder before analysis -->
+    <div class="empty-panel" id="emptyPanel">
+      <div class="empty-ico">🔍</div>
+      <div class="empty-title">No analysis yet</div>
+      <div class="empty-sub">Enter your target company and skills above, then click Analyze</div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Analyzing your skills…</div>
+  <div class="loading-steps">
+    <div class="lstep active" id="ls1"><span class="lstep-dot"></span>Matching company profile</div>
+    <div class="lstep" id="ls2"><span class="lstep-dot"></span>Comparing skill matrix</div>
+    <div class="lstep" id="ls3"><span class="lstep-dot"></span>Calculating readiness score</div>
+    <div class="lstep" id="ls4"><span class="lstep-dot"></span>Generating action plan</div>
+  </div>
+</div>
+
+<!-- ── SKILL TAG PREVIEW ── -->
+<script>
+function updateTagPreview() {
+    const raw = document.getElementById("knownSkills").value;
+    const tags = raw.split(",").map(s=>s.trim()).filter(Boolean);
+    const display = document.getElementById("tagsDisplay");
+    display.innerHTML = tags.slice(0,12).map(t =>
+        `<span class="stag">✓ ${t}</span>`
+    ).join('') + (tags.length>12?`<span class="stag" style="color:var(--text-muted)">+${tags.length-12} more</span>`:'');
+}
+</script>
+<script src="/js/skill-gap.js"></script>
+
+<!-- ── OVERRIDE ANALYZE TO ADD LOADING STEPS ── -->
+<script>
+(function(){
+    const orig = window.analyzeGap;
+    window.analyzeGap = function() {
+        // Animate loading steps
+        const steps = ['ls1','ls2','ls3','ls4'];
+        steps.forEach(id => document.getElementById(id).classList.remove('active'));
+        let i = 0;
+        const iv = setInterval(() => {
+            if (i < steps.length) {
+                document.getElementById(steps[i]).classList.add('active');
+                i++;
+            } else { clearInterval(iv); }
+        }, 350);
+        orig();
+    };
+
+    // Trigger tag preview after skill-gap.js auto-loads localStorage skills
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const ta = document.getElementById('knownSkills');
+            if (ta && ta.value.trim() && typeof updateTagPreview === 'function') {
+                updateTagPreview();
+            }
+        }, 100);
+    });
+})();
+</script>
+</body>
+</html>

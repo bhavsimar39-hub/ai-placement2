@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirming Email • AI Placement</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --primary:#10B981;--accent:#6366F1;
+    --bg:#0F1419;--card:#1A1F26;
+    --t1:#F9FAFB;--t2:#9CA3AF;
+  }
+  body{
+    font-family:"Archivo",sans-serif;background:var(--bg);color:var(--t1);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:20px;position:relative;overflow:hidden;
+  }
+  .bg{position:fixed;inset:0;z-index:0}
+  .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.12}
+  .orb1{width:500px;height:500px;background:radial-gradient(circle,#10B981,transparent);top:-20%;left:-15%}
+  .orb2{width:450px;height:450px;background:radial-gradient(circle,#6366F1,transparent);bottom:-20%;right:-15%}
+  .grid{
+    position:absolute;inset:0;
+    background-image:linear-gradient(rgba(16,185,129,.02) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(16,185,129,.02) 1px,transparent 1px);
+    background-size:50px 50px;opacity:.4;
+  }
+
+  .wrap{position:relative;z-index:1;width:100%;max-width:440px;text-align:center}
+
+  .logo{display:inline-flex;align-items:center;gap:12px;margin-bottom:40px}
+  .logo-icon{
+    width:48px;height:48px;background:linear-gradient(135deg,#10B981,#059669);
+    border-radius:12px;display:flex;align-items:center;justify-content:center;
+    font-size:28px;box-shadow:0 8px 24px rgba(16,185,129,.3);
+  }
+  .logo-text{
+    font-size:28px;font-weight:800;font-family:"JetBrains Mono",monospace;
+    background:linear-gradient(135deg,#10B981,#6366F1);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+
+  .card{
+    background:var(--card);border:1px solid rgba(16,185,129,.15);
+    border-radius:24px;padding:52px 44px;
+    box-shadow:0 24px 64px rgba(0,0,0,.5);position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;width:100%;height:2px;
+    background:linear-gradient(90deg,#10B981,#6366F1,#F59E0B);
+  }
+
+  /* States */
+  .state{display:none}
+  .state.active{display:block;animation:fadeUp .4s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+  .icon-wrap{
+    width:80px;height:80px;border-radius:20px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:40px;margin:0 auto 24px;
+  }
+  .icon-loading{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(99,102,241,.1));animation:pulse 1.5s ease-in-out infinite}
+  .icon-success{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.1))}
+  .icon-error  {background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.1))}
+
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+  .state-title{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+  .state-sub{font-size:15px;color:var(--t2);line-height:1.65;margin-bottom:28px}
+  .state-sub b{color:var(--t1)}
+
+  .spinner{
+    width:44px;height:44px;border-radius:50%;
+    border:3px solid rgba(99,102,241,.2);border-top-color:#6366F1;
+    animation:spin .7s linear infinite;margin:0 auto;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 36px;border-radius:12px;border:none;
+    font-size:15px;font-weight:700;font-family:"Archivo",sans-serif;
+    cursor:pointer;transition:all .2s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,#10B981,#059669);color:#fff;
+    box-shadow:0 6px 20px rgba(16,185,129,.35);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(16,185,129,.45)}
+  .btn-secondary{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--t2);
+  }
+  .btn-secondary:hover{color:var(--t1);background:rgba(255,255,255,.09)}
+
+  .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+  /* Progress dots */
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:20px}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15)}
+  .dot.active{background:var(--accent)}
+  /* ── MOBILE ── */
+  @media (max-width: 480px) {
+    body { padding: 16px 12px; align-items: flex-start; padding-top: 30px; }
+    .wrap { max-width: 100%; }
+    .logo { margin-bottom: 24px; gap: 10px; }
+    .logo-icon { width: 40px; height: 40px; font-size: 22px; }
+    .logo-text { font-size: 22px; }
+    .card { padding: 32px 22px; border-radius: 18px; }
+    .icon-wrap { width: 64px; height: 64px; font-size: 32px; border-radius: 16px; }
+    .state-title { font-size: 22px; }
+    .state-sub { font-size: 14px; }
+    .btn { padding: 12px 22px; font-size: 14px; }
+    .btn-row { flex-direction: column; align-items: stretch; }
+    .btn-row .btn { justify-content: center; }
+  }
+
+  @media (max-width: 360px) {
+    .card { padding: 24px 16px; }
+    .state-title { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="grid"></div>
+</div>
+
+<div class="wrap">
+  <div class="logo">
+    <div class="logo-icon">🎯</div>
+    <span class="logo-text">AI Placement</span>
+  </div>
+
+  <div class="card">
+
+    <!-- LOADING state -->
+    <div class="state active" id="stateLoading">
+      <div class="icon-wrap icon-loading">
+        <div class="spinner"></div>
+      </div>
+      <div class="state-title">Confirming your email…</div>
+      <div class="state-sub">Please wait while we verify your account.</div>
+      <div class="dots">
+        <div class="dot active" id="d1"></div>
+        <div class="dot" id="d2"></div>
+        <div class="dot" id="d3"></div>
+      </div>
+    </div>
+
+    <!-- SUCCESS state -->
+    <div class="state" id="stateSuccess">
+      <div class="icon-wrap icon-success">🎉</div>
+      <div class="state-title" style="color:#10B981">Email Confirmed!</div>
+      <div class="state-sub">
+        Your account is now active, <b id="confirmedName">there</b>!<br>
+        You're being signed in automatically…
+      </div>
+      <div class="spinner" style="border-top-color:#10B981;border-color:rgba(16,185,129,.2)"></div>
+    </div>
+
+    <!-- ERROR state -->
+    <div class="state" id="stateError">
+      <div class="icon-wrap icon-error">❌</div>
+      <div class="state-title" style="color:#fb7185">Confirmation Failed</div>
+      <div class="state-sub" id="errorMsg">
+        The confirmation link may have expired or already been used.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="window.location.href='/signup.html'">Sign Up Again</button>
+        <button class="btn btn-primary"   onclick="window.location.href='/login.html'">Go to Login →</button>
+      </div>
+    </div>
+
+    <!-- ALREADY CONFIRMED state -->
+    <div class="state" id="stateAlready">
+      <div class="icon-wrap icon-success">✅</div>
+      <div class="state-title">Already Confirmed</div>
+      <div class="state-sub">Your email is already verified. Go ahead and sign in!</div>
+      <button class="btn btn-primary" onclick="window.location.href='/login.html'">
+        Sign In →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ─────────────────────────────────────────────────────────────────
+// Supabase redirects here after the user clicks the confirmation link.
+// The URL hash contains: #access_token=...&refresh_token=...&type=signup
+//
+// This page:
+//  1. Reads the token from the URL hash
+//  2. Saves it to localStorage
+//  3. Calls backend to create the MongoDB user document
+//  4. Redirects to dashboard
+// ─────────────────────────────────────────────────────────────────
+
+const API = "http://localhost:5000";
+
+function showState(id) {
+    document.querySelectorAll(".state").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+async function handleConfirmation() {
+    // ── Parse BOTH hash (#) and query string (?) ──────────────────
+    // Mobile email clients strip # fragments, Supabase uses ?code= (PKCE)
+    const hashParams  = new URLSearchParams(window.location.hash.substring(1));
+    const queryParams = new URLSearchParams(window.location.search);
+
+    const accessToken  = hashParams.get("access_token")   || queryParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token")   || queryParams.get("refresh_token");
+    const code         = queryParams.get("code");           // PKCE (mobile)
+    const errorCode    = hashParams.get("error_code")      || queryParams.get("error_code");
+    const errorDesc    = hashParams.get("error_description")|| queryParams.get("error_description");
+
+    // ── Animate loading dots ─────────────────────────────────────
+    setTimeout(() => {
+        document.getElementById("d1").classList.add("done");
+        document.getElementById("d1").classList.remove("active");
+        document.getElementById("d2").classList.add("active");
+    }, 600);
+    setTimeout(() => {
+        document.getElementById("d2").classList.add("done");
+        document.getElementById("d2").classList.remove("active");
+        document.getElementById("d3").classList.add("active");
+    }, 1200);
+
+    // ── Error in URL ──────────────────────────────────────────────
+    if (errorCode) {
+        setTimeout(() => {
+            document.getElementById("errorMsg").textContent =
+                (errorDesc || "").replace(/\+/g," ") || "The link is invalid or has expired.";
+            showState("stateError");
+        }, 1400);
+        return;
+    }
+
+    // ── No token and no code ──────────────────────────────────────
+    if (!accessToken && !code) {
+        setTimeout(() => {
+            const saved = localStorage.getItem("token");
+            if (saved) window.location.href = "/dashboard.html";
+            else showState("stateAlready");
+        }, 1400);
+        return;
+    }
+
+    // ── Exchange code (PKCE/mobile) or save token (desktop) ───────
+    try {
+        let finalToken = accessToken;
+
+        if (code) {
+            // Mobile PKCE flow — exchange code for session via Supabase SDK
+            const { createClient } = window.supabase;
+            const sb = createClient(
+                "https://tbbjseuniixtofxnglgn.supabase.co",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYmpzZXVuaWl4dG9meG5nbGduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0ODM2NTQsImV4cCI6MjA4OTA1OTY1NH0.W105azTILfUkD0Ufu0weV_uZFxlbOIdxJtJeLlyTSYQ"
+            );
+            const { data, error } = await sb.auth.exchangeCodeForSession(code);
+            if (error || !data?.session) { showState("stateError"); return; }
+            finalToken = data.session.access_token;
+        }
+
+        // Save token for all future API calls
+        localStorage.setItem("token", finalToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
+        // Trigger MongoDB user creation via backend
+        try {
+            await fetch(`${API}/api/user/profile`, {
+                headers: { "Authorization": "Bearer " + finalToken }
+            });
+        } catch(e) { /* non-fatal */ }
+
+    } catch (err) {
+        console.warn("Confirmation error (non-fatal):", err.message);
+    }
+
+    // ── Show success then redirect ─────────────────────────────────
+    setTimeout(() => {
+        document.getElementById("d3").classList.add("done");
+        document.getElementById("d3").classList.remove("active");
+        showState("stateSuccess");
+        setTimeout(() => { window.location.href = "/dashboard.html"; }, 2200);
+    }, 1500);
+}
+
+// Run on page load
+handleConfirmation();
+</script>
+</body>
+</html>

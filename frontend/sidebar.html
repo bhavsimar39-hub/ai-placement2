@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .sidebar {
+        width: 280px; height: 100vh;
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        display: flex; flex-direction: column;
+        position: fixed; left: 0; top: 0; z-index: 1000;
+        border-right: 1px solid rgba(148,163,184,0.1);
+        box-shadow: 8px 0 40px rgba(0,0,0,0.25);
+        font-family: 'Inter', system-ui, sans-serif;
+        animation: sidebarIn .4s cubic-bezier(.4,0,.2,1);
+        overflow: hidden;
+    }
+    @keyframes sidebarIn { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
+    .sidebar::before {
+        content:''; position:absolute; inset:0; pointer-events:none;
+        background-image: linear-gradient(rgba(16,185,129,0.02) 1px,transparent 1px), linear-gradient(90deg,rgba(16,185,129,0.02) 1px,transparent 1px);
+        background-size:32px 32px; opacity:0.7;
+    }
+    .sidebar::after {
+        content:''; position:absolute; top:-120px; right:-120px;
+        width:300px; height:300px; border-radius:50%;
+        background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);
+        pointer-events:none;
+    }
+    .logo-section {
+        padding:24px 20px 20px;
+        border-bottom:1px solid rgba(148,163,184,0.1);
+        position:relative; z-index:2; flex-shrink:0;
+        background:linear-gradient(135deg,rgba(16,185,129,0.03) 0%,transparent 100%);
+    }
+    .logo-section::after {
+        content:''; position:absolute; bottom:0; left:20px; right:20px; height:1px;
+        background:linear-gradient(90deg,transparent,rgba(16,185,129,0.3),transparent);
+    }
+    .logo { display:flex; align-items:center; gap:12px; text-decoration:none; cursor:pointer; transition:transform .2s; }
+    .logo:hover { transform:translateX(2px); }
+    .logo-icon-wrap {
+        width:46px; height:46px; border-radius:14px; flex-shrink:0;
+        background:linear-gradient(135deg,#10B981 0%,#059669 100%);
+        display:flex; align-items:center; justify-content:center; font-size:22px;
+        box-shadow:0 8px 24px rgba(16,185,129,0.35),inset 0 1px 0 rgba(255,255,255,0.2);
+        position:relative; overflow:hidden;
+    }
+    .logo-icon-wrap::after {
+        content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+        background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,0.15) 50%,transparent 70%);
+        animation:logoShimmer 4s ease-in-out infinite;
+    }
+    @keyframes logoShimmer {
+        0%,100%{transform:translateX(-100%) translateY(-100%) rotate(45deg)}
+        50%{transform:translateX(70%) translateY(70%) rotate(45deg)}
+    }
+    .logo-text-wrap { display:flex; flex-direction:column; gap:2px; }
+    .logo-name {
+        font-size:18px; font-weight:800; letter-spacing:-.4px;
+        background:linear-gradient(135deg,#ffffff 0%,#e2e8f0 100%);
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .logo-tag { font-size:9px; font-weight:700; letter-spacing:2px; color:#64748b; text-transform:uppercase; }
+    .sidebar-scroll {
+        flex:1; overflow-y:auto; overflow-x:hidden;
+        padding:12px 0 16px; position:relative; z-index:2;
+    }
+    .sidebar-scroll::-webkit-scrollbar { width:4px; }
+    .sidebar-scroll::-webkit-scrollbar-track { background:transparent; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#10B981,#059669); border-radius:10px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#34D399,#10B981); }
+    .nav-section { margin-top:8px; }
+    .sec-label {
+        display:flex; align-items:center; gap:10px; padding:12px 20px 8px;
+        font-size:10px; font-weight:800; color:rgba(148,163,184,0.5);
+        text-transform:uppercase; letter-spacing:2px; position:relative;
+    }
+    .sec-label::before { content:''; flex:0 0 16px; height:2px; background:linear-gradient(90deg,#10B981,transparent); border-radius:2px; }
+    .sec-label::after  { content:''; flex:1; height:1px; background:rgba(148,163,184,0.08); }
+    .divider { height:1px; background:linear-gradient(90deg,transparent,rgba(148,163,184,0.1),transparent); margin:12px 20px; }
+    .nav-links { display:flex; flex-direction:column; gap:2px; padding:0 12px; }
+    .nav-link {
+        display:flex; align-items:center; gap:12px; padding:11px 14px;
+        border-radius:12px; text-decoration:none;
+        font-size:14px; font-weight:500; color:rgba(226,232,240,0.7);
+        position:relative; transition:all .2s cubic-bezier(.4,0,.2,1); cursor:pointer;
+    }
+    .nav-link::before {
+        content:''; position:absolute; left:0; top:25%; bottom:25%;
+        width:3px; border-radius:0 4px 4px 0;
+        background:linear-gradient(180deg,#10B981,#059669);
+        opacity:0; transition:opacity .2s;
+    }
+    .nav-link:hover { background:rgba(16,185,129,0.08); color:rgba(255,255,255,0.95); transform:translateX(2px); }
+    .nav-link:hover::before { opacity:0.6; }
+    .nav-link.active {
+        background:linear-gradient(90deg,rgba(16,185,129,0.15) 0%,rgba(16,185,129,0.05) 100%);
+        color:#ffffff; font-weight:600; box-shadow:0 2px 12px rgba(16,185,129,0.15);
+    }
+    .nav-link.active::before { opacity:1; }
+    .nav-icon {
+        width:32px; height:32px; flex-shrink:0; border-radius:10px;
+        display:flex; align-items:center; justify-content:center; font-size:16px;
+        background:rgba(15,23,42,0.6); border:1px solid rgba(148,163,184,0.1); transition:all .2s;
+    }
+    .nav-link:hover .nav-icon { background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.3); transform:scale(1.05); }
+    .nav-link.active .nav-icon { background:rgba(16,185,129,0.2); border-color:rgba(16,185,129,0.4); box-shadow:0 0 16px rgba(16,185,129,0.3); }
+    .nav-text { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .badge { font-size:9px; font-weight:800; padding:4px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:.8px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+    .b-hot { background:linear-gradient(135deg,#f59e0b,#ea580c); color:#fff; }
+    .b-new { background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; }
+    .b-pro { background:linear-gradient(135deg,#06b6d4,#0891b2); color:#fff; }
+    .sidebar-footer {
+        flex-shrink:0; padding:14px 14px 16px;
+        border-top:1px solid rgba(148,163,184,0.1);
+        position:relative; z-index:2; background:rgba(15,23,42,0.6);
+    }
+    .sidebar-footer::before {
+        content:''; position:absolute; top:0; left:20px; right:20px; height:1px;
+        background:linear-gradient(90deg,transparent,rgba(16,185,129,0.3),transparent);
+    }
+    .logout-btn {
+        width:100%; padding:13px 18px;
+        display:flex; align-items:center; justify-content:center; gap:10px;
+        background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25);
+        border-radius:12px; color:#fca5a5;
+        font-size:14px; font-weight:700; font-family:inherit;
+        cursor:pointer; transition:all .3s cubic-bezier(.4,0,.2,1);
+        position:relative; overflow:hidden;
+    }
+    .logout-btn::before {
+        content:''; position:absolute; inset:0;
+        background:linear-gradient(135deg,#ef4444,#dc2626);
+        opacity:0; transition:opacity .3s;
+    }
+    .logout-btn:hover { color:#fff; transform:translateY(-2px); box-shadow:0 8px 24px rgba(239,68,68,0.4); border-color:transparent; }
+    .logout-btn:hover::before { opacity:1; }
+    .logout-btn:active { transform:translateY(0); }
+    .logout-icon, .logout-label { position:relative; z-index:1; }
+    .logout-icon { font-size:17px; }
+
+    /* ── MOBILE HAMBURGER ── */
+    .mob-hamburger {
+        display: none;
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        z-index: 1100;
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg,#10B981,#059669);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        box-shadow: 0 4px 16px rgba(16,185,129,0.4);
+        transition: transform .2s;
+    }
+    .mob-hamburger:hover { transform: scale(1.05); }
+    .mob-hamburger span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #fff;
+        border-radius: 2px;
+        transition: all .25s;
+    }
+    .mob-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mob-hamburger.open span:nth-child(2) { opacity: 0; }
+    .mob-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mob-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+    .mob-overlay.visible { display: block; }
+
+    @media (max-width: 768px) {
+        .mob-hamburger { display: flex; }
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform .3s cubic-bezier(.4,0,.2,1);
+        }
+        .sidebar.mob-open { transform: translateX(0); }
+    }
+</style>
+</head>
+<body>
+<button class="mob-hamburger" id="mobHamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+</button>
+<div class="mob-overlay" id="mobOverlay"></div>
+<div class="sidebar" id="mainSidebar">
+    <div class="logo-section">
+        <div class="logo" onclick="window.location.href='/dashboard.html'">
+            <div class="logo-icon-wrap">🚀</div>
+            <div class="logo-text-wrap">
+                <div class="logo-name">AI Placement</div>
+                <div class="logo-tag">Career Platform</div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-scroll">
+        <div class="nav-section">
+            <div class="sec-label">Core Features</div>
+            <div class="nav-links">
+                <a href="/dashboard.html" class="nav-link"><div class="nav-icon">📊</div><span class="nav-text">Dashboard</span></a>
+                <a href="/resume-upload.html" class="nav-link"><div class="nav-icon">📄</div><span class="nav-text">Resume Upload</span></a>
+                <a href="/ats-checker.html" class="nav-link"><div class="nav-icon">✅</div><span class="nav-text">ATS Checker</span></a>
+                <a href="/readiness.html" class="nav-link"><div class="nav-icon">📈</div><span class="nav-text">Readiness Score</span></a>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="nav-section">
+            <div class="sec-label">AI Features</div>
+            <div class="nav-links">
+                <a href="/nlp-analyzer.html" class="nav-link"><div class="nav-icon">🧠</div><span class="nav-text">NLP Analyzer</span><span class="badge b-hot">Hot</span></a>
+                <a href="/career-dna.html" class="nav-link"><div class="nav-icon">🧬</div><span class="nav-text">Career DNA</span><span class="badge b-pro">Pro</span></a>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="nav-section">
+            <div class="sec-label">Job Search</div>
+            <div class="nav-links">
+                <a href="/job-match.html" class="nav-link"><div class="nav-icon">💼</div><span class="nav-text">Job Match</span></a>
+                <a href="/skill-gap.html" class="nav-link"><div class="nav-icon">🎯</div><span class="nav-text">Skill Gap</span></a>
+                <a href="/career-insights.html" class="nav-link"><div class="nav-icon">💰</div><span class="nav-text">Career Insights</span><span class="badge b-new">New</span></a>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="nav-section">
+            <div class="sec-label">Preparation</div>
+            <div class="nav-links">
+                <a href="/interview-prep.html" class="nav-link"><div class="nav-icon">🎤</div><span class="nav-text">Interview Prep</span></a>
+                <a href="/learning-roadmap.html" class="nav-link"><div class="nav-icon">🗺️</div><span class="nav-text">Learning Path</span></a>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="nav-section">
+            <div class="sec-label">Account</div>
+            <div class="nav-links">
+                <a href="/history.html" class="nav-link"><div class="nav-icon">🕒</div><span class="nav-text">Activity History</span></a>
+                <a href="/settings.html" class="nav-link"><div class="nav-icon">⚙️</div><span class="nav-text">Settings</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-footer">
+        <!-- ── Dark / Light Mode Toggle ── -->
+        <div id="themeToggleWrap" style="margin-bottom:10px;">
+            <button id="themeToggleBtn"
+                style="width:100%;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;
+                       background:rgba(148,163,184,0.07);border:1px solid rgba(148,163,184,0.15);
+                       border-radius:12px;cursor:pointer;font-family:inherit;transition:all .25s;
+                       color:rgba(226,232,240,0.8);font-size:13px;font-weight:600;">
+                <div style="display:flex;align-items:center;gap:9px;">
+                    <span id="themeIcon" style="font-size:16px;">🌙</span>
+                    <span id="themeLabel">Dark Mode</span>
+                </div>
+                <!-- pill track -->
+                <div id="themePill"
+                    style="width:38px;height:22px;border-radius:11px;
+                           background:rgba(148,163,184,0.2);border:1px solid rgba(148,163,184,0.2);
+                           position:relative;transition:background .3s,border-color .3s;flex-shrink:0;">
+                    <div id="themeThumb"
+                        style="position:absolute;top:3px;left:3px;width:14px;height:14px;
+                               border-radius:50%;background:#64748b;
+                               transition:transform .3s,background .3s;box-shadow:0 1px 4px rgba(0,0,0,0.3);">
+                    </div>
+                </div>
+            </button>
+        </div>
+        <button class="logout-btn" id="sidebarLogoutBtn">
+            <span class="logout-icon">🚪</span>
+            <span class="logout-label">Logout</span>
+        </button>
+    </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  THEME ENGINE  —  injects dark-mode CSS into the host page
+// ══════════════════════════════════════════════════════════
+(function() {
+    var DARK_CSS = `
+html[data-theme="dark"] {
+    /* ── Core palette overrides ── */
+    --bg:        #0f172a;
+    --bg-darker: #0a1020;
+    --surface:   #1e293b;
+    --surface2:  #1e293b;
+    --surface3:  rgba(255,255,255,0.03);
+    --border:    rgba(148,163,184,0.12);
+    --border2:   rgba(148,163,184,0.18);
+    --text:      #e2e8f0;
+    --text-muted:#94a3b8;
+    --text-soft: #cbd5e1;
+    /* primaries stay green/indigo — no change needed */
+    color-scheme: dark;
+}
+
+/* ── Page body & backgrounds ── */
+html[data-theme="dark"] body {
+    background: linear-gradient(180deg, #0f172a 0%, #0a1020 100%) !important;
+    color: #e2e8f0 !important;
+}
+html[data-theme="dark"] body::before {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(16,185,129,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(99,102,241,0.06) 0%, transparent 50%) !important;
+}
+
+/* ── Universal surface reset ── */
+html[data-theme="dark"] *,
+html[data-theme="dark"] *::before,
+html[data-theme="dark"] *::after {
+    transition: background-color .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+}
+
+/* ── Cards, panels, form areas ── */
+html[data-theme="dark"] .page-header,
+html[data-theme="dark"] .form-card,
+html[data-theme="dark"] .score-panel,
+html[data-theme="dark"] .results-card,
+html[data-theme="dark"] .selector-section,
+html[data-theme="dark"] .job-card,
+html[data-theme="dark"] .results-bar,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] [class*="card"],
+html[data-theme="dark"] [class*="panel"],
+html[data-theme="dark"] [class*="section"],
+html[data-theme="dark"] [class*="box"],
+html[data-theme="dark"] [class*="wrap"] {
+    background: #1e293b !important;
+    border-color: rgba(148,163,184,0.12) !important;
+    color: #e2e8f0 !important;
+}
+
+/* ── Inputs, selects, textareas ── */
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+    background: #0f172a !important;
+    border-color: rgba(148,163,184,0.2) !important;
+    color: #e2e8f0 !important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+    color: #475569 !important;
+}
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] textarea:focus,
+html[data-theme="dark"] select:focus {
+    border-color: #10B981 !important;
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.15) !important;
+}
+html[data-theme="dark"] select option {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+}
+
+/* ── Text colours ── */
+html[data-theme="dark"] h1, html[data-theme="dark"] h2,
+html[data-theme="dark"] h3, html[data-theme="dark"] h4 {
+    color: #f1f5f9 !important;
+}
+html[data-theme="dark"] p,
+html[data-theme="dark"] span:not(.badge):not([class*="pill"]):not([class*="tag"]):not([class*="badge"]) {
+    color: #cbd5e1;
+}
+
+/* ── Muted / soft text helpers ── */
+html[data-theme="dark"] [class*="muted"],
+html[data-theme="dark"] [class*="sub"],
+html[data-theme="dark"] [style*="color:#6B7280"],
+html[data-theme="dark"] [style*="color: #6B7280"],
+html[data-theme="dark"] [style*="color:#4B5563"],
+html[data-theme="dark"] [style*="color:#374151"] {
+    color: #94a3b8 !important;
+}
+
+/* ── Inline white backgrounds (common in result panels) ── */
+html[data-theme="dark"] [style*="background:white"],
+html[data-theme="dark"] [style*="background: white"],
+html[data-theme="dark"] [style*="background:#fff"],
+html[data-theme="dark"] [style*="background: #fff"],
+html[data-theme="dark"] [style*="background:#FFFFFF"],
+html[data-theme="dark"] [style*="background: #FFFFFF"] {
+    background: #1e293b !important;
+}
+html[data-theme="dark"] [style*="background:#F9FAFB"],
+html[data-theme="dark"] [style*="background:#F3F4F6"],
+html[data-theme="dark"] [style*="background:#ECFDF5"],
+html[data-theme="dark"] [style*="background:#EFF6FF"],
+html[data-theme="dark"] [style*="background:#F0FDF4"],
+html[data-theme="dark"] [style*="background:#EDE9FE"] {
+    background: #162032 !important;
+}
+
+/* ── Inline border colours ── */
+html[data-theme="dark"] [style*="border:1px solid #E5E7EB"],
+html[data-theme="dark"] [style*="border: 1px solid #E5E7EB"],
+html[data-theme="dark"] [style*="border-color:#E5E7EB"] {
+    border-color: rgba(148,163,184,0.12) !important;
+}
+
+/* ── Skill / result tags that use light bg ── */
+html[data-theme="dark"] .stag,
+html[data-theme="dark"] .tag,
+html[data-theme="dark"] [class*="skill"],
+html[data-theme="dark"] [class*="tag"] {
+    background: rgba(16,185,129,0.12) !important;
+    border-color: rgba(16,185,129,0.2) !important;
+}
+
+/* ── Stat / pstat boxes ── */
+html[data-theme="dark"] .pstat,
+html[data-theme="dark"] [class*="pstat"],
+html[data-theme="dark"] [class*="ph-stat"] {
+    background: rgba(255,255,255,0.04) !important;
+    border-color: rgba(148,163,184,0.12) !important;
+}
+
+/* ── Dividers ── */
+html[data-theme="dark"] hr,
+html[data-theme="dark"] .divider,
+html[data-theme="dark"] [class*="divider"] {
+    border-color: rgba(148,163,184,0.1) !important;
+    background: rgba(148,163,184,0.1) !important;
+}
+
+/* ── Modal overlays (keep dark, just tweak inner card) ── */
+html[data-theme="dark"] [id*="Modal"] > div,
+html[data-theme="dark"] [id*="modal"] > div {
+    background: #1e293b !important;
+    border-color: rgba(148,163,184,0.15) !important;
+}
+
+/* ── Scrollbars ── */
+html[data-theme="dark"] ::-webkit-scrollbar-track { background: #0f172a; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; border-radius:10px; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ── Loading overlays ── */
+html[data-theme="dark"] .loading-overlay {
+    background: rgba(10,16,32,0.92) !important;
+}
+
+/* ── Interest pills (job-match domain grid) ── */
+html[data-theme="dark"] .interest-pill {
+    background: rgba(255,255,255,0.03) !important;
+    border-color: rgba(148,163,184,0.12) !important;
+    color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .interest-pill:hover {
+    background: rgba(16,185,129,0.1) !important;
+}
+html[data-theme="dark"] .interest-pill.active {
+    background: rgba(16,185,129,0.12) !important;
+    border-color: rgba(16,185,129,0.35) !important;
+}
+
+/* ── rb-filter sort buttons ── */
+html[data-theme="dark"] .rb-filter {
+    background: transparent !important;
+    border-color: rgba(148,163,184,0.15) !important;
+    color: #94a3b8 !important;
+}
+html[data-theme="dark"] .rb-filter.on,
+html[data-theme="dark"] .rb-filter:hover {
+    background: rgba(16,185,129,0.1) !important;
+    border-color: rgba(16,185,129,0.3) !important;
+    color: #10B981 !important;
+}
+
+/* ── Skill fill bars background track ── */
+html[data-theme="dark"] .skill-track,
+html[data-theme="dark"] .jc-bar-track,
+html[data-theme="dark"] [class*="bar-track"] {
+    background: rgba(255,255,255,0.06) !important;
+}
+
+/* ── Score ring idle state ── */
+html[data-theme="dark"] .ring-bg { stroke: rgba(255,255,255,0.08) !important; }
+html[data-theme="dark"] .ring-idle { stroke: rgba(255,255,255,0.12) !important; }
+
+/* ── Content area (main page right of sidebar) ── */
+html[data-theme="dark"] .content {
+    background: transparent !important;
+}
+}`;
+
+    // ── Inject the dark-mode stylesheet once into the host page ──
+    function injectDarkCSS() {
+        if (document.getElementById('ai-dark-theme')) return;
+        var el = document.createElement('style');
+        el.id  = 'ai-dark-theme';
+        el.textContent = DARK_CSS;
+        document.head.appendChild(el);
+    }
+
+    // ── Apply or remove the theme attribute ──
+    function applyTheme(isDark) {
+        if (isDark) {
+            injectDarkCSS();
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        updateToggleUI(isDark);
+    }
+
+    // ── Sync toggle button visual state ──
+    function updateToggleUI(isDark) {
+        var icon   = document.getElementById('themeIcon');
+        var label  = document.getElementById('themeLabel');
+        var pill   = document.getElementById('themePill');
+        var thumb  = document.getElementById('themeThumb');
+        var btn    = document.getElementById('themeToggleBtn');
+        if (!icon) return;
+
+        if (isDark) {
+            icon.textContent  = '☀️';
+            label.textContent = 'Light Mode';
+            pill.style.background    = 'rgba(16,185,129,0.3)';
+            pill.style.borderColor   = 'rgba(16,185,129,0.4)';
+            thumb.style.transform    = 'translateX(16px)';
+            thumb.style.background   = '#10B981';
+            btn.style.background     = 'rgba(16,185,129,0.1)';
+            btn.style.borderColor    = 'rgba(16,185,129,0.2)';
+            btn.style.color          = '#10B981';
+        } else {
+            icon.textContent  = '🌙';
+            label.textContent = 'Dark Mode';
+            pill.style.background    = 'rgba(148,163,184,0.2)';
+            pill.style.borderColor   = 'rgba(148,163,184,0.2)';
+            thumb.style.transform    = 'translateX(0)';
+            thumb.style.background   = '#64748b';
+            btn.style.background     = 'rgba(148,163,184,0.07)';
+            btn.style.borderColor    = 'rgba(148,163,184,0.15)';
+            btn.style.color          = 'rgba(226,232,240,0.8)';
+        }
+    }
+
+(function() {
+    function doLogout() {
+        if (!confirm('🚪 Are you sure you want to logout?')) return;
+
+        // Fire backend logout in background — don't wait
+        var token = localStorage.getItem('token');
+        if (token) {
+            fetch('http://localhost:5000/api/auth/logout', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+            }).catch(function() {});
+        }
+
+        // Clear storage immediately
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Toast
+        var style = document.createElement('style');
+        style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(80px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}';
+        document.head.appendChild(style);
+
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:99999;background:linear-gradient(135deg,#10b981,#059669);color:#fff;padding:16px 28px;border-radius:14px;font-weight:700;font-size:15px;font-family:Inter,sans-serif;box-shadow:0 12px 40px rgba(16,185,129,.5);animation:toastIn .4s cubic-bezier(.4,0,.2,1);';
+        toast.textContent = '✅ Logged out successfully!';
+        document.body.appendChild(toast);
+
+        setTimeout(function() { window.location.href = '/login.html'; }, 1200);
+    }
+
+    function initSidebar() {
+        // Attach logout
+        var btn = document.getElementById('sidebarLogoutBtn');
+        if (btn) {
+            btn.onclick = doLogout;
+        }
+
+        // Also expose globally so pages that call handleLogout() still work
+        window.handleLogout = doLogout;
+        window.simpleLogout = doLogout;
+
+        // Active page highlight
+        var page = window.location.pathname.split('/').pop() || 'dashboard.html';
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            var href = (link.getAttribute('href') || '').replace(/^\//, '');
+            if (href && href === page) link.classList.add('active');
+        });
+
+        // ── Theme toggle init ──────────────────────────────
+        var isDark = localStorage.getItem('theme') === 'dark';
+        applyTheme(isDark);
+
+        var toggleBtn = document.getElementById('themeToggleBtn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                isDark = !isDark;
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                applyTheme(isDark);
+            });
+        }
+    }
+
+    // Run immediately if DOM ready, else wait
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSidebar);
+    } else {
+        initSidebar();
+    }
+})();
+})();
+</script>
+
+<!-- ── No-flash: apply saved theme before first paint ── -->
+<script>
+(function(){
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+})();
+</script>
+<script>
+(function() {
+    var ham     = document.getElementById('mobHamburger');
+    var overlay = document.getElementById('mobOverlay');
+    var sidebar = document.getElementById('mainSidebar');
+    function openNav()  { sidebar.classList.add('mob-open'); overlay.classList.add('visible'); ham.classList.add('open'); }
+    function closeNav() { sidebar.classList.remove('mob-open'); overlay.classList.remove('visible'); ham.classList.remove('open'); }
+    if (ham) ham.addEventListener('click', function() { sidebar.classList.contains('mob-open') ? closeNav() : openNav(); });
+    if (overlay) overlay.addEventListener('click', closeNav);
+    // Close on nav link click (mobile UX)
+    document.querySelectorAll('.nav-link').forEach(function(a) { a.addEventListener('click', closeNav); });
+})();
+</script>
+</body>
+</html>

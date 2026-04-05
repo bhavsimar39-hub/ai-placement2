@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Preparation • AI Placement</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/global.css">
+<style>
+:root{
+  --primary:#10B981;--primary-dark:#059669;--primary-light:#D1FAE5;
+  --accent:#6366F1;--accent-cyan:#06B6D4;
+  --bg:#FFFFFF;--bg-darker:#F9FAFB;--surface:#FFFFFF;--s3:rgba(0,0,0,.02);
+  --border:#E5E7EB;--border2:#D1D5DB;
+  --text:#111827;--muted:#6B7280;--soft:#4B5563;
+  --red:#EF4444;--amber:#F59E0B;--green:#10B981;
+  --mono:'JetBrains Mono',monospace;--sans:'Archivo',-apple-system,sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(circle at 20% 30%,rgba(16,185,129,.05) 0%,transparent 50%),
+             radial-gradient(circle at 80% 70%,rgba(99,102,241,.04) 0%,transparent 50%);}
+.content{margin-left:300px;padding:40px;position:relative;z-index:1;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pls{0%,100%{opacity:1;box-shadow:0 0 12px var(--primary)}50%{opacity:.5;box-shadow:0 0 4px var(--primary)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes tick{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── HEADER ── */
+.ph{background:var(--surface);border:1px solid var(--border);border-radius:24px;
+  padding:36px 44px;margin-bottom:24px;position:relative;overflow:hidden;
+  animation:fadeIn .5s ease;}
+.ph::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#10B981,#6366F1,#06B6D4);}
+.ph-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.ph-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);
+  box-shadow:0 0 10px var(--primary);animation:pls 2.4s ease-in-out infinite;}
+.ph-lbl{font-family:var(--mono);font-size:10px;color:var(--primary);letter-spacing:2.5px;text-transform:uppercase;}
+.ph-title{font-size:clamp(26px,3.5vw,38px);font-weight:800;letter-spacing:-1.5px;margin-bottom:6px;}
+.ph-title span{background:linear-gradient(135deg,#10B981,#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ph-sub{font-size:14px;color:var(--muted);line-height:1.6;}
+
+/* ── STATS BAR ── */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  margin-top:20px;padding-top:20px;border-top:1px solid rgba(0,0,0,.08);}
+.sb{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.08);
+  border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;}
+.sb-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;flex-shrink:0;}
+.ico1{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.2);}
+.ico2{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);}
+.ico3{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.18);}
+.ico4{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.18);}
+.sb-num{font-family:var(--mono);font-size:24px;font-weight:800;line-height:1;}
+.sb-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1.2px;margin-top:2px;}
+
+/* ── PROGRESS ── */
+.prog-strip{height:4px;background:rgba(0,0,0,.08);border-radius:2px;margin-bottom:20px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#10B981,#06B6D4);transition:width .7s ease;width:0%;}
+
+/* ── CONTROLS ── */
+.ctrl-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.role-wrap{position:relative;flex:1;min-width:200px;}
+.role-wrap::after{content:'▾';position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  pointer-events:none;color:var(--primary);font-size:13px;}
+select.rsel{width:100%;padding:11px 36px 11px 14px;background:var(--surface);
+  border:1.5px solid var(--border);border-radius:11px;font-family:var(--sans);
+  font-size:14px;font-weight:600;color:var(--text);outline:none;cursor:pointer;
+  appearance:none;transition:border-color .2s;}
+select.rsel option{background:#1A1F26;}
+select.rsel:focus{border-color:var(--primary);}
+.cbtn{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  font-family:var(--sans);font-size:13px;font-weight:600;color:var(--soft);
+  cursor:pointer;transition:all .2s;white-space:nowrap;}
+.cbtn:hover{border-color:var(--primary);color:var(--primary);}
+.cbtn.on{background:rgba(16,185,129,.1);border-color:var(--border2);color:var(--primary);}
+
+/* ── QUESTIONS GRID ── */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:18px;}
+@media(max-width:1100px){.qgrid{grid-template-columns:1fr;}}
+
+/* ── QUESTION CARD ── */
+.qc{background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;transition:all .3s cubic-bezier(.4,0,.2,1);
+  opacity:0;animation:slideIn .4s ease forwards;}
+.qc:hover{border-color:rgba(16,185,129,.3);box-shadow:0 10px 36px rgba(0,0,0,.35);transform:translateY(-2px);}
+.qc.practiced{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.02);}
+.qc-bar{height:2px;background:linear-gradient(90deg,#10B981,#059669);}
+.qc.practiced .qc-bar{background:linear-gradient(90deg,#10B981,#06B6D4);}
+
+.qc-top{padding:20px 22px 16px;}
+.qc-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.qc-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted);
+  background:rgba(0,0,0,.08);padding:3px 9px;border-radius:5px;}
+.badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.dbadge{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;}
+.de{background:rgba(16,185,129,.1);color:#10B981;border:1px solid rgba(16,185,129,.2);}
+.dm{background:rgba(245,158,11,.1);color:#F59E0B;border:1px solid rgba(245,158,11,.18);}
+.dh{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.18);}
+.pbadge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;
+  background:rgba(16,185,129,.1);color:#10B981;border:1px solid rgba(16,185,129,.2);}
+.catag{font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 7px;
+  background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.08);border-radius:5px;}
+
+.qc-q{font-size:14px;font-weight:600;line-height:1.6;color:var(--text);}
+
+.qc-body{padding:14px 22px 18px;}
+.hint-box{display:flex;gap:9px;padding:10px 13px;background:rgba(99,102,241,.07);
+  border:1px solid rgba(99,102,241,.15);border-radius:9px;margin-bottom:12px;
+  font-size:12px;color:#a5b4fc;line-height:1.6;}
+.hint-ico{font-size:14px;flex-shrink:0;margin-top:1px;}
+textarea.ans{width:100%;padding:12px 14px;background:rgba(0,0,0,.04);
+  border:1.5px solid rgba(0,0,0,.08);border-radius:10px;font-family:var(--sans);
+  font-size:13px;color:var(--text);outline:none;resize:vertical;min-height:100px;
+  line-height:1.6;transition:border-color .2s,box-shadow .2s;}
+textarea.ans::placeholder{color:rgba(255,255,255,.18);}
+textarea.ans:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(16,185,129,.1);}
+.cc{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:right;margin-top:4px;}
+
+.qc-foot{display:flex;gap:8px;padding:0 22px 18px;}
+.sbtn{flex:1;padding:10px;background:linear-gradient(135deg,#10B981,#059669);
+  border:none;border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:700;
+  color:#fff;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.sbtn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(16,185,129,.35);}
+.sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.pbtn{padding:10px 14px;background:transparent;border:1.5px solid var(--border);
+  border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:600;
+  color:var(--soft);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.pbtn:hover{border-color:var(--primary);color:var(--primary);}
+.pbtn.done{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#10B981;}
+
+/* ── FLASHCARD MODE ── */
+#flashSection{display:none;}
+#flashSection.on{display:block;animation:fadeIn .3s ease;}
+.flash-wrap{background:var(--surface);border:1px solid var(--border);border-radius:22px;
+  overflow:hidden;margin-bottom:16px;}
+.flash-wrap::before{content:'';display:block;height:2px;background:linear-gradient(90deg,#10B981,#6366F1);}
+.flash-inner{padding:52px 44px;text-align:center;min-height:280px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+.flash-n{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
+.flash-q{font-size:22px;font-weight:700;line-height:1.5;max-width:680px;color:var(--text);}
+.flash-hint{font-size:13px;color:#a5b4fc;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.15);
+  border-radius:10px;padding:12px 16px;max-width:600px;display:none;}
+.flash-hint.show{display:block;animation:fadeIn .3s ease;}
+.flash-pb{width:100%;max-width:400px;height:4px;background:rgba(0,0,0,.08);border-radius:2px;overflow:hidden;}
+.flash-pf{height:100%;background:linear-gradient(90deg,#10B981,#06B6D4);border-radius:2px;transition:width .4s ease;}
+.flash-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;}
+.fnbtn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;
+  background:var(--surface);border:1px solid var(--border);border-radius:11px;
+  font-family:var(--sans);font-size:14px;font-weight:600;color:var(--soft);cursor:pointer;transition:all .2s;}
+.fnbtn:hover{border-color:var(--primary);color:var(--primary);}
+.fnbtn.prim{background:linear-gradient(135deg,#10B981,#059669);border:none;
+  color:#fff;box-shadow:0 4px 14px rgba(16,185,129,.3);}
+.fnbtn.prim:hover{transform:translateY(-1px);box-shadow:0 7px 22px rgba(16,185,129,.4);}
+
+/* ── TIMER ── */
+.timer-widget{position:fixed;bottom:28px;right:28px;z-index:50;
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:16px 20px;text-align:center;min-width:126px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);display:none;animation:fadeIn .3s ease;}
+.timer-widget.on{display:block;}
+.tw-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
+.tw-time{font-family:var(--mono);font-size:28px;font-weight:800;color:var(--primary);letter-spacing:-1px;}
+.tw-time.w{color:#F59E0B;}.tw-time.d{color:#EF4444;animation:tick .5s ease-in-out infinite;}
+.tw-row{display:flex;gap:6px;margin-top:9px;}
+.tw-btn{flex:1;padding:6px;border:1px solid var(--border);background:transparent;
+  border-radius:7px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all .2s;}
+.tw-btn:hover{border-color:var(--primary);color:var(--primary);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;right:28px;z-index:999;
+  background:var(--surface);border:1px solid rgba(16,185,129,.3);border-radius:13px;
+  padding:13px 18px;display:none;align-items:center;gap:9px;font-size:13px;font-weight:600;
+  box-shadow:0 10px 36px rgba(0,0,0,.4);}
+.toast.on{display:flex;animation:fadeIn .3s ease;}
+
+/* ── AI FEEDBACK PANEL ── */
+.ai-panel{display:none;border-top:1px solid rgba(0,0,0,.08);padding:18px 22px 20px;
+  background:rgba(99,102,241,.03);animation:fadeIn .3s ease;}
+.ai-panel.open{display:block;}
+.aip-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.aip-ring{width:62px;height:62px;flex-shrink:0;position:relative;}
+.aip-ring svg{transform:rotate(-90deg);}
+.aip-ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;}
+.aip-ring-score{font-family:var(--mono);font-size:16px;font-weight:800;line-height:1;}
+.aip-ring-lbl{font-family:var(--mono);font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+.aip-meta{flex:1;}
+.aip-verdict{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;
+  display:inline-block;margin-bottom:5px;}
+.aip-verdict.excellent{background:rgba(16,185,129,.12);color:#10B981;border:1px solid rgba(16,185,129,.2);}
+.aip-verdict.good{background:rgba(99,102,241,.1);color:#818cf8;border:1px solid rgba(99,102,241,.2);}
+.aip-verdict.needs-work{background:rgba(245,158,11,.1);color:#F59E0B;border:1px solid rgba(245,158,11,.18);}
+.aip-verdict.poor{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.18);}
+.aip-bert{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.aip-bert span{color:#06B6D4;font-weight:700;}
+.aip-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+@media(max-width:640px){.aip-cols{grid-template-columns:1fr;}}
+.aip-box{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:11px 13px;}
+.aip-box-title{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.2px;margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.aip-box-title.green{color:#10B981;}.aip-box-title.red{color:#EF4444;}.aip-box-title.amber{color:#F59E0B;}
+.aip-box ul{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.aip-box ul li{font-size:12px;color:var(--soft);line-height:1.5;padding-left:10px;position:relative;}
+.aip-box ul li::before{content:'·';position:absolute;left:0;color:var(--muted);}
+.aip-model{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;}
+.aip-model-title{font-family:var(--mono);font-size:9px;font-weight:700;color:#a5b4fc;
+  text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;}
+.aip-model-text{font-size:12px;color:var(--soft);line-height:1.7;}
+.aip-kw{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.aip-kw-title{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:5px;}
+.kwtag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;}
+.kw-used{background:rgba(16,185,129,.1);color:#10B981;border:1px solid rgba(16,185,129,.18);}
+.kw-miss{background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.18);}
+.aibtn{padding:10px 14px;background:linear-gradient(135deg,#6366F1,#4F46E5);border:none;
+  border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.aibtn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(99,102,241,.4);}
+.aibtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.aibtn.loading{background:linear-gradient(135deg,#4B5563,#374151);}
+
+@media(max-width:768px){.content{margin-left:0;padding:18px;padding-top:72px;}.qgrid{grid-template-columns:1fr;}.stats-bar{grid-template-columns:1fr 1fr;}.ph{padding:24px;}}
+
+@media(max-width:480px){
+  .content{padding:14px;padding-top:70px;}
+  .ph{padding:18px;}
+  .ph-title{font-size:24px;}
+  .stats-bar{grid-template-columns:1fr 1fr;gap:8px;}
+  .sb{padding:10px 12px;}
+  .sb-num{font-size:18px;}
+  .ctrl-row{gap:6px;}
+  .cbtn{padding:8px 10px;font-size:12px;}
+  .qc-foot{flex-wrap:wrap;gap:6px;}
+  .sbtn,.pbtn,.aibtn{font-size:12px;padding:9px 10px;}
+  .aip-cols{grid-template-columns:1fr;}
+  .aip-ring{width:52px;height:52px;}
+  .aip-ring-score{font-size:13px;}
+}
+</style>
+</head>
+<body>
+<div id="sidebar-container"></div>
+<script>fetch('/sidebar.html')
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('#sidebar-container script').forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    })
+    .catch(e => console.error('Sidebar error:', e));</script>
+
+<div class="content">
+
+  <!-- HEADER -->
+  <div class="ph">
+    <div class="ph-brand"><div class="ph-dot"></div><span class="ph-lbl">AI Placement · Interview Intelligence</span></div>
+    <h1 class="ph-title">Interview <span>Preparation</span></h1>
+    <p class="ph-sub">Master real-world interview questions, track your progress and practice with flashcard mode. Organized by role and difficulty.</p>
+    <div class="stats-bar">
+      <div class="sb"><div class="sb-ico ico1">📋</div><div><div class="sb-num" id="statTotal">0</div><div class="sb-lbl">Total Questions</div></div></div>
+      <div class="sb"><div class="sb-ico ico2">✍️</div><div><div class="sb-num" id="statAnswered">0</div><div class="sb-lbl">Answered</div></div></div>
+      <div class="sb"><div class="sb-ico ico3">✅</div><div><div class="sb-num" id="statPracticed">0</div><div class="sb-lbl">Practiced</div></div></div>
+      <div class="sb"><div class="sb-ico ico4">📊</div><div><div class="sb-num" id="statPct">0%</div><div class="sb-lbl">Readiness</div></div></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-strip"><div class="prog-fill" id="progFill"></div></div>
+
+  <!-- CONTROLS -->
+  <div class="ctrl-row">
+    <div class="role-wrap">
+      <select class="rsel" id="roleSelect" onchange="onRoleChange()">
+        <option value="Full Stack Developer">🌐 Full Stack Developer</option>
+        <option value="Frontend Developer">🎨 Frontend Developer</option>
+        <option value="Backend Developer">🖥️ Backend Developer</option>
+        <option value="Data Scientist">📊 Data Scientist</option>
+        <option value="DevOps Engineer">⚙️ DevOps Engineer</option>
+        <option value="Java Developer">☕ Java Developer</option>
+        <option value="Python Developer">🐍 Python Developer</option>
+        <option value="ML Engineer">🤖 ML Engineer</option>
+        <option value="Cloud Architect">☁️ Cloud Architect</option>
+        <option value="Cybersecurity Analyst">🔐 Cybersecurity Analyst</option>
+      </select>
+    </div>
+    <button class="cbtn" id="flashBtn" onclick="toggleFlash()">📚 Flashcard Mode</button>
+    <button class="cbtn" id="timerBtn" onclick="toggleTimer()">⏱ Timer</button>
+    <button class="cbtn" id="gapBtn"   onclick="toggleGaps()">🎯 Show Gaps</button>
+  </div>
+
+  <!-- FLASHCARD SECTION -->
+  <div id="flashSection">
+    <div class="flash-wrap">
+      <div class="flash-inner">
+        <div class="flash-n" id="flashN">Question 1 / 10</div>
+        <div class="flash-q" id="flashQ">Loading…</div>
+        <div class="flash-hint" id="flashHint"></div>
+        <div class="flash-pb"><div class="flash-pf" id="flashPF"></div></div>
+      </div>
+    </div>
+    <div class="flash-nav">
+      <button class="fnbtn" onclick="flashPrev()">← Previous</button>
+      <button class="fnbtn" onclick="flashReveal()">💡 Show Hint</button>
+      <button class="fnbtn prim" onclick="flashNext()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- NORMAL QUESTIONS SECTION -->
+  <div id="normalSection">
+    <div class="qgrid" id="questionsContainer"></div>
+  </div>
+
+</div>
+
+<!-- TIMER WIDGET -->
+<div class="timer-widget" id="timerWidget">
+  <div class="tw-lbl">⏱ Session Timer</div>
+  <div class="tw-time" id="twTime">00:00</div>
+  <div class="tw-row">
+    <button class="tw-btn" onclick="twReset()">Reset</button>
+    <button class="tw-btn" id="twPauseBtn" onclick="twPause()">Pause</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastIco">✅</span><span id="toastMsg">Saved!</span></div>
+
+<script>
+const API = "http://localhost:5000/api";
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "/login.html";
+
+// ── QUESTION DATABASE ────────────────────────────────────────
+const questionDatabase = {
+  "Full Stack Developer":[
+    "Tell me about yourself and your experience with full stack development.",
+    "Explain the difference between SQL and NoSQL databases. When would you use each?",
+    "How do you handle authentication and authorization in a web application?",
+    "Describe your experience with REST APIs. What makes a good API design?",
+    "How do you optimize the performance of a web application?",
+    "Explain the concept of responsive design and how you implement it.",
+    "What is your approach to debugging complex issues in production?",
+    "How do you manage state in a React or Vue application?",
+    "Describe a challenging project you worked on and how you solved it.",
+    "How do you ensure code quality and maintainability in your projects?"
+  ],
+  "Frontend Developer":[
+    "What are the key differences between var, let, and const in JavaScript?",
+    "Explain CSS specificity and the cascade.",
+    "How do you optimize website performance and loading times?",
+    "What are React hooks and why are they useful?",
+    "How do you ensure cross-browser compatibility?",
+    "Explain the virtual DOM and how it works.",
+    "What is your approach to responsive web design?",
+    "How do you handle form validation in JavaScript?",
+    "Describe your experience with CSS preprocessors like Sass or Less.",
+    "What accessibility standards do you follow when building websites?"
+  ],
+  "Backend Developer":[
+    "Explain how you would design a RESTful API for a social media platform.",
+    "What is database indexing and why is it important?",
+    "How do you handle database migrations in production?",
+    "Explain the difference between microservices and monolithic architecture.",
+    "How do you implement caching in a backend application?",
+    "What are common security vulnerabilities and how do you prevent them?",
+    "How do you handle concurrency and race conditions?",
+    "Explain the concept of middleware in backend frameworks.",
+    "How do you optimize database queries for better performance?",
+    "Describe your experience with message queues and async processing."
+  ],
+  "Data Scientist":[
+    "Explain the difference between supervised and unsupervised learning.",
+    "How do you handle missing data in a dataset?",
+    "What is overfitting and how do you prevent it?",
+    "Describe the steps you take in a typical data science project.",
+    "Explain the difference between precision and recall.",
+    "How do you evaluate the performance of a machine learning model?",
+    "What is feature engineering and why is it important?",
+    "Describe your experience with data visualization tools.",
+    "How do you handle imbalanced datasets?",
+    "Explain the concept of cross-validation."
+  ],
+  "DevOps Engineer":[
+    "Explain the CI/CD pipeline and its importance.",
+    "How do you implement infrastructure as code?",
+    "What is containerization and how does Docker work?",
+    "Explain the difference between horizontal and vertical scaling.",
+    "How do you monitor and troubleshoot production issues?",
+    "Describe your experience with cloud platforms like AWS or Azure.",
+    "What is Kubernetes and why is it used?",
+    "How do you implement security in a DevOps environment?",
+    "Explain the concept of blue-green deployment.",
+    "How do you manage secrets and sensitive configuration?"
+  ],
+  "Java Developer":[
+    "Explain the principles of Object-Oriented Programming.",
+    "What is the difference between abstract classes and interfaces?",
+    "How does garbage collection work in Java?",
+    "Explain the difference between ArrayList and LinkedList.",
+    "What are Java Streams and how do you use them?",
+    "Describe your experience with Spring Framework.",
+    "How do you handle exceptions in Java?",
+    "What is dependency injection and why is it useful?",
+    "Explain multithreading in Java and how you implement it.",
+    "What are design patterns and which ones have you used?"
+  ],
+  "Python Developer":[
+    "Explain the difference between lists and tuples in Python.",
+    "What are Python decorators and how do you use them?",
+    "How does memory management work in Python?",
+    "Explain the Global Interpreter Lock (GIL).",
+    "What is the difference between deep copy and shallow copy?",
+    "Describe your experience with Python frameworks like Django or Flask.",
+    "How do you handle errors and exceptions in Python?",
+    "What are generators and when would you use them?",
+    "Explain list comprehensions and their advantages.",
+    "How do you optimize Python code for better performance?"
+  ],
+  "ML Engineer":[
+    "Explain the bias-variance tradeoff and how you handle it in practice.",
+    "What is the difference between bagging and boosting?",
+    "How do you handle class imbalance in a classification dataset?",
+    "Explain the transformer architecture and the self-attention mechanism.",
+    "What is feature importance and how do you calculate it?",
+    "How do you deploy a machine learning model to production at scale?",
+    "What is regularization? Compare L1 and L2 regularization.",
+    "Explain gradient descent and its variants: SGD, Adam, RMSProp.",
+    "How do you detect and handle model drift in production?",
+    "Describe an end-to-end ML pipeline you've built from data to deployment."
+  ],
+  "Cloud Architect":[
+    "How do you design a highly available, fault-tolerant cloud architecture?",
+    "Explain the differences between IaaS, PaaS, and SaaS with real examples.",
+    "How do you optimize cloud costs without sacrificing performance?",
+    "Describe your approach to multi-cloud and hybrid cloud strategies.",
+    "How do you implement security and compliance in cloud environments?",
+    "Explain auto-scaling strategies: reactive vs predictive scaling.",
+    "What is infrastructure as code and which tools have you used?",
+    "How do you design disaster recovery for a cloud-native application?",
+    "Explain the CAP theorem and its implications for distributed systems.",
+    "How do you handle data residency requirements in global deployments?"
+  ],
+  "Cybersecurity Analyst":[
+    "Explain the difference between symmetric and asymmetric encryption.",
+    "What is the OWASP Top 10 and how do you address each vulnerability?",
+    "How would you respond to a ransomware attack in a production environment?",
+    "Explain the concept of zero-trust architecture and how to implement it.",
+    "What is threat modeling? Walk me through the STRIDE methodology.",
+    "How do you conduct a penetration test on a web application?",
+    "Explain the difference between IDS and IPS systems.",
+    "What is SIEM and how have you used it to detect threats?",
+    "How do you investigate a potential insider threat incident?",
+    "Describe your incident response process from detection to post-mortem."
+  ]
+};
+
+const HINTS = {
+  "sql":"Think about ACID properties, indexes and query optimization.",
+  "nosql":"Consider CAP theorem and document vs key-value trade-offs.",
+  "react":"Mention virtual DOM, reconciliation and component lifecycle.",
+  "authentication":"JWT, OAuth2, session-based auth — discuss trade-offs.",
+  "api":"REST principles: stateless, uniform interface, resource URLs.",
+  "performance":"Caching, CDN, lazy loading, code splitting, DB indexes.",
+  "debug":"Binary search isolation: reproduce → narrow → fix → verify.",
+  "state":"Redux for complex global state, Context for simpler cases.",
+  "docker":"Images vs containers, layers, Dockerfile best practices.",
+  "kubernetes":"Pods, Services, Deployments, replica sets, ingress.",
+  "machine learning":"Bias-variance tradeoff, cross-validation, regularization.",
+  "python":"GIL, list comprehensions, generators, context managers.",
+  "java":"JVM internals, garbage collection, generics, streams API.",
+  "security":"Defense in depth, principle of least privilege, OWASP Top 10.",
+  "cloud":"Shared responsibility model, availability zones, auto-scaling.",
+  "gradient":"Learning rate tuning, batch size, momentum — visualize loss curves.",
+  "transformer":"Q, K, V matrices, multi-head attention, positional encoding.",
+  "default":"Use the STAR method: Situation → Task → Action → Result."
+};
+
+function getHint(q) {
+  const ql = q.toLowerCase();
+  for (const [k,v] of Object.entries(HINTS)) if(ql.includes(k)) return `💡 ${v}`;
+  return `💡 ${HINTS.default}`;
+}
+
+const DIFFS   = ["Easy","Medium","Hard"];
+const CATS    = ["Conceptual","Practical","Behavioral","System Design","Technical"];
+const DIFF_CLS= ["de","dm","dh"];
+
+let currentRole = "Full Stack Developer";
+let userAnswers = {};
+let showGaps    = false;
+
+// ── LOAD USER ANSWERS ─────────────────────────────────────────
+async function loadUserAnswers() {
+  try {
+    const res = await fetch(`${API}/interview/answers`, {
+      headers:{"Authorization":"Bearer "+token}
+    });
+    if (res.ok) {
+      const d = await res.json();
+      userAnswers = d.answers || {};
+    }
+  } catch(e) { console.warn("Answers load failed:", e.message); }
+}
+
+// ── RENDER QUESTIONS ──────────────────────────────────────────
+function renderQuestions() {
+  const questions = questionDatabase[currentRole] || [];
+  const container = document.getElementById("questionsContainer");
+
+  container.innerHTML = questions.map((q, i) => {
+    const aid     = `${currentRole}-${i}`;
+    const saved   = userAnswers[aid] || {};
+    const isPrac  = saved.practiced || false;
+    const diff    = DIFFS[i % 3];
+    const cat     = CATS[i % CATS.length];
+    const diffCls = DIFF_CLS[i % 3];
+    const delay   = Math.min(i * 55, 800);
+    const hidden  = showGaps && isPrac ? 'style="display:none"' : '';
+
+    return `<div class="qc${isPrac?" practiced":""}" ${hidden} style="animation-delay:${delay}ms">
+      <div class="qc-bar"></div>
+      <div class="qc-top">
+        <div class="qc-meta">
+          <span class="qc-num">Q${String(i+1).padStart(2,"0")}</span>
+          <div class="badges">
+            ${isPrac?'<span class="pbadge">✓ Practiced</span>':""}
+            <span class="dbadge ${diffCls}">${diff}</span>
+            <span class="catag">${cat}</span>
+          </div>
+        </div>
+        <div class="qc-q">${q}</div>
+      </div>
+      <div class="qc-body">
+        <div class="hint-box"><span class="hint-ico">💡</span><span>${getHint(q)}</span></div>
+        <textarea class="ans" id="ans-${i}"
+          placeholder="Structure your answer using STAR: Situation → Task → Action → Result…"
+          oninput="document.getElementById('cc-${i}').textContent=this.value.length+' chars'"
+        >${saved.answer||""}</textarea>
+        <div class="cc" id="cc-${i}">${(saved.answer||"").length} chars</div>
+      </div>
+      <div class="qc-foot">
+        <button class="sbtn" onclick="saveAns(${i})">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293z"/></svg>
+          Save Answer
+        </button>
+        <button class="aibtn" id="aibtn-${i}" onclick="getAIFeedback(${i})">🤖 AI Feedback</button>
+        <button class="pbtn${isPrac?" done":""}" id="pb-${i}" onclick="markPrac(${i})">
+          ${isPrac?"✓ Practiced":"Mark Practiced"}
+        </button>
+      </div>
+      <div class="ai-panel" id="aip-${i}"></div>
+    </div>`;
+  }).join('');
+
+  updateStats();
+  if (isFlash) renderFlash();
+}
+
+// ── SAVE ANSWER ────────────────────────────────────────────────
+async function saveAns(i) {
+  const answer = document.getElementById(`ans-${i}`)?.value.trim();
+  if (!answer) { showToast("Write your answer first ⚠️","⚠️"); return; }
+  const aid      = `${currentRole}-${i}`;
+  const question = questionDatabase[currentRole][i];
+  try {
+    const res = await fetch(`${API}/interview/save-answer`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify({questionId:aid, role:currentRole, question, answer})
+    });
+    if (res.ok) {
+      userAnswers[aid] = {...(userAnswers[aid]||{}), answer};
+      showToast("Answer saved! 💾");
+      updateStats();
+    } else { showToast("Failed to save ❌","❌"); }
+  } catch { showToast("Connection error ❌","❌"); }
+}
+
+// ── MARK PRACTICED ─────────────────────────────────────────────
+async function markPrac(i) {
+  const aid = `${currentRole}-${i}`;
+  try {
+    const res = await fetch(`${API}/interview/mark-practiced`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify({questionId:aid})
+    });
+    if (res.ok) {
+      userAnswers[aid] = {...(userAnswers[aid]||{}), practiced:true};
+      const card = document.querySelectorAll('.qc')[i];
+      const btn  = document.getElementById(`pb-${i}`);
+      if (card) card.classList.add("practiced");
+      if (btn)  { btn.classList.add("done"); btn.textContent = "✓ Practiced"; }
+      showToast("Marked as practiced ✅");
+      updateStats();
+    }
+  } catch { showToast("Failed ❌","❌"); }
+}
+
+// ── STATS ──────────────────────────────────────────────────────
+function updateStats() {
+  const qs = questionDatabase[currentRole] || [];
+  let ans = 0, prac = 0;
+  qs.forEach((_,i) => {
+    const s = userAnswers[`${currentRole}-${i}`] || {};
+    if (s.answer)    ans++;
+    if (s.practiced) prac++;
+  });
+  const pct = qs.length ? Math.round((prac/qs.length)*100) : 0;
+  document.getElementById("statTotal").textContent    = qs.length;
+  document.getElementById("statAnswered").textContent = ans;
+  document.getElementById("statPracticed").textContent= prac;
+  document.getElementById("statPct").textContent      = pct+"%";
+  document.getElementById("progFill").style.width     = pct+"%";
+}
+
+// ── ROLE CHANGE ────────────────────────────────────────────────
+function onRoleChange() {
+  currentRole = document.getElementById("roleSelect").value;
+  renderQuestions();
+}
+
+// ── GAPS FILTER ────────────────────────────────────────────────
+function toggleGaps() {
+  showGaps = !showGaps;
+  const btn = document.getElementById("gapBtn");
+  btn.classList.toggle("on", showGaps);
+  btn.textContent = showGaps ? "📋 Show All" : "🎯 Show Gaps";
+  renderQuestions();
+}
+
+// ── FLASHCARD MODE ─────────────────────────────────────────────
+let isFlash = false, flashIdx = 0;
+
+function toggleFlash() {
+  isFlash = !isFlash;
+  const fs = document.getElementById("flashSection");
+  const ns = document.getElementById("normalSection");
+  const btn = document.getElementById("flashBtn");
+  fs.classList.toggle("on", isFlash);
+  ns.style.display = isFlash ? "none" : "block";
+  btn.classList.toggle("on", isFlash);
+  btn.textContent = isFlash ? "✕ Exit Flashcards" : "📚 Flashcard Mode";
+  if (isFlash) { flashIdx = 0; renderFlash(); }
+}
+
+function renderFlash() {
+  const qs = questionDatabase[currentRole] || [];
+  if (!qs.length) return;
+  document.getElementById("flashN").textContent = `Question ${flashIdx+1} / ${qs.length}`;
+  document.getElementById("flashQ").textContent = qs[flashIdx];
+  document.getElementById("flashHint").textContent = getHint(qs[flashIdx]);
+  document.getElementById("flashHint").classList.remove("show");
+  document.getElementById("flashPF").style.width = `${((flashIdx+1)/qs.length)*100}%`;
+}
+
+function flashNext() {
+  const qs = questionDatabase[currentRole] || [];
+  if (flashIdx < qs.length - 1) { flashIdx++; renderFlash(); }
+  else { document.getElementById("flashQ").textContent = "🎉 You've completed all questions for this role!"; }
+}
+
+function flashPrev() {
+  if (flashIdx > 0) { flashIdx--; renderFlash(); }
+}
+
+function flashReveal() {
+  document.getElementById("flashHint").classList.add("show");
+}
+
+// ── TIMER ──────────────────────────────────────────────────────
+let twSecs=0, twRunning=false, twPaused=false, twIv=null, twOn=false;
+
+function toggleTimer() {
+  twOn = !twOn;
+  const w = document.getElementById("timerWidget");
+  const b = document.getElementById("timerBtn");
+  w.classList.toggle("on", twOn);
+  b.classList.toggle("on", twOn);
+  if (twOn && !twRunning) { twRunning=true; twIv=setInterval(twTick,1000); }
+}
+
+function twTick() {
+  if (twPaused) return;
+  twSecs++;
+  const m=String(Math.floor(twSecs/60)).padStart(2,"0");
+  const s=String(twSecs%60).padStart(2,"0");
+  const d=document.getElementById("twTime");
+  d.textContent=`${m}:${s}`;
+  d.className="tw-time"+(twSecs>1800?" d":twSecs>900?" w":"");
+}
+
+function twReset() {
+  clearInterval(twIv); twSecs=0; twPaused=false; twRunning=true;
+  document.getElementById("twTime").textContent="00:00";
+  document.getElementById("twTime").className="tw-time";
+  document.getElementById("twPauseBtn").textContent="Pause";
+  twIv=setInterval(twTick,1000);
+}
+
+function twPause() {
+  twPaused=!twPaused;
+  document.getElementById("twPauseBtn").textContent=twPaused?"Resume":"Pause";
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+function showToast(msg, ico="✅") {
+  const t=document.getElementById("toast");
+  document.getElementById("toastIco").textContent=ico;
+  document.getElementById("toastMsg").textContent=msg;
+  t.classList.add("on");
+  setTimeout(()=>t.classList.remove("on"),3000);
+}
+
+// ── AI FEEDBACK (Groq + BERT) ─────────────────────────────
+async function getAIFeedback(i) {
+  const answer = document.getElementById(`ans-${i}`)?.value.trim();
+  if (!answer || answer.length < 20) {
+    showToast("Write a proper answer first (20+ chars) ⚠️", "⚠️"); return;
+  }
+
+  const btn   = document.getElementById(`aibtn-${i}`);
+  const panel = document.getElementById(`aip-${i}`);
+  const question = questionDatabase[currentRole][i];
+
+  // Loading state
+  btn.disabled = true;
+  btn.classList.add("loading");
+  btn.textContent = "⏳ Analyzing…";
+  panel.classList.remove("open");
+
+  try {
+    const res = await fetch(`${API}/interview/evaluate-answer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ question, role: currentRole, answer })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "Evaluation failed");
+
+    const ev = data.evaluation;
+
+    // ── Score ring colour
+    const scoreCol = ev.score >= 80 ? "#10B981" : ev.score >= 60 ? "#6366F1" : ev.score >= 40 ? "#F59E0B" : "#EF4444";
+    const circ = 2 * Math.PI * 24; // r=24
+    const dash = ((ev.score / 100) * circ).toFixed(1);
+
+    // ── Verdict badge class
+    const vClass = { Excellent:"excellent", Good:"good", "Needs Work":"needs-work", Poor:"poor" }[ev.verdict] || "needs-work";
+
+    // ── BERT chip
+    const bertHTML = ev.bertPowered && ev.relevanceScore !== null
+      ? `<div class="aip-bert">BERT Relevance <span>${ev.relevanceScore}%</span></div>`
+      : "";
+
+    // ── Strengths / Gaps
+    const listItems = arr => arr.map(t => `<li>${t}</li>`).join("");
+
+    // ── Keywords
+    const kwUsed = ev.keywordsUsed.length
+      ? ev.keywordsUsed.map(k => `<span class="kwtag kw-used">✓ ${k}</span>`).join("")
+      : '<span style="font-size:12px;color:var(--muted)">None detected</span>';
+    const kwMiss = ev.keywordsMissed.length
+      ? ev.keywordsMissed.map(k => `<span class="kwtag kw-miss">✕ ${k}</span>`).join("")
+      : '<span style="font-size:12px;color:var(--muted)">None missing — great!</span>';
+
+    // ── Improvements
+    const imprvHTML = ev.improvements.length
+      ? `<div class="aip-box" style="grid-column:1/-1">
+          <div class="aip-box-title amber">💡 How to Improve</div>
+          <ul>${listItems(ev.improvements)}</ul>
+        </div>` : "";
+
+    panel.innerHTML = `
+      <div class="aip-top">
+        <div class="aip-ring">
+          <svg width="62" height="62" viewBox="0 0 62 62">
+            <circle cx="31" cy="31" r="24" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="5"/>
+            <circle cx="31" cy="31" r="24" fill="none" stroke="${scoreCol}" stroke-width="5"
+              stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+              style="transition:stroke-dasharray .8s ease"/>
+          </svg>
+          <div class="aip-ring-num">
+            <div class="aip-ring-score" style="color:${scoreCol}">${ev.score}</div>
+            <div class="aip-ring-lbl">Score</div>
+          </div>
+        </div>
+        <div class="aip-meta">
+          <div class="aip-verdict ${vClass}">${ev.verdict}</div>
+          ${bertHTML}
+        </div>
+      </div>
+
+      <div class="aip-cols">
+        <div class="aip-box">
+          <div class="aip-box-title green">✅ Strengths</div>
+          <ul>${ev.strengths.length ? listItems(ev.strengths) : "<li>Keep developing your answer.</li>"}</ul>
+        </div>
+        <div class="aip-box">
+          <div class="aip-box-title red">⚠️ Gaps</div>
+          <ul>${ev.gaps.length ? listItems(ev.gaps) : "<li>No major gaps found!</li>"}</ul>
+        </div>
+        ${imprvHTML}
+      </div>
+
+      ${ev.modelAnswer ? `
+      <div class="aip-model">
+        <div class="aip-model-title">🎯 Model Answer</div>
+        <div class="aip-model-text">${ev.modelAnswer}</div>
+      </div>` : ""}
+
+      <div class="aip-kw-title">Keywords Used</div>
+      <div class="aip-kw" style="margin-bottom:8px">${kwUsed}</div>
+      <div class="aip-kw-title">Keywords to Add</div>
+      <div class="aip-kw">${kwMiss}</div>
+    `;
+
+    panel.classList.add("open");
+    showToast("AI feedback ready! 🤖");
+
+  } catch (err) {
+    showToast("Feedback failed: " + err.message, "❌");
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("loading");
+    btn.textContent = "🤖 AI Feedback";
+  }
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+(async function init() {
+  await loadUserAnswers();
+  renderQuestions();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Readiness Assessment • AI Placement</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        body { background:linear-gradient(180deg,#FFFFFF 0%,#F9FAFB 100%); font-family:'Plus Jakarta Sans','Inter',system-ui,-apple-system,sans-serif; color:#111827; min-height:100vh; overflow-x:hidden; }
+
+
+
+        /* ══ CONTENT ══ */
+        .content { margin-left:280px; }
+
+        .bg-glow { position:fixed; border-radius:50%; pointer-events:none; z-index:0; filter:blur(140px); }
+        .glow-cyan  { width:600px;height:600px;top:-180px;right:-180px;background:rgba(16,185,129,0.06); }
+        .glow-blue  { width:480px;height:480px;bottom:-100px;left:-120px;background:rgba(99,102,241,0.04); }
+        .glow-white { display:none; }
+
+        /* ══ HERO ══ */
+        .page-header { position:relative;z-index:1;padding:48px 52px 60px;background:rgba(255,255,255,0.98);border-bottom:1px solid #E5E7EB;box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+        .header-grid { position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px);background-size:52px 52px; }
+        .header-glow-r { position:absolute;top:-140px;right:-120px;width:680px;height:500px;border-radius:50%;pointer-events:none;background:radial-gradient(ellipse,rgba(16,185,129,0.07) 0%,transparent 65%); }
+        .header-glow-l { display:none; }
+        .header-inner { position:relative;z-index:2;max-width:840px; }
+
+        .header-badge { display:inline-flex;align-items:center;gap:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);padding:7px 18px;border-radius:50px;margin-bottom:26px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#059669; }
+        .badge-pulse { width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 10px #10b981;animation:blink 2s ease-in-out infinite; }
+        @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+
+        .page-title { font-size:58px;font-weight:900;letter-spacing:-2.5px;line-height:1.06;margin-bottom:18px; }
+        .title-plain { color:#111827; }
+        .title-grad  { background:linear-gradient(135deg,#10B981,#6366F1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+        .title-dim   { color:#4B5563; }
+        .page-subtitle { font-size:16px;color:#6B7280;line-height:1.75;max-width:540px;margin-bottom:36px; }
+
+        .hstats { display:flex;gap:14px;flex-wrap:wrap; }
+        .hstat { display:flex;align-items:center;gap:12px;background:#F9FAFB;border:1px solid #E5E7EB;padding:11px 18px;border-radius:12px;transition:background .25s,border-color .25s; }
+        .hstat:hover { background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.25); }
+        .hstat-icon { font-size:20px;flex-shrink:0; }
+        .hstat-label { font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;letter-spacing:.8px; }
+        .hstat-val   { font-size:14px;color:#111827;font-weight:800;margin-top:2px; }
+
+        /* ══ MAIN ══ */
+        .main-wrap { position:relative;z-index:5;max-width:1380px;margin:0 auto;padding:40px 48px 80px; }
+        .grid-layout { display:grid;grid-template-columns:1fr 390px;gap:24px;align-items:start; }
+
+        .glass-card { background:rgba(255,255,255,0.98);border:1px solid #E5E7EB;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+
+        .card-head { display:flex;align-items:center;gap:16px;padding:24px 32px;border-bottom:1px solid #E5E7EB;background:#F9FAFB; }
+        .card-icon { width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);display:grid;place-items:center;font-size:20px;flex-shrink:0; }
+        .card-head-title { font-size:13px;font-weight:800;color:#111827;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px; }
+        .card-head-sub   { font-size:12px;color:#6B7280; }
+        .card-body { padding:28px 32px; }
+
+        .factor { position:relative;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:14px;padding:22px 24px 22px 28px;margin-bottom:14px;overflow:hidden;transition:border-color .25s,transform .2s,box-shadow .25s; }
+        .factor::before { content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#fff 0%,#10b981 50%,#059669 100%); }
+        .factor::after  { content:'';position:absolute;top:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,0.18),transparent); }
+        .factor:hover { border-color:rgba(16,185,129,0.3);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+        .factor-head  { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px; }
+        .factor-title { font-size:14px;font-weight:700;color:#111827;margin-bottom:4px; }
+        .factor-sub   { font-size:12px;color:#6B7280; }
+        .weight-pill  { background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-size:11px;font-weight:800;padding:5px 14px;border-radius:50px;border:1px solid rgba(16,185,129,0.18);white-space:nowrap;box-shadow:0 4px 14px rgba(16,185,129,0.3); }
+
+        .igroup { margin-bottom:15px; }
+        .igroup:last-child { margin-bottom:0; }
+        .ilabel { display:block;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px; }
+        .ifield { width:100%;padding:12px 16px;background:#FFFFFF;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;font-weight:500;color:#111827;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none; }
+        .ifield:focus { border-color:#10B981;box-shadow:0 0 0 3px rgba(16,185,129,0.1); }
+        .ifield::placeholder { color:#9CA3AF; }
+        select.ifield { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2310B981' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer; }
+        select.ifield option { background:#FFFFFF;color:#111827; }
+
+        .islider { width:100%;height:5px;border-radius:10px;outline:none;-webkit-appearance:none;cursor:pointer;background:linear-gradient(90deg,#10b981 var(--p,0%),rgba(16,185,129,0.1) var(--p,0%));transition:background .05s; }
+        .islider::-webkit-slider-thumb { -webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid #10b981;box-shadow:0 0 16px rgba(255,255,255,0.55),0 0 8px rgba(16,185,129,0.7);cursor:pointer; }
+        .islider::-moz-range-thumb { width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid #10b981; }
+        .slider-row  { display:flex;justify-content:space-between;align-items:center;margin-top:10px; }
+        .slider-edge { font-size:11px;color:#9CA3AF;font-weight:500; }
+        .slider-live { font-size:22px;font-weight:900;color:#111827;letter-spacing:-1px; }
+
+        .checks { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px; }
+        .citem { position:relative; }
+        .citem input { position:absolute;opacity:0;width:0;height:0; }
+        .clabel { display:flex;align-items:center;gap:10px;padding:11px 14px;background:#FFFFFF;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;font-weight:600;color:#6B7280;cursor:pointer;transition:all .2s;user-select:none; }
+        .clabel:hover { border-color:rgba(16,185,129,0.3);color:#111827; }
+        .citem input:checked + .clabel { border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.06);color:#111827; }
+        .cbox { width:18px;height:18px;border:1.5px solid #D1D5DB;border-radius:5px;display:grid;place-items:center;flex-shrink:0;font-size:11px;font-weight:900;color:transparent;transition:all .2s; }
+        .citem input:checked + .clabel .cbox { background:linear-gradient(135deg,#10b981,#34d399);border-color:transparent;color:#fff;box-shadow:0 0 10px rgba(16,185,129,0.5); }
+
+        .calc-bar { padding:24px 32px;border-top:1px solid #E5E7EB;background:#F9FAFB; }
+        .calc-btn { position:relative;overflow:hidden;width:100%;padding:17px;background:linear-gradient(135deg,#059669 0%,#10b981 50%,#34d399 100%);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:12px;font-size:15px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;font-family:inherit;cursor:pointer;transition:transform .3s,box-shadow .3s;box-shadow:0 6px 28px rgba(16,185,129,0.35); }
+        .calc-btn::before { content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent); }
+        .calc-btn::after  { content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);transform:skewX(-18deg);transition:left .55s ease; }
+        .calc-btn:hover { transform:translateY(-2px);box-shadow:0 14px 44px rgba(16,185,129,0.55); }
+        .calc-btn:hover::after { left:130%; }
+        .calc-btn:active { transform:translateY(0); }
+
+        .score-panel { position:sticky;top:28px; }
+        .score-top { padding:44px 28px 32px;text-align:center;background:#F9FAFB;border-bottom:1px solid #E5E7EB;position:relative;overflow:hidden; }
+        .score-top::before { content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,0.28),transparent); }
+        .score-top::after  { content:'';position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);width:220px;height:220px;border-radius:50%;background:radial-gradient(rgba(16,185,129,0.05),transparent 65%); }
+
+        .ring-wrap { position:relative;width:196px;height:196px;margin:0 auto 24px; }
+        .ring-wrap svg { transform:rotate(-90deg); }
+        .ring-track { fill:none;stroke:#E5E7EB;stroke-width:10; }
+        .ring-fill  { fill:none;stroke:url(#ringGrad);stroke-width:10;stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:553;transition:stroke-dashoffset 1.6s cubic-bezier(.34,1.1,.64,1); }
+        .ring-num   { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:62px;font-weight:900;color:#111827;letter-spacing:-4px; }
+        .ring-label { font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:14px; }
+        .ring-status { display:inline-block;padding:8px 24px;border-radius:50px;font-size:13px;font-weight:700; }
+        .s-default   { background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB; }
+        .s-excellent { background:rgba(16,185,129,0.1);color:#059669;border:1px solid rgba(16,185,129,0.25); }
+        .s-good      { background:#F3F4F6;color:#374151;border:1px solid #E5E7EB; }
+        .s-average   { background:rgba(245,158,11,0.1);color:#D97706;border:1px solid rgba(245,158,11,0.2); }
+        .s-poor      { background:rgba(239,68,68,0.08);color:#DC2626;border:1px solid rgba(239,68,68,0.18); }
+
+        .breakdown { padding:24px 28px; }
+        .bd-title { font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px; }
+        .bd-row { display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(16,185,129,0.05); }
+        .bd-row:last-child { border-bottom:none; }
+        .bd-lbl  { font-size:12px;color:#6B7280;font-weight:500;min-width:88px; }
+        .bd-track { flex:1;height:4px;background:rgba(16,185,129,0.07);border-radius:2px;overflow:hidden; }
+        .bd-fill  { height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,#10b981,#34d399,rgba(255,255,255,0.6));transition:width 1s ease .2s; }
+        .bd-val   { font-size:13px;font-weight:800;color:#111827;min-width:36px;text-align:right; }
+
+        .mt { margin-top:20px; }
+        .igrid { display:grid;grid-template-columns:1fr 1fr; }
+        .icard { padding:26px;border-right:1px solid rgba(16,185,129,0.06);border-bottom:1px solid rgba(16,185,129,0.06);transition:background .2s; }
+        .icard:hover { background:rgba(16,185,129,0.025); }
+        .icard:nth-child(even) { border-right:none; }
+        .icard:nth-last-child(-n+2) { border-bottom:none; }
+        .icard-icon  { width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:20px;margin-bottom:12px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.12); }
+        .icard-title { font-size:14px;font-weight:700;color:#111827;margin-bottom:6px; }
+        .icard-text  { font-size:13px;color:rgba(255,255,255,0.48);line-height:1.65; }
+
+        .ritem { display:flex;align-items:center;gap:14px;padding:18px 32px;border-bottom:1px solid rgba(16,185,129,0.06);transition:background .2s; }
+        .ritem:hover { background:rgba(16,185,129,0.02); }
+        .ritem:last-child { border-bottom:none; }
+        .rpill  { padding:4px 12px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap; }
+        .rp-high { background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.2); }
+        .rp-med  { background:rgba(245,158,11,0.1);color:#fde68a;border:1px solid rgba(245,158,11,0.2); }
+        .rp-low  { background:rgba(16,185,129,0.1);color:#6ee7b7;border:1px solid rgba(16,185,129,0.2); }
+        .rtext   { flex:1;font-size:13px;color:#4B5563;line-height:1.55; }
+
+        .spin { position:fixed;inset:0;background:rgba(15,20,25,0.92);display:none;z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(8px); }
+        .spin.show { display:flex; }
+        .spinner { width:56px;height:56px;border:4px solid rgba(16,185,129,0.2);border-top-color:#10b981;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:20px; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .spin-text { font-size:16px;font-weight:700;color:#111827; }
+        .spin-sub  { font-size:13px;color:#9CA3AF;margin-top:6px; }
+
+        @media(max-width:1260px) {
+            .grid-layout { grid-template-columns:1fr; }
+            .score-panel { position:relative;top:0; }
+            .igrid { grid-template-columns:1fr; }
+            .icard { border-right:none; }
+        }
+        @media(max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .content { margin-left:0; }
+            .page-header { padding:36px 24px 48px; }
+            .page-title { font-size:38px; }
+            .main-wrap { padding:24px 20px 60px; }
+            .card-body,.calc-bar { padding:20px; }
+            .checks { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow glow-cyan"></div>
+<div class="bg-glow glow-blue"></div>
+<div class="bg-glow glow-white"></div>
+
+<div id="sidebar-container"></div>
+
+<div class="content">
+
+    <div class="page-header">
+        <div class="header-grid"></div>
+        <div class="header-glow-r"></div>
+        <div class="header-glow-l"></div>
+        <div class="header-inner">
+            <div class="header-badge"><span class="badge-pulse"></span>Comprehensive Assessment</div>
+            <h1 class="page-title">
+                <span class="title-plain">Career </span><span class="title-grad">Readiness</span><span class="title-dim"> Score</span>
+            </h1>
+            <p class="page-subtitle">Multi-factor evaluation of your job market competitiveness using industry-standard metrics</p>
+            <div class="hstats">
+                <div class="hstat"><span class="hstat-icon">📊</span><div><div class="hstat-label">Assessment Factors</div><div class="hstat-val">5 Categories</div></div></div>
+                <div class="hstat"><span class="hstat-icon">⚖️</span><div><div class="hstat-label">Scoring Range</div><div class="hstat-val">0 – 100 Points</div></div></div>
+                <div class="hstat"><span class="hstat-icon">🤖</span><div><div class="hstat-label">Analysis</div><div class="hstat-val">AI Powered</div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrap">
+        <div class="grid-layout">
+            <div>
+                <div class="glass-card">
+                    <div class="card-head">
+                        <div class="card-icon">📋</div>
+                        <div><div class="card-head-title">Assessment Factors</div><div class="card-head-sub">Complete all sections for accurate scoring</div></div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- FACTOR 1: Education -->
+                        <div class="factor">
+                            <div class="factor-head">
+                                <div><div class="factor-title">🎓 Education &amp; Certifications</div><div class="factor-sub">Highest degree and professional credentials</div></div>
+                                <span class="weight-pill">Weight: 20%</span>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">CGPA / GPA (out of 10)</label>
+                                <input type="range" min="0" max="10" value="0" step="0.1" class="islider" id="cgpaSlider" oninput="updateSlider(this, 'cgpaVal', '', 1)">
+                                <div class="slider-row"><span class="slider-edge">0.0</span><span class="slider-live" id="cgpaVal">0.0</span><span class="slider-edge">10.0</span></div>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Highest Degree</label>
+                                <select class="ifield" id="education">
+                                    <option value="0">High School</option>
+                                    <option value="25">Associate's / Diploma</option>
+                                    <option value="50">Bachelor's Degree</option>
+                                    <option value="75">Master's Degree</option>
+                                    <option value="100">PhD / Doctorate</option>
+                                </select>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Certifications (relevant to career)</label>
+                                <div class="checks">
+                                    <div class="citem"><input type="checkbox" id="cert1" data-val="5"><label class="clabel" for="cert1"><span class="cbox">✓</span>Industry Certified</label></div>
+                                    <div class="citem"><input type="checkbox" id="cert2" data-val="5"><label class="clabel" for="cert2"><span class="cbox">✓</span>Technical Cert</label></div>
+                                    <div class="citem"><input type="checkbox" id="cert3" data-val="5"><label class="clabel" for="cert3"><span class="cbox">✓</span>Leadership Cert</label></div>
+                                    <div class="citem"><input type="checkbox" id="cert4" data-val="5"><label class="clabel" for="cert4"><span class="cbox">✓</span>International</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FACTOR 2: Experience -->
+                        <div class="factor">
+                            <div class="factor-head">
+                                <div><div class="factor-title">💼 Work Experience</div><div class="factor-sub">Total years and relevance to target role</div></div>
+                                <span class="weight-pill">Weight: 30%</span>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Total Years of Experience</label>
+                                <input type="range" min="0" max="20" value="0" step="0.5" class="islider" id="yearsExp" oninput="updateSlider(this, 'yearsExpVal')">
+                                <div class="slider-row"><span class="slider-edge">0 years</span><span class="slider-live" id="yearsExpVal">0</span><span class="slider-edge">20 years</span></div>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Relevant Experience %</label>
+                                <input type="range" min="0" max="100" value="0" class="islider" id="relevantExp" oninput="updateSlider(this, 'relevantExpVal', '%')">
+                                <div class="slider-row"><span class="slider-edge">0%</span><span class="slider-live" id="relevantExpVal">0%</span><span class="slider-edge">100%</span></div>
+                            </div>
+                        </div>
+
+                        <!-- FACTOR 3: Skills -->
+                        <div class="factor">
+                            <div class="factor-head">
+                                <div><div class="factor-title">🛠️ Technical Skills &amp; Tools</div><div class="factor-sub">Breadth and depth of technical proficiency</div></div>
+                                <span class="weight-pill">Weight: 25%</span>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Number of Technical Skills</label>
+                                <input type="number" min="0" max="50" value="0" class="ifield" id="techSkills" placeholder="e.g., 12">
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Skill Level</label>
+                                <select class="ifield" id="skillLevel">
+                                    <option value="30">Beginner</option>
+                                    <option value="50">Intermediate</option>
+                                    <option value="75">Advanced</option>
+                                    <option value="100">Expert</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- FACTOR 4: Projects &amp; Portfolio -->
+                        <div class="factor">
+                            <div class="factor-head">
+                                <div><div class="factor-title">🚀 Projects &amp; Portfolio</div><div class="factor-sub">Demonstrated applied skills and achievements</div></div>
+                                <span class="weight-pill">Weight: 15%</span>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Completed Projects</label>
+                                <input type="number" min="0" max="50" value="0" class="ifield" id="projects" placeholder="e.g., 5">
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Portfolio Quality</label>
+                                <div class="checks">
+                                    <div class="citem"><input type="checkbox" id="port1" data-val="15"><label class="clabel" for="port1"><span class="cbox">✓</span>GitHub / Code</label></div>
+                                    <div class="citem"><input type="checkbox" id="port2" data-val="15"><label class="clabel" for="port2"><span class="cbox">✓</span>Live Demos</label></div>
+                                    <div class="citem"><input type="checkbox" id="port3" data-val="15"><label class="clabel" for="port3"><span class="cbox">✓</span>Case Studies</label></div>
+                                    <div class="citem"><input type="checkbox" id="port4" data-val="15"><label class="clabel" for="port4"><span class="cbox">✓</span>Awards</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FACTOR 5: Soft Skills -->
+                        <div class="factor">
+                            <div class="factor-head">
+                                <div><div class="factor-title">🤝 Soft Skills &amp; Leadership</div><div class="factor-sub">Communication, teamwork, and management abilities</div></div>
+                                <span class="weight-pill">Weight: 10%</span>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Leadership Experience</label>
+                                <select class="ifield" id="leadership">
+                                    <option value="20">None</option>
+                                    <option value="50">Team Member</option>
+                                    <option value="75">Team Lead</option>
+                                    <option value="100">Manager / Senior Leadership</option>
+                                </select>
+                            </div>
+                            <div class="igroup">
+                                <label class="ilabel">Communication Skills</label>
+                                <div class="checks">
+                                    <div class="citem"><input type="checkbox" id="comm1" data-val="12.5"><label class="clabel" for="comm1"><span class="cbox">✓</span>Public Speaking</label></div>
+                                    <div class="citem"><input type="checkbox" id="comm2" data-val="12.5"><label class="clabel" for="comm2"><span class="cbox">✓</span>Writing</label></div>
+                                    <div class="citem"><input type="checkbox" id="comm3" data-val="12.5"><label class="clabel" for="comm3"><span class="cbox">✓</span>Presentations</label></div>
+                                    <div class="citem"><input type="checkbox" id="comm4" data-val="12.5"><label class="clabel" for="comm4"><span class="cbox">✓</span>Multilingual</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="calc-bar">
+                        <button class="calc-btn" onclick="calculateScore()">⚡ Calculate Readiness Score</button>
+                    </div>
+                </div>
+
+                <div class="glass-card mt">
+                    <div class="card-head">
+                        <div class="card-icon">💡</div>
+                        <div><div class="card-head-title">How Scoring Works</div><div class="card-head-sub">Weighted algorithm explained</div></div>
+                    </div>
+                    <div class="igrid">
+                        <div class="icard"><div class="icard-icon">🎓</div><div class="icard-title">Education (20%)</div><div class="icard-text">Higher degrees and relevant certifications boost your baseline competitiveness</div></div>
+                        <div class="icard"><div class="icard-icon">💼</div><div class="icard-title">Experience (30%)</div><div class="icard-text">Years of relevant work history weighted highest due to market demand</div></div>
+                        <div class="icard"><div class="icard-icon">🛠️</div><div class="icard-title">Skills (25%)</div><div class="icard-text">Technical proficiency and breadth of modern tools employers seek</div></div>
+                        <div class="icard"><div class="icard-icon">🚀</div><div class="icard-title">Portfolio (15%)</div><div class="icard-text">Proven project work and public portfolio demonstrating real-world application</div></div>
+                        <div class="icard"><div class="icard-icon">🤝</div><div class="icard-title">Soft Skills (10%)</div><div class="icard-text">Leadership, communication, and collaboration abilities that enhance team value</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-panel glass-card">
+                <div class="score-top">
+                    <div class="ring-label">Career Readiness</div>
+                    <div class="ring-wrap">
+                        <svg width="196" height="196">
+                            <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#34d399"/></linearGradient></defs>
+                            <circle class="ring-track" cx="98" cy="98" r="88"/>
+                            <circle class="ring-fill" id="scoreRing" cx="98" cy="98" r="88"/>
+                        </svg>
+                        <div class="ring-num" id="scoreNum">0</div>
+                    </div>
+                    <div class="ring-status s-default" id="scoreStatus">Not Calculated</div>
+                </div>
+
+                <div class="breakdown">
+                    <div class="bd-title">Factor Breakdown</div>
+                    <div class="bd-row"><span class="bd-lbl">Education</span><div class="bd-track"><div class="bd-fill" id="eduBar"></div></div><span class="bd-val" id="eduVal">0</span></div>
+                    <div class="bd-row"><span class="bd-lbl">Experience</span><div class="bd-track"><div class="bd-fill" id="expBar"></div></div><span class="bd-val" id="expVal">0</span></div>
+                    <div class="bd-row"><span class="bd-lbl">Skills</span><div class="bd-track"><div class="bd-fill" id="skillBar"></div></div><span class="bd-val" id="skillVal">0</span></div>
+                    <div class="bd-row"><span class="bd-lbl">Portfolio</span><div class="bd-track"><div class="bd-fill" id="portBar"></div></div><span class="bd-val" id="portVal">0</span></div>
+                    <div class="bd-row"><span class="bd-lbl">Soft Skills</span><div class="bd-track"><div class="bd-fill" id="softBar"></div></div><span class="bd-val" id="softVal">0</span></div>
+                </div>
+
+                <div class="breakdown">
+                    <div class="bd-title">Recommendations</div>
+                    <div id="recoList">
+                        <div class="ritem"><span class="rpill rp-low">Info</span><span class="rtext">Complete the assessment to receive personalized recommendations</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="spin" id="spinner">
+    <div><div class="spinner"></div><div class="spin-text">Calculating Your Score</div><div class="spin-sub">Analyzing assessment factors...</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ── Supabase client (same keys you use everywhere else) ──
+const _supabase = supabase.createClient(
+    window.SUPABASE_URL || 'YOUR_SUPABASE_URL',
+    window.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY'
+);
+
+// ── Active page highlight ──
+(function() {
+    try {
+        const page = window.location.pathname.split('/').pop() || 'dashboard.html';
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const href = (link.getAttribute('href') || '').replace(/^\//, '');
+            if (href && href === page) link.classList.add('active');
+        });
+    } catch(e) { console.error('Active page error:', e); }
+})();
+
+// handleLogout is provided by sidebar.html
+
+// ── Slider logic (unchanged) ──
+function updateSlider(el, targetId, suffix = '') {
+    const val = el.value;
+    const pct = ((val - el.min) / (el.max - el.min)) * 100;
+    el.style.setProperty('--p', pct + '%');
+    document.getElementById(targetId).textContent = val + suffix;
+}
+
+document.querySelectorAll('.islider').forEach(sl => {
+    const targetId = sl.getAttribute('oninput').match(/'([^']+)'/)[1];
+    updateSlider(sl, targetId, sl.id === 'relevantExp' ? '%' : '');
+});
+
+function calculateScore() {
+    document.getElementById('spinner').classList.add('show');
+
+    setTimeout(() => {
+        const edu = +document.getElementById('education').value;
+        const certVal = Array.from(document.querySelectorAll('input[id^="cert"]:checked')).reduce((sum, cb) => sum + parseFloat(cb.dataset.val), 0);
+        const eduScore = (edu * 0.8 + certVal * 0.2);
+
+        const years = +document.getElementById('yearsExp').value;
+        const relevance = +document.getElementById('relevantExp').value;
+        const expScore = Math.min(100, (years / 10 * 100) * (relevance / 100));
+
+        const techCount = +document.getElementById('techSkills').value;
+        const skillLvl = +document.getElementById('skillLevel').value;
+        const skillScore = Math.min(100, (techCount / 15 * 100 * 0.5) + (skillLvl * 0.5));
+
+        const projectCount = +document.getElementById('projects').value;
+        const portVal = Array.from(document.querySelectorAll('input[id^="port"]:checked')).reduce((sum, cb) => sum + parseFloat(cb.dataset.val), 0);
+        const portScore = Math.min(100, (projectCount / 10 * 100 * 0.4) + (portVal / 60 * 100 * 0.6));
+
+        const lead = +document.getElementById('leadership').value;
+        const commVal = Array.from(document.querySelectorAll('input[id^="comm"]:checked')).reduce((sum, cb) => sum + parseFloat(cb.dataset.val), 0);
+        const softScore = (lead * 0.5) + (commVal / 50 * 100 * 0.5);
+
+        const total = Math.round((eduScore * 0.2) + (expScore * 0.3) + (skillScore * 0.25) + (portScore * 0.15) + (softScore * 0.1));
+
+        document.getElementById('scoreNum').textContent = total;
+        const circ = 553 - (553 * total / 100);
+        document.getElementById('scoreRing').style.strokeDashoffset = circ;
+
+        const statusEl = document.getElementById('scoreStatus');
+        statusEl.className = 'ring-status';
+        if (total >= 80) statusEl.classList.add('s-excellent'), statusEl.textContent = 'Excellent';
+        else if (total >= 60) statusEl.classList.add('s-good'), statusEl.textContent = 'Good';
+        else if (total >= 40) statusEl.classList.add('s-average'), statusEl.textContent = 'Average';
+        else statusEl.classList.add('s-poor'), statusEl.textContent = 'Poor';
+
+        document.getElementById('eduVal').textContent = Math.round(eduScore);
+        document.getElementById('eduBar').style.width = eduScore + '%';
+        document.getElementById('expVal').textContent = Math.round(expScore);
+        document.getElementById('expBar').style.width = expScore + '%';
+        document.getElementById('skillVal').textContent = Math.round(skillScore);
+        document.getElementById('skillBar').style.width = skillScore + '%';
+        document.getElementById('portVal').textContent = Math.round(portScore);
+        document.getElementById('portBar').style.width = portScore + '%';
+        document.getElementById('softVal').textContent = Math.round(softScore);
+        document.getElementById('softBar').style.width = softScore + '%';
+
+        let reco = [];
+        if (eduScore < 60) reco.push('<div class="ritem"><span class="rpill rp-high">High</span><span class="rtext">Consider pursuing advanced certifications or degrees to boost credibility</span></div>');
+        if (expScore < 50) reco.push('<div class="ritem"><span class="rpill rp-high">High</span><span class="rtext">Gain more work experience, especially in your target domain</span></div>');
+        if (skillScore < 50) reco.push('<div class="ritem"><span class="rpill rp-high">High</span><span class="rtext">Learn more in-demand technical skills through courses or self-study</span></div>');
+        if (portScore < 50) reco.push('<div class="ritem"><span class="rpill rp-med">Medium</span><span class="rtext">Build a portfolio with personal projects, GitHub repos, or case studies</span></div>');
+        if (softScore < 50) reco.push('<div class="ritem"><span class="rpill rp-med">Medium</span><span class="rtext">Develop leadership and communication skills through volunteering or public speaking</span></div>');
+        if (reco.length === 0) reco.push('<div class="ritem"><span class="rpill rp-low">Success</span><span class="rtext">Excellent profile! Focus on networking and applying to top-tier roles</span></div>');
+
+        document.getElementById('recoList').innerHTML = reco.join('');
+        document.getElementById('spinner').classList.remove('show');
+    }, 1800);
+}
+</script>
+
+
+<script>
+// Load sidebar — logout handled inside sidebar.html
+fetch('/sidebar.html')
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('#sidebar-container script').forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    })
+    .catch(e => console.error('Sidebar error:', e));
+</script>
+</body>
+</html>

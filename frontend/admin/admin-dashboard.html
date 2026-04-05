@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+
+    <style>
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 25px 15px;
+            background: rgba(255,255,255,0.40);
+            backdrop-filter: blur(18px);
+            border-right: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 6px 0 18px rgba(160,160,255,0.25);
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            color: #444;
+            border-radius: 12px;
+            transition: 0.25s ease;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.7);
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2 class="page-title">Admin Panel</h2>
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="students.html">Students</a>
+        <a href="analytics.html">Analytics</a>
+        
+        <a href="../history.html">Login History</a>
+    </div>
+
+    <div class="main-content">
+
+        <h1 class="page-title">Admin Dashboard</h1>
+
+        <div style="display:flex; gap:25px; flex-wrap:wrap; margin-top:40px;">
+
+            <div class="glass-card" style="width:270px;">
+                <h3>Total Students</h3>
+                <h2 id="totalStudents" style="font-size:40px;">—</h2>
+            </div>
+
+            <div class="glass-card" style="width:270px;">
+                <h3>Avg Readiness Score</h3>
+                <h2 id="avgPRS" style="font-size:40px;">—</h2>
+            </div>
+
+            <div class="glass-card" style="width:270px;">
+                <h3>Top Job Role</h3>
+                <h2 id="topJob" style="font-size:28px;">—</h2>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard • AI Placement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #D1FAE5;
+            --accent: #6366F1;
+            --accent-cyan: #06B6D4;
+            --bg-dark: #FFFFFF;
+            --bg-darker: #F9FAFB;
+            --bg-card: #FFFFFF;
+            --text-light: #111827;
+            --text-secondary: #4B5563;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* ANIMATED BACKGROUND */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .content {
+            margin-left: 300px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* WELCOME HEADER - PREMIUM DESIGN */
+        .welcome-header {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px 48px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .welcome-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #10B981, #6366F1, #06B6D4);
+        }
+
+        .welcome-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .welcome-info {
+            flex: 1;
+        }
+
+        .greeting {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-name {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10B981, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1.5px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* CURRENT TIME & DATE */
+        .datetime-container {
+            text-align: right;
+        }
+
+        .current-time {
+            font-size: 36px;
+            font-weight: 800;
+            font-family: "JetBrains Mono", monospace;
+            color: var(--text-light);
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .current-date {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* QUICK STATS ROW */
+        .quick-stats {
+            display: flex;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .stat-pill {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .stat-pill-icon {
+            font-size: 20px;
+        }
+
+        /* REFRESH BUTTON */
+        .refresh-btn {
+            margin-left: auto;
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 22px;
+            background: #F9FAFB;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 14px; font-weight: 700;
+            font-family: inherit; cursor: pointer;
+            transition: all .25s;
+        }
+        .refresh-btn:hover {
+            background: #F3F4F6;
+            border-color: #D1D5DB;
+            color: var(--text-light);
+            transform: translateY(-1px);
+        }
+        .refresh-btn:active { transform: translateY(0); }
+        .refresh-btn.spinning .refresh-icon { animation: spin360 .55s ease; }
+        @keyframes spin360 { to { transform: rotate(360deg); } }
+        .refresh-icon { display: inline-block; }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* METRIC CARDS - ULTRA PROFESSIONAL */
+        .metric-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .metric-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            font-family: "JetBrains Mono", monospace;
+            letter-spacing: -1px;
+        }
+
+        .metric-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Card color variants */
+        .metric-card:nth-child(1) {
+            --card-color-1: #10B981;
+            --card-color-2: #059669;
+        }
+
+        .metric-card:nth-child(2) {
+            --card-color-1: #6366F1;
+            --card-color-2: #4F46E5;
+        }
+
+        .metric-card:nth-child(3) {
+            --card-color-1: #F59E0B;
+            --card-color-2: #D97706;
+        }
+
+        /* SKILLS SECTION */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .skills-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .skills-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-tag {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .skill-tag:hover {
+            background: rgba(16, 185, 129, 0.25);
+            transform: scale(1.05);
+        }
+
+        .skill-tag-missing {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #EF4444;
+        }
+
+        .skill-tag-missing:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* FADE IN */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+
+        /* Activity feed */
+        .activity-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon { font-size: 22px; flex-shrink: 0; }
+        .activity-content { flex: 1; }
+        .activity-title { font-size: 14px; font-weight: 600; color: var(--text-light); }
+        .activity-time  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .activity-status { font-size: 11px; font-weight: 700; padding: 3px 10px;
+            border-radius: 8px; white-space: nowrap; }
+        .status-success { background: rgba(16,185,129,0.15); color: #10B981; }
+        .status-pending { background: rgba(245,158,11,0.15); color: #F59E0B; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .welcome-header {
+                padding: 28px 24px;
+            }
+            .welcome-top {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .datetime-container {
+                text-align: left;
+            }
+            .user-name {
+                font-size: 32px;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+            .content { padding: 14px; padding-top: 70px; }
+            .welcome-header { padding: 20px 18px; border-radius: 16px; }
+            .user-name { font-size: 26px; }
+            .welcome-top { gap: 14px; }
+            .datetime-container { font-size: 13px; }
+            .dashboard-grid { gap: 14px; }
+        }
+        @media (max-width: 400px) {
+            .content { padding: 10px; padding-top: 68px; }
+            .user-name { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar-container"></div>
+
+<script>
+// Load sidebar — logout and active-page handled inside sidebar.html itself
+fetch("/sidebar.html")
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+
+        // Run sidebar scripts manually (innerHTML doesn't execute scripts)
+        document.querySelectorAll('#sidebar-container script').forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    });
+</script>
+
+<!-- MAIN CONTENT -->
+<div class="content fade-in">
+
+    <!-- WELCOME HEADER -->
+    <div class="welcome-header">
+        <div class="welcome-top">
+            <div class="welcome-info">
+                <div class="greeting">
+                    <span>👋</span>
+                    <span id="greetingText">Good Morning</span>
+                </div>
+                <h1 class="user-name" id="userName">Loading...</h1>
+                <p class="welcome-subtitle">Welcome back to your career intelligence dashboard</p>
+            </div>
+
+            <div class="datetime-container">
+                <div class="current-time" id="currentTime">--:--</div>
+                <div class="current-date" id="currentDate">Loading...</div>
+            </div>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-pill">
+                <span class="stat-pill-icon">🎯</span>
+                <span>Active Session</span>
+            </div>
+            <div class="stat-pill" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.2); color: #6366F1;">
+                <span class="stat-pill-icon">⚡</span>
+                <span id="resumeStatusPill">No Resume</span>
+            </div>
+            <button class="refresh-btn" id="refreshBtn">
+                <span class="refresh-icon">🔄</span>
+                <span>Refresh</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- METRICS GRID — 6 cards covering all features -->
+    <div class="dashboard-grid" style="grid-template-columns:repeat(3,1fr);">
+
+        <div class="metric-card">
+            <div class="metric-icon">📄</div>
+            <div class="metric-label">Resume Status</div>
+            <div class="metric-value" id="resumeStatus">--</div>
+            <div class="metric-subtitle">Upload status</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">🎯</div>
+            <div class="metric-label">Readiness Score</div>
+            <div class="metric-value" id="readinessScore">--%</div>
+            <div class="metric-subtitle">Overall AI evaluation</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">✅</div>
+            <div class="metric-label">ATS Score</div>
+            <div class="metric-value" id="atsScore">--</div>
+            <div class="metric-subtitle">Resume ATS compatibility</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">⚠️</div>
+            <div class="metric-label">Skill Gaps</div>
+            <div class="metric-value" id="skillGap">0</div>
+            <div class="metric-subtitle" id="skillGapTrack">Missing skills</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">🧬</div>
+            <div class="metric-label">Career DNA Score</div>
+            <div class="metric-value" id="careerScore">--</div>
+            <div class="metric-subtitle" id="careerLevel">Career level</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">💼</div>
+            <div class="metric-label">Job Matches</div>
+            <div class="metric-value" id="jobMatchCount">0</div>
+            <div class="metric-subtitle" id="topJobRole">Top matched role</div>
+        </div>
+
+    </div>
+
+    <!-- SKILLS BREAKDOWN -->
+    <div class="skills-grid">
+        
+        <div class="skills-card">
+            <h3 class="skills-card-title">
+                <span>✅</span>
+                Detected Skills
+            </h3>
+            <div class="skills-list" id="skillsFound">
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <div>No skills detected yet</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="skills-card">
+            <h3 class="skills-card-title">
+                <span>⚠️</span>
+                Missing Skills
+            </h3>
+            <div class="skills-list" id="skillsMissing">
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <div>No gaps identified</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+<script>
+// Static time & date
+(function() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const timeEl = document.getElementById('currentTime');
+    const dateEl = document.getElementById('currentDate');
+    const greetEl = document.getElementById('greetingText');
+    const nameEl  = document.getElementById('userName');
+    if (timeEl)  timeEl.textContent  = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    if (dateEl)  dateEl.textContent  = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    if (greetEl) greetEl.textContent = now.getHours() < 12 ? 'Good Morning' : now.getHours() < 17 ? 'Good Afternoon' : 'Good Evening';
+    if (nameEl)  nameEl.textContent  = localStorage.getItem('userName') || 'User';
+})();
+</script>
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>

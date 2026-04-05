@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings • AI Placement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/global.css">
+<style>
+:root{
+  --primary:#10B981;--primary-dark:#059669;--primary-light:#D1FAE5;
+  --accent:#6366F1;--accent-cyan:#06B6D4;
+  --bg:#FFFFFF;--bg-darker:#F9FAFB;
+  --surface:#FFFFFF;--surface2:#FFFFFF;--surface3:rgba(0,0,0,0.02);
+  --border:#E5E7EB;--border2:#D1D5DB;
+  --teal:#10B981;--teal-dim:rgba(16,185,129,0.1);--teal-glow:rgba(16,185,129,0.25);
+  --blue:#3b82f6;--indigo:#6366F1;
+  --text:#111827;--text-muted:#6B7280;--text-soft:#4B5563;
+  --red:#EF4444;--amber:#F59E0B;--green:#10B981;--purple:#a78bfa;--pink:#f472b6;
+  --mono:'JetBrains Mono',monospace;--sans:'Archivo',-apple-system,sans-serif;--display:'Archivo',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 20% 30%,rgba(16,185,129,0.05) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(99,102,241,0.04) 0%,transparent 50%);pointer-events:none;}
+
+
+.content{position:relative;z-index:1;}
+.page{max-width:820px;margin:0 auto;padding:48px 32px 80px;}
+
+/* PAGE HEADER */
+.ph{margin-bottom:40px;}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 12px var(--teal);animation:pulse 2.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.brand-label{font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:2.5px;text-transform:uppercase;}
+.page-title{font-family:var(--display);font-size:clamp(28px,4vw,40px);font-weight:800;line-height:1.1;letter-spacing:-1.5px;}
+.page-title span{color:var(--teal);}
+.page-sub{font-size:14px;color:var(--text-muted);margin-top:10px;}
+
+/* ALERT BANNERS */
+.alert{display:none;border-radius:12px;padding:14px 18px;margin-bottom:24px;font-size:13px;font-weight:500;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.alert.show{display:flex;align-items:center;gap:10px;}
+.alert-success{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--primary);}
+.alert-error{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red);}
+.alert-ico{font-size:16px;flex-shrink:0;}
+
+/* SECTION CARDS */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:20px;opacity:0;transform:translateY(16px);animation:fadeUp .5s ease forwards;}
+.section:nth-child(1){animation-delay:.05s}.section:nth-child(2){animation-delay:.12s}.section:nth-child(3){animation-delay:.19s}.section:nth-child(4){animation-delay:.26s}.section:nth-child(5){animation-delay:.33s}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.section::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.1) 50%,transparent 100%);}
+.section-header{display:flex;align-items:center;gap:14px;padding:22px 28px;border-bottom:1px solid var(--border);}
+.section-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ico-teal{background:var(--teal-dim);border:1px solid rgba(16,185,129,.2);}
+.ico-blue{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);}
+.ico-red{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);}
+.ico-purple{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);}
+.ico-amber{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);}
+.section-title{font-family:var(--display);font-size:16px;font-weight:700;}
+.section-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.section-body{padding:24px 28px;}
+
+/* PROFILE SECTION */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:12px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.8px;font-family:var(--mono);}
+.form-input{background:rgba(0,0,0,0.03);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--text);font-family:var(--sans);outline:none;transition:border-color .2s,box-shadow .2s;}
+.form-input::placeholder{color:var(--text-muted);}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim);}
+.form-input:disabled{opacity:.5;cursor:not-allowed;}
+select.form-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%23666'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+select.form-input option{background:var(--surface);}
+
+/* NOTIFICATIONS */
+.notif-item{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border);}
+.notif-item:last-child{border-bottom:none;}
+.notif-left{display:flex;align-items:center;gap:14px;}
+.notif-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(0,0,0,0.03);border:1px solid var(--border);}
+.notif-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+.notif-desc{font-size:12px;color:var(--text-muted);}
+
+/* TOGGLE */
+.toggle{position:relative;width:46px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,.1);border:1px solid var(--border2);border-radius:24px;cursor:pointer;transition:all .3s;}
+.toggle input:checked ~ .toggle-track{background:var(--teal);border-color:var(--teal);box-shadow:0 0 10px rgba(16,185,129,.35);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(22px);}
+
+/* PASSWORD SECTION */
+.pwd-grid{display:flex;flex-direction:column;gap:16px;}
+.pwd-strength{margin-top:6px;}
+.pwd-bars{display:flex;gap:4px;margin-bottom:5px;}
+.pwd-seg{flex:1;height:3px;border-radius:2px;background:rgba(16,185,129,0.15);transition:background .3s;}
+.pwd-seg.weak{background:var(--red);}
+.pwd-seg.fair{background:var(--amber);}
+.pwd-seg.good{background:var(--primary);}
+.pwd-seg.strong{background:var(--teal);}
+.pwd-label{font-size:11px;color:var(--text-muted);}
+
+/* SESSIONS */
+.session-list{display:flex;flex-direction:column;gap:8px;}
+.session-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:11px;transition:background .2s;}
+.session-item:hover{background:rgba(16,185,129,.04);}
+.session-item.current{border-color:rgba(16,185,129,.3);background:var(--teal-dim);}
+.session-left{display:flex;align-items:center;gap:12px;}
+.session-ico{font-size:20px;}
+.session-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.session-meta{font-family:var(--mono);font-size:10px;color:var(--text-muted);}
+.session-badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(16,185,129,.3);}
+
+/* DANGER ZONE */
+.danger-items{display:flex;flex-direction:column;gap:12px;}
+.danger-item{display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:12px;}
+.danger-info h3{font-size:14px;font-weight:600;margin-bottom:3px;}
+.danger-info p{font-size:12px;color:var(--text-muted);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:10px;border:none;font-size:13px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),#06b6d4);color:#0F1419;}
+.btn-primary:hover{box-shadow:0 6px 20px var(--teal-glow);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text-soft);}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+.btn-danger{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red);}
+.btn-danger:hover{background:rgba(248,113,113,.2);box-shadow:0 4px 14px rgba(248,113,113,.2);}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px;}
+.btn-full{width:100%;margin-top:18px;}
+
+/* ACCOUNT INFO BAR */
+.acct-bar{display:flex;align-items:center;gap:16px;padding:16px 20px;background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;}
+.acct-av{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1a3a2a,#0d4d36);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:18px;font-weight:800;color:var(--teal);position:relative;flex-shrink:0;}
+.acct-av::after{content:'';position:absolute;inset:0;border-radius:12px;border:1px solid rgba(255,255,255,.12);}
+.acct-name{font-size:15px;font-weight:700;}
+.acct-email{font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:2px;}
+.acct-right{margin-left:auto;}
+.online-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(52,211,153,.12);color:var(--primary);border:1px solid rgba(52,211,153,.25);}
+.online-dot{width:5px;height:5px;border-radius:50%;background:var(--primary);animation:pulse 1.5s ease-in-out infinite;}
+
+@media(max-width:680px){.profile-grid{grid-template-columns:1fr;}.page{padding:24px 16px 60px;}}
+
+/* ── MOBILE ── */
+@media(max-width:480px){
+  .content{padding-top:70px;}
+  .page{padding:16px 12px 50px;}
+  .page-title{font-size:26px;}
+  .acct-bar{flex-wrap:wrap;gap:10px;padding:14px;}
+  .acct-right{width:100%;}
+}
+@media(max-width:360px){
+  .page-title{font-size:22px;}
+  .page{padding:12px 10px 48px;}
+}
+</style>
+</head>
+<body>
+
+<div id="sidebar-container"></div>
+<script>fetch('/sidebar.html')
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('#sidebar-container script').forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    })
+    .catch(e => console.error('Sidebar error:', e));</script>
+
+<div class="content">
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="ph">
+    <div class="brand"><div class="brand-dot"></div><span class="brand-label">AI Placement · Account</span></div>
+    <h1 class="page-title">Account <span>Settings</span></h1>
+    <p class="page-sub">Manage your profile, security, notifications and active sessions</p>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="alert alert-success" id="alertSuccess"><span class="alert-ico">✅</span><span id="alertSuccessMsg"></span></div>
+  <div class="alert alert-error"   id="alertError">  <span class="alert-ico">⚠️</span><span id="alertErrorMsg"></span></div>
+
+  <!-- ACCOUNT CARD -->
+  <div class="acct-bar" id="acctBar">
+    <div class="acct-av" id="acctAv">?</div>
+    <div>
+      <div class="acct-name" id="acctName">Loading…</div>
+      <div class="acct-email" id="acctEmail">—</div>
+    </div>
+    <div class="acct-right"><span class="online-badge"><span class="online-dot"></span>Online</span></div>
+  </div>
+
+  <!-- ── 1. PROFILE ── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-ico ico-teal">👤</div>
+      <div><div class="section-title">Profile Information</div><div class="section-sub">Update your personal details</div></div>
+    </div>
+    <div class="section-body">
+      <div class="profile-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="profileName" placeholder="Your full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="profileEmail" disabled placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-input" id="profilePhone" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" class="form-input" id="profileLocation" placeholder="City, Country">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Role</label>
+          <input type="text" class="form-input" id="profileRole" placeholder="e.g. Full Stack Developer">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Experience Level</label>
+          <select class="form-input" id="profileExp">
+            <option value="">Select level</option>
+            <option value="Fresher">Fresher (0–1 yr)</option>
+            <option value="Junior">Junior (1–3 yrs)</option>
+            <option value="Mid-Level">Mid-Level (3–5 yrs)</option>
+            <option value="Senior">Senior (5+ yrs)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expected Salary</label>
+          <input type="text" class="form-input" id="profileSalary" placeholder="e.g. ₹8–12 LPA">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Bio</label>
+          <textarea class="form-input" id="profileBio" rows="3" style="resize:vertical;min-height:80px" placeholder="Brief professional summary…"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="saveProfileBtn" onclick="saveProfile()">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293z"/></svg>
+        Save Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- ── 2. NOTIFICATIONS ── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-ico ico-amber">🔔</div>
+      <div><div class="section-title">Notification Preferences</div><div class="section-sub">Control how and when we contact you</div></div>
+    </div>
+    <div class="section-body">
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-ico">📧</div>
+          <div><div class="notif-title">Email Notifications</div><div class="notif-desc">Job matches, application updates, alerts</div></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="notifEmail" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-ico">📰</div>
+          <div><div class="notif-title">Weekly Job Digest</div><div class="notif-desc">Summary of new opportunities every Monday</div></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="notifDigest" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-ico">💡</div>
+          <div><div class="notif-title">Career Tips & Insights</div><div class="notif-desc">Resume improvement and career guidance</div></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="notifTips"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-ico">🔐</div>
+          <div><div class="notif-title">Security Alerts</div><div class="notif-desc">Login notifications and account activity</div></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="notifSecurity" checked disabled><div class="toggle-track" style="opacity:.6;cursor:not-allowed"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <button class="btn btn-primary btn-full" id="saveNotifBtn" onclick="saveNotifications()">Save Preferences</button>
+    </div>
+  </div>
+
+  <!-- ── 3. CHANGE PASSWORD ── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-ico ico-blue">🔒</div>
+      <div><div class="section-title">Change Password</div><div class="section-sub">Update your Supabase account password</div></div>
+    </div>
+    <div class="section-body">
+      <div class="pwd-grid">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-input" id="pwdCurrent" placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-input" id="pwdNew" placeholder="Min 6 characters" oninput="checkPwdStrength(this.value)">
+          <div class="pwd-strength">
+            <div class="pwd-bars">
+              <div class="pwd-seg" id="ps1"></div><div class="pwd-seg" id="ps2"></div>
+              <div class="pwd-seg" id="ps3"></div><div class="pwd-seg" id="ps4"></div>
+            </div>
+            <span class="pwd-label" id="pwdLabel"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-input" id="pwdConfirm" placeholder="Repeat new password">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="savePwdBtn" onclick="changePassword()">
+        🔐 Update Password
+      </button>
+    </div>
+  </div>
+
+  <!-- ── 4. ACTIVE SESSIONS ── -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-ico ico-purple">🖥️</div>
+      <div><div class="section-title">Active Sessions</div><div class="section-sub">Devices currently logged into your account</div></div>
+    </div>
+    <div class="section-body">
+      <div class="session-list" id="sessionList">
+        <div class="session-item current">
+          <div class="session-left">
+            <div class="session-ico">🌐</div>
+            <div>
+              <div class="session-name">Current Browser Session</div>
+              <div class="session-meta" id="sessionMeta">Loading…</div>
+            </div>
+          </div>
+          <span class="session-badge">Current</span>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full" style="margin-top:14px" onclick="showLogoutConfirm()">
+        🚪 Sign Out All Other Sessions
+      </button>
+    </div>
+  </div>
+
+  <!-- ── 5. DANGER ZONE ── -->
+  <div class="section" style="border-color:rgba(248,113,113,.15)">
+    <div class="section-header" style="border-color:rgba(248,113,113,.12)">
+      <div class="section-ico ico-red">⚠️</div>
+      <div><div class="section-title" style="color:var(--red)">Danger Zone</div><div class="section-sub">Irreversible actions — proceed with caution</div></div>
+    </div>
+    <div class="section-body">
+      <div class="danger-items">
+        <div class="danger-item">
+          <div class="danger-info">
+            <h3>Clear Activity History</h3>
+            <p>Delete all your activity logs and login history permanently</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
+        </div>
+        <div class="danger-item">
+          <div class="danger-info">
+            <h3>Export My Data</h3>
+            <p>Download all your data as a JSON file</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇️ Export</button>
+        </div>
+        <div class="danger-item" style="border-color:rgba(248,113,113,.2)">
+          <div class="danger-info">
+            <h3>Delete Account</h3>
+            <p>Permanently delete your account and all associated data</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Delete Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /content -->
+
+<!-- CONFIRM MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:32px;max-width:400px;width:90%;animation:fadeUp .3s ease">
+    <div id="modalIcon" style="font-size:36px;margin-bottom:16px;text-align:center"></div>
+    <div id="modalTitle" style="font-family:var(--display);font-size:20px;font-weight:800;text-align:center;margin-bottom:8px"></div>
+    <div id="modalMsg" style="font-size:13px;color:var(--text-muted);text-align:center;line-height:1.6;margin-bottom:24px"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" style="flex:1" id="modalConfirmBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/auth-refresh.js"></script>
+<script src="js/settings.js"></script>
+</body>
+</html>
