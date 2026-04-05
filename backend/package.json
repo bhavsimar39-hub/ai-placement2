@@ -1,8 +1,17 @@
 {
   "name": "ai-placement-backend",
   "version": "1.0.0",
+  "description": "AI Placement Platform — Backend API Server",
   "main": "server.js",
   "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
     "@supabase/supabase-js": "^2.99.1",
@@ -21,5 +30,8 @@
     "pdfreader": "^3.0.8",
     "string-similarity": "^4.0.4",
     "unzipper": "^0.12.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
   }
 }
