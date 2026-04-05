@@ -1,211 +1,219 @@
 // backend/controllers/historyController.js
-// PERSONAL HISTORY — Shows only logged-in user's own data
+// Personal activity + login + ATS history with BERT session clustering
 
 import User from "../models/User.js";
+import { semanticSimilarity } from "../services/bertService.js";
 
-// ── Activity type normalisation map ───────────────────────────────────────────
-// Keys = every type ever saved by any controller
-// Values = canonical display category used by the frontend
-const TYPE_MAP = {
-    // Resume
-    "resume":               "resume_upload",
-    "resume_upload":        "resume_upload",
-    "upload":               "resume_upload",
-    // ATS
-    "ats":                  "ats_check",
-    "ats_check":            "ats_check",
-    "ats_analysis":         "ats_check",
-    // NLP / AI analysis
-    "nlp":                  "nlp_analysis",
-    "nlp_analysis":         "nlp_analysis",
-    "nlp_check":            "nlp_analysis",
-    // Career DNA
-    "career_dna":           "career_dna",
-    "career-dna":           "career_dna",
-    "dna":                  "career_dna",
-    "careerdna":            "career_dna",
-    // Login
-    "login":                "login",
-    // Readiness / profile
-    "readiness":            "readiness",
-    "profile":              "profile_update",
-    "profile_update":       "profile_update",
-};
+// ── Helpers ────────────────────────────────────────────────
+const ATS_TYPES     = new Set(["ats_check", "ats"]);
+const RESUME_TYPES  = new Set(["resume_upload", "upload", "resume"]);
+const SKILL_TYPES   = new Set(["skill_gap"]);
+const JOB_TYPES     = new Set(["job_match"]);
+const NLP_TYPES     = new Set(["nlp_analysis", "nlp"]);
 
-function normaliseType(rawType) {
-    return TYPE_MAP[(rawType || "").toLowerCase()] || rawType || "other";
-}
+function isAts(type)    { return ATS_TYPES.has(type); }
+function isResume(type) { return RESUME_TYPES.has(type); }
 
-// ── Extract ATS score reliably from an activity record ─────────────────────────
-function extractScore(activity) {
-    // 1. From metadata (most reliable — set by ats-checker and resumeController)
-    const m = activity.metadata || {};
-    if (m.atsScore)  return m.atsScore;
-    if (m.score)     return m.score;
-    if (m.total)     return m.total;
-
-    // 2. From description string — look for "ATS 72/100" or "Score: 72"
-    const desc = activity.description || "";
-    const patterns = [
-        /ATS\s+(\d+)\s*\/\s*100/i,
-        /score[:\s]+(\d+)/i,
-        /(\d+)\s*\/\s*100/,
-        /(\d{1,3})%/,
-    ];
-    for (const re of patterns) {
-        const match = desc.match(re);
-        if (match) {
-            const n = parseInt(match[1]);
-            if (n >= 0 && n <= 100) return n;
-        }
-    }
-    return null;
-}
-
-// ── GET /history/my-history ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// GET /api/history/my-history
+// ═══════════════════════════════════════════════════════════
 export const getPersonalHistory = async (req, res) => {
     try {
-        const user = await User.findById(req.userId)
-            .select(
-                "name email loginHistory lastLogin createdAt " +
-                "atsAnalysis resume activityHistory readinessScore " +
-                "resumeCount resumeHistory"
-            )
-            .lean();
+        const user = await User.findById(req.userId).lean();
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
+        const activity = user.activityHistory || [];
+        const logins   = user.loginHistory    || [];
 
-        const now   = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        // ── ATS sub-list (has a numeric score in metadata) ──
+        const atsItems = activity.filter(
+            a => isAts(a.type) && typeof a.metadata?.score === "number"
+        );
+        const atsScores = atsItems.map(a => a.metadata.score);
 
-        const loginHistory = user.loginHistory   || [];
-        const atsHistory   = user.atsAnalysis    || [];
-        const rawActivities= user.activityHistory|| [];
+        // ── Logins today ────────────────────────────────────
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const loginsToday = logins.filter(l => new Date(l.timestamp) >= todayStart).length;
 
-        // ── Normalise all activities ──────────────────────────────────────────
-        const activities = rawActivities.map(a => ({
-            ...a,
-            type: normaliseType(a.type),
-        }));
+        // ── Resume uploads ──────────────────────────────────
+        const resumeUploads = activity.filter(a => isResume(a.type)).length;
 
-        // ── ATS score data ────────────────────────────────────────────────────
-        // Collect from dedicated atsAnalysis array AND from activity records
-        const atsFromActivities = activities
-            .filter(a => a.type === "ats_check" || a.type === "nlp_analysis" || a.type === "resume_upload")
-            .map(a => ({ score: extractScore(a), timestamp: a.timestamp, title: a.title, description: a.description }))
-            .filter(a => a.score !== null && a.score >= 0);
+        // ── Skill gap checks ────────────────────────────────
+        const skillGapChecks = activity.filter(a => SKILL_TYPES.has(a.type)).length;
 
-        const atsFromArray = atsHistory.map(a => ({
-            score: a.score,
-            timestamp: a.analyzedAt || a.timestamp,
-            title: "ATS Check",
-            description: a.suggestions ? a.suggestions[0] || "" : "",
-        })).filter(a => a.score != null);
+        // ── Job match checks ────────────────────────────────
+        const jobMatchChecks = activity.filter(a => JOB_TYPES.has(a.type)).length;
 
-        // Merge and deduplicate by timestamp proximity (5 min window)
-        const allAts = [...atsFromArray, ...atsFromActivities]
-            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-        const deduped = [];
-        allAts.forEach(entry => {
-            const last = deduped[deduped.length - 1];
-            if (last && Math.abs(new Date(entry.timestamp) - new Date(last.timestamp)) < 5 * 60 * 1000) {
-                // Keep the higher score
-                if (entry.score > last.score) deduped[deduped.length - 1] = entry;
-            } else {
-                deduped.push(entry);
-            }
-        });
-
-        const atsScores  = deduped.map(a => a.score);
-        const avgAts     = atsScores.length ? Math.round(atsScores.reduce((s, n) => s + n, 0) / atsScores.length) : 0;
-        const bestAts    = atsScores.length ? Math.max(...atsScores) : 0;
-        const latestAts  = deduped.length   ? deduped[deduped.length - 1].score : 0;
-
-        // ── Login stats ───────────────────────────────────────────────────────
-        const totalLogins  = loginHistory.length;
-        const loginsToday  = loginHistory.filter(l => new Date(l.timestamp || l.date) >= today).length;
-
-        // ── Stats ─────────────────────────────────────────────────────────────
+        // ── Stats object ─────────────────────────────────────
         const stats = {
-            totalLogins,
+            totalLogins:    logins.length,
             loginsToday,
-            atsChecks:      deduped.length,
-            latestAtsScore: latestAts,
-            avgAtsScore:    avgAts,
-            bestAtsScore:   bestAts,
+            atsChecks:      atsItems.length,
+            latestAtsScore: atsScores.length ? atsScores[atsScores.length - 1] : null,
+            avgAtsScore:    atsScores.length
+                                ? Math.round(atsScores.reduce((s, n) => s + n, 0) / atsScores.length)
+                                : 0,
+            bestAtsScore:   atsScores.length ? Math.max(...atsScores) : 0,
             readinessScore: user.readinessScore || 0,
-            resumeUploads:  (user.resumeCount || 0),
-            totalActivities:activities.length,
-            memberSince:    user.createdAt,
+            resumeUploads,
+            skillGapChecks,
+            jobMatchChecks,
+            totalActivities: activity.length,
         };
 
-        // ── Recent activity (last 30, newest first) ───────────────────────────
-        const recentActivity = [...activities]
+        // ── Recent activity — latest 20 ──────────────────────
+        const recentActivity = [...activity]
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-            .slice(0, 30)
+            .slice(0, 20);
+
+        // ── Recent logins — latest 10 ────────────────────────
+        const recentLogins = [...logins]
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .slice(0, 10);
+
+        // ── ATS history — all scored checks, oldest→newest ──
+        const atsHistory = [...atsItems]
+            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
             .map(a => ({
-                type:        a.type,
-                title:       a.title        || "Activity",
-                description: a.description  || "",
+                score:       a.metadata.score,
+                title:       a.title       || "ATS Analysis",
+                description: a.description || "",
                 timestamp:   a.timestamp,
-                status:      a.status       || "success",
-                metadata:    a.metadata     || {},
+                metadata:    a.metadata    || {},
             }));
 
-        // ── Recent logins (last 15) ───────────────────────────────────────────
-        const recentLogins = [...loginHistory]
-            .sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date))
-            .slice(0, 15)
-            .map(l => ({
-                timestamp:  l.timestamp  || l.date,
-                ipAddress:  l.ipAddress  || l.ip  || null,
-                userAgent:  l.userAgent  || l.device || null,
-            }));
+        // ── BERT session clustering (non-fatal) ──────────────
+        // Groups temporally close + semantically similar activities
+        // into named "focus sessions" so the user sees meaningful patterns.
+        let sessionClusters = [];
+        if (activity.length >= 2 && process.env.HUGGINGFACE_API_KEY) {
+            try {
+                sessionClusters = await buildSessionClusters(activity);
+            } catch (_) {
+                // BERT unavailable — surface what we have without clusters
+            }
+        }
 
         return res.json({
             success: true,
-            user: {
-                name:        user.name,
-                email:       user.email,
-                memberSince: user.createdAt,
-            },
             stats,
             recentActivity,
             recentLogins,
-            atsHistory: deduped,   // full scored array for chart
+            atsHistory,
+            sessionClusters,   // [] when BERT unavailable — frontend handles gracefully
         });
 
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Failed to load personal history",
-            error: error.message,
+            message: "Failed to load history: " + error.message,
         });
     }
 };
 
-// ── DELETE /history/clear ─────────────────────────────────────────────────────
-export const clearPersonalHistory = async (req, res) => {
-    try {
-        const user = await User.findById(req.userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+// ═══════════════════════════════════════════════════════════
+// BERT SESSION CLUSTERING
+// Groups activities that are:
+//   • within 2-hour time window of each other  AND
+//   • semantically similar (cosine sim > 0.35)
+// Returns named session summaries for the frontend.
+// ═══════════════════════════════════════════════════════════
+async function buildSessionClusters(activities) {
+    // Sort chronologically
+    const sorted = [...activities].sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    );
+
+    const TWO_HOURS = 2 * 60 * 60 * 1000;
+    const clusters  = [];
+    let current     = [sorted[0]];
+
+    for (let i = 1; i < sorted.length; i++) {
+        const prev = sorted[i - 1];
+        const curr = sorted[i];
+
+        const timeDiff     = new Date(curr.timestamp) - new Date(prev.timestamp);
+        const withinWindow = timeDiff < TWO_HOURS;
+
+        if (!withinWindow) {
+            clusters.push(current);
+            current = [curr];
+            continue;
         }
 
-        user.activityHistory = [];
-        user.loginHistory    = [];
-        await user.save();
+        // Use description or title as semantic proxy
+        const textA = (prev.description || prev.title || prev.type).slice(0, 256);
+        const textB = (curr.description || curr.title || curr.type).slice(0, 256);
 
-        return res.json({ success: true, message: "Activity history cleared successfully" });
+        const sim = await semanticSimilarity(textA, textB);
 
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to clear history",
-            error: error.message,
+        // Threshold 0.35 — loose enough to group same-domain activities
+        // (e.g. two different ATS checks both score ~0.45 against each other)
+        if (sim >= 0.35) {
+            current.push(curr);
+        } else {
+            clusters.push(current);
+            current = [curr];
+        }
+    }
+    clusters.push(current);
+
+    // Only return multi-activity clusters — single-item runs are not "sessions"
+    return clusters
+        .filter(c => c.length > 1)
+        .map(c => {
+            const types   = c.map(a => a.type);
+            const typeSet = new Set(types);
+            const start   = c[0].timestamp;
+            const end     = c[c.length - 1].timestamp;
+            const spanMin = Math.round((new Date(end) - new Date(start)) / 60000);
+
+            return {
+                label:      deriveSessionLabel(typeSet, types),
+                activities: c.length,
+                timeSpanMin: spanMin,
+                types:      [...typeSet],
+                start,
+                end,
+                // Collect any ATS scores within this session for quick summary
+                atsScores: c
+                    .filter(a => isAts(a.type) && typeof a.metadata?.score === "number")
+                    .map(a => a.metadata.score),
+            };
         });
+}
+
+// Map a cluster's activity types to a human-readable session label
+function deriveSessionLabel(typeSet, typeList) {
+    const hasResume  = typeList.some(t => isResume(t));
+    const hasAts     = typeList.some(t => isAts(t));
+    const hasNlp     = typeList.some(t => NLP_TYPES.has(t));
+    const hasSkill   = typeList.some(t => SKILL_TYPES.has(t));
+    const hasJob     = typeList.some(t => JOB_TYPES.has(t));
+
+    if (hasResume && hasAts && hasNlp) return "Full Resume Review Session";
+    if (hasResume && hasAts)           return "Resume & ATS Session";
+    if (hasResume && hasNlp)           return "Resume Deep Analysis Session";
+    if (hasNlp    && hasSkill)         return "Career Intelligence Session";
+    if (hasSkill  && hasJob)           return "Job Search & Planning Session";
+    if (typeList.every(t => isAts(t))) return "ATS Optimisation Session";
+    if (typeList.every(t => NLP_TYPES.has(t))) return "NLP Analysis Session";
+    if (hasSkill)                      return "Career Planning Session";
+    if (hasJob)                        return "Job Discovery Session";
+    return "Career Activity Session";
+}
+
+// ═══════════════════════════════════════════════════════════
+// DELETE /api/history/clear
+// ═══════════════════════════════════════════════════════════
+export const clearPersonalHistory = async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.userId, {
+            $set: { activityHistory: [], loginHistory: [] },
+        });
+        return res.json({ success: true, message: "History cleared successfully" });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
