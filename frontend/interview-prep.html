@@ -244,6 +244,7 @@ textarea.ans:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(16,185,
   .aip-ring-score{font-size:13px;}
 }
 </style>
+<script src="/config.js"></script>
 </head>
 <body>
 <div id="sidebar-container"></div>
@@ -336,7 +337,7 @@ textarea.ans:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(16,185,
 <div class="toast" id="toast"><span id="toastIco">✅</span><span id="toastMsg">Saved!</span></div>
 
 <script>
-const API = "http://localhost:5000/api";
+// API loaded from config.js
 const token = localStorage.getItem("token");
 if (!token) window.location.href = "/login.html";
 

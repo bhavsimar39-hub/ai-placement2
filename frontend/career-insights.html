@@ -428,6 +428,7 @@
             .content { padding: 10px; }
         }
     </style>
+<script src="/config.js"></script>
 </head>
 <body>
 
@@ -589,7 +590,7 @@
 </div>
 
 <script>
-const API_BASE = "http://localhost:5000/api";
+// API_BASE loaded from config.js
 
 async function analyzeCareer() {
     const targetRole     = document.getElementById('targetRole').value;

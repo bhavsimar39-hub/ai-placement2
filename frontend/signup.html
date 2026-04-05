@@ -414,6 +414,7 @@
             }
         }
     </style>
+<script src="/config.js"></script>
 </head>
 
 <body>
@@ -549,7 +550,7 @@
             btn.textContent = "Creating Account…";
 
             try {
-                const res  = await fetch("http://localhost:5000/api/auth/signup", {
+                const res  = await fetch(API + "/auth/signup", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, email, password })

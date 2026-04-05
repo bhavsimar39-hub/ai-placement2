@@ -166,6 +166,7 @@
             .checks { grid-template-columns:1fr; }
         }
     </style>
+<script src="/config.js"></script>
 </head>
 <body>
 
@@ -438,7 +439,7 @@ function calculateScore() {
 
     const token = localStorage.getItem('token');
 
-    fetch('http://localhost:5000/api/readiness/calculate', {
+    fetch(API_BASE + '/readiness/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': token ? 'Bearer ' + token : '' },
         body: JSON.stringify({

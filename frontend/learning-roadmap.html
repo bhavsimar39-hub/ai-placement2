@@ -191,6 +191,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   .role-grid{grid-template-columns:1fr;}
 }
 </style>
+<script src="/config.js"></script>
 </head>
 <body>
 <div id="sidebar-container"></div>
@@ -267,7 +268,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 </div><!-- /content -->
 
 <script>
-const API = "http://localhost:5000/api";
+// API loaded from config.js
 const token = localStorage.getItem("token");
 if (!token) window.location.href = "/login.html";
 

@@ -192,6 +192,7 @@
         .sidebar.mob-open { transform: translateX(0); }
     }
 </style>
+<script src="/config.js"></script>
 </head>
 <body>
 <button class="mob-hamburger" id="mobHamburger" aria-label="Open menu">
@@ -556,7 +557,7 @@ html[data-theme="dark"] .content {
         // Fire backend logout in background — don't wait
         var token = localStorage.getItem('token');
         if (token) {
-            fetch('http://localhost:5000/api/auth/logout', {
+            fetch(API_BASE + '/auth/logout', {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
             }).catch(function() {});

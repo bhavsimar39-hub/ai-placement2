@@ -122,6 +122,7 @@
     .state-title { font-size: 19px; }
   }
 </style>
+<script src="/config.js"></script>
 </head>
 <body>
 
@@ -203,7 +204,7 @@
 //  4. Redirects to dashboard
 // ─────────────────────────────────────────────────────────────────
 
-const API = "http://localhost:5000";
+// API loaded from config.js
 
 function showState(id) {
     document.querySelectorAll(".state").forEach(s => s.classList.remove("active"));

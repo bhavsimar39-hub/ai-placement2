@@ -605,6 +605,7 @@
         .btn-google:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .btn-google svg { flex-shrink: 0; }
     </style>
+<script src="/config.js"></script>
 </head>
 
 <body>
@@ -885,7 +886,7 @@
             loginBtn.textContent = "Signing in...";
 
             try {
-                const res = await fetch("http://localhost:5000/api/auth/login", {
+                const res = await fetch(API + "/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
@@ -922,7 +923,7 @@
             btn.disabled = true;
             btn.textContent = "Sending...";
             try {
-                await fetch("http://localhost:5000/api/auth/forgot-password", {
+                await fetch(API + "/auth/forgot-password", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email })
@@ -1053,7 +1054,7 @@
             btn.textContent = "Sending...";
 
             try {
-                const res = await fetch("http://localhost:5000/api/auth/resend-confirmation", {
+                const res = await fetch(API + "/auth/resend-confirmation", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: pendingConfirmEmail })
