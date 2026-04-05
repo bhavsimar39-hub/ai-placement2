@@ -1,7 +1,18 @@
 import fs from "fs";
 import mammoth from "mammoth";
+import { createRequire } from "module";
+import User from "../models/User.js";
 
-import User from "../models/User.js";  // ✅ ADDED - Import User model
+// ── CJS require for pdf-parse ────────────────────────────────────────────────
+const _require = createRequire(import.meta.url);
+let pdfParse = null;
+try {
+    const mod = _require("pdf-parse");
+    pdfParse = typeof mod === "function" ? mod : (mod?.default || null);
+    if (typeof pdfParse !== "function") pdfParse = null;
+} catch (e) {
+    console.warn("⚠  pdf-parse not found:", e.message);
+}
 
 // ==================== COMPREHENSIVE SKILL DATABASE (350+ SKILLS) ====================
 const TECH_SKILLS = {
@@ -21,35 +32,64 @@ const TECH_SKILLS = {
 
 const ALL_SKILLS = Object.values(TECH_SKILLS).flat();
 
-// PDF EXTRACTION — pdfjs-dist (replaces old pdfHelper.cjs/pdf-parse)
+// PDF EXTRACTION — pdf-parse first, pdfjs-dist fallback (no workerSrc needed)
 async function extractPDF(filePath) {
     const buf = fs.readFileSync(filePath);
-    let getDocument, GlobalWorkerOptions;
-    try {
-        ({ getDocument, GlobalWorkerOptions } = await import("pdfjs-dist/legacy/build/pdf.mjs"));
-    } catch (_) {
+
+    // ── Strategy 1: pdf-parse (module-level, most reliable in Node ESM) ──
+    if (pdfParse) {
         try {
-            ({ getDocument, GlobalWorkerOptions } = await import("pdfjs-dist/build/pdf.mjs"));
-        } catch (__) {
-            throw new Error("pdfjs-dist unavailable. Run: npm install pdfjs-dist");
+            const data = await pdfParse(buf);
+            if (data && data.text && data.text.trim().length > 30) {
+                console.log("✅ PDF extracted via pdf-parse —", data.text.trim().length, "chars");
+                return data.text.replace(/\s+/g, " ").trim();
+            }
+        } catch (e) {
+            console.warn("⚠  pdf-parse error:", e.message);
         }
     }
-    // MUST set workerSrc BEFORE calling getDocument
-    GlobalWorkerOptions.workerSrc = "";
-    const pdf = await getDocument({
-        data: new Uint8Array(buf),
-        useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true,
-    }).promise;
-    let text = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const c = await (await pdf.getPage(i)).getTextContent();
-        text += c.items.map(x => x.str || "").join(" ") + "\n";
+
+    // ── Strategy 2: pdfjs-dist (no workerSrc — use flags to disable worker) ──
+    let getDocument, GlobalWorkerOptions;
+    for (const mod of ["pdfjs-dist/legacy/build/pdf.mjs", "pdfjs-dist/build/pdf.mjs"]) {
+        try {
+            const m = await import(mod);
+            getDocument         = m.getDocument         || m.default?.getDocument;
+            GlobalWorkerOptions = m.GlobalWorkerOptions || m.default?.GlobalWorkerOptions;
+            if (getDocument && GlobalWorkerOptions) break;
+        } catch (_) { continue; }
     }
-    await pdf.destroy();
-    const clean = text.replace(/\s/g, "");
-    if (clean.length > 50 && (clean.match(/[\x20-\x7E]/g)||[]).length / clean.length < 0.5)
-        throw new Error("PDF appears scanned/image-based. Please upload as DOCX.");
-    return text.replace(/\s+/g, " ").trim();
+
+    if (getDocument && GlobalWorkerOptions) {
+        try {
+            // Do NOT set workerSrc — disableRange+disableStream+useWorkerFetch:false
+            // tells pdfjs to run synchronously without any worker thread
+            const pdf = await getDocument({
+                data:            new Uint8Array(buf),
+                useWorkerFetch:  false,
+                isEvalSupported: false,
+                useSystemFonts:  true,
+                disableRange:    true,
+                disableStream:   true,
+                disableFontFace: true,
+            }).promise;
+            let text = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const c = await (await pdf.getPage(i)).getTextContent();
+                text += c.items.map(x => x.str || "").join(" ") + "\n";
+            }
+            await pdf.destroy();
+            const result = text.replace(/\s+/g, " ").trim();
+            if (result.length > 30) {
+                console.log("✅ PDF extracted via pdfjs-dist —", result.length, "chars");
+                return result;
+            }
+        } catch (e) {
+            console.warn("⚠  pdfjs-dist error:", e.message);
+        }
+    }
+
+    throw new Error("Could not extract text from this PDF. Please upload as DOCX or TXT instead.");
 }
 
 async function extractText(filePath, mime, name, extractedTextFallback) {
