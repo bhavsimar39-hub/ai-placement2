@@ -638,3 +638,72 @@ Rules:
         return null;
     }
 }
+// ═══════════════════════════════════════════════════════════
+// READINESS INSIGHTS — AI coaching card for readiness score
+// Called after score calculation with full breakdown data
+// ═══════════════════════════════════════════════════════════
+export async function groqReadinessInsights({ readinessScore, status, breakdown, inputData }) {
+    const system = `You are an expert career coach and hiring manager with 15+ years experience.
+Given a candidate's career readiness assessment scores, generate precise, honest, and actionable insights.
+Return ONLY valid JSON — no markdown, no backticks, no extra text.`;
+
+    const { education, experience, skills, portfolio, softSkills } = breakdown;
+    const { cgpa, yearsExp, relevantExp, techSkills, skillLevel, projects } = inputData;
+
+    const prompt = `Career Readiness Assessment Results:
+Overall Score: ${readinessScore}/100 — Status: ${status}
+
+Factor Breakdown (out of 100):
+- Education: ${education} (CGPA: ${cgpa}/10, Degree: ${inputData.degree})
+- Experience: ${experience} (${yearsExp} years, ${relevantExp}% relevant)
+- Technical Skills: ${skills} (${techSkills} skills at ${skillLevel} level)
+- Portfolio: ${portfolio} (${projects} projects)
+- Soft Skills: ${softSkills}
+
+Return ONLY this exact JSON:
+{
+  "headline": "One honest punchy sentence (max 12 words) about this candidate's current job market position",
+  "overallVerdict": "2-3 sentences: honest, specific assessment of their readiness — what's working, what's not, what hiring managers would actually think",
+  "strongestFactor": {
+    "name": "Which factor name is their biggest strength",
+    "insight": "One specific sentence about why this is strong and how to leverage it"
+  },
+  "weakestFactor": {
+    "name": "Which factor needs the most urgent work",
+    "insight": "One specific sentence about the exact gap and realistic timeline to fix it"
+  },
+  "topActions": [
+    {"action": "The single most impactful thing they can do this week", "impact": "High|Medium", "timeframe": "e.g., 1 week"},
+    {"action": "Second most impactful action", "impact": "High|Medium", "timeframe": "e.g., 1 month"},
+    {"action": "Third action for long-term growth", "impact": "Medium", "timeframe": "e.g., 3 months"}
+  ],
+  "marketReality": "One honest sentence about their real chances in the current job market at this score level",
+  "cgpaNote": "${cgpa > 0 ? `One specific note about their CGPA of ${cgpa} and how recruiters will view it` : null}",
+  "timeToReady": "Realistic estimate of how long to reach 80+ score if they act on recommendations (e.g., '3-4 months of focused effort')"
+}
+
+Rules:
+- Be specific and honest — reference actual numbers from the breakdown
+- Don't be generic — tailor every sentence to their exact scores
+- cgpaNote: return null (not string "null") if cgpa is 0
+- topActions: make them concrete and immediately actionable`;
+
+    try {
+        const raw  = await callGroq(system, prompt, 1200);
+        const data = parseJSON(raw);
+        return {
+            headline:       data.headline        || '',
+            overallVerdict: data.overallVerdict  || '',
+            strongestFactor: data.strongestFactor || null,
+            weakestFactor:  data.weakestFactor   || null,
+            topActions:     Array.isArray(data.topActions) ? data.topActions : [],
+            marketReality:  data.marketReality   || '',
+            cgpaNote:       data.cgpaNote && data.cgpaNote !== 'null' ? data.cgpaNote : null,
+            timeToReady:    data.timeToReady     || '',
+            groqPowered:    true,
+        };
+    } catch (e) {
+        console.warn('groqReadinessInsights failed:', e.message);
+        return null;
+    }
+}
