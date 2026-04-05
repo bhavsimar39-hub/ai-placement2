@@ -382,7 +382,7 @@
 </div>
 
 <div class="spin" id="spinner">
-    <div><div class="spinner"></div><div class="spin-text">Calculating Your Score</div><div class="spin-sub">Analyzing assessment factors...</div></div>
+    <div><div class="spinner"></div><div class="spin-text">Calculating Your Score</div><div class="spin-sub">🤖 AI analysing your profile with Groq…</div></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -422,62 +422,172 @@ document.querySelectorAll('.islider').forEach(sl => {
 function calculateScore() {
     document.getElementById('spinner').classList.add('show');
 
-    setTimeout(() => {
-        const edu = +document.getElementById('education').value;
-        const certVal = Array.from(document.querySelectorAll('input[id^="cert"]:checked')).reduce((sum, cb) => sum + parseFloat(cb.dataset.val), 0);
-        const eduScore = (edu * 0.8 + certVal * 0.2);
+    // Read all form values
+    const cgpa        = parseFloat(document.getElementById('cgpaSlider').value) || 0;
+    const education   = parseFloat(document.getElementById('education').value) || 50;
+    const degreeName  = document.getElementById('education').options[document.getElementById('education').selectedIndex].text;
+    const certVal     = Array.from(document.querySelectorAll('input[id^="cert"]:checked')).reduce((s, cb) => s + parseFloat(cb.dataset.val), 0);
+    const yearsExp    = parseFloat(document.getElementById('yearsExp').value) || 0;
+    const relevantExp = parseFloat(document.getElementById('relevantExp').value) || 0;
+    const techSkills  = parseFloat(document.getElementById('techSkills').value) || 0;
+    const skillLevel  = parseFloat(document.getElementById('skillLevel').value) || 50;
+    const projects    = parseFloat(document.getElementById('projects').value) || 0;
+    const portVal     = Array.from(document.querySelectorAll('input[id^="port"]:checked')).reduce((s, cb) => s + parseFloat(cb.dataset.val), 0);
+    const leadership  = parseFloat(document.getElementById('leadership').value) || 20;
+    const commVal     = Array.from(document.querySelectorAll('input[id^="comm"]:checked')).reduce((s, cb) => s + parseFloat(cb.dataset.val), 0);
 
-        const years = +document.getElementById('yearsExp').value;
-        const relevance = +document.getElementById('relevantExp').value;
-        const expScore = Math.min(100, (years / 10 * 100) * (relevance / 100));
+    const token = localStorage.getItem('token');
 
-        const techCount = +document.getElementById('techSkills').value;
-        const skillLvl = +document.getElementById('skillLevel').value;
-        const skillScore = Math.min(100, (techCount / 15 * 100 * 0.5) + (skillLvl * 0.5));
+    fetch('http://localhost:5000/api/readiness/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token ? 'Bearer ' + token : '' },
+        body: JSON.stringify({
+            cgpa, education, degreeName,
+            certifications: certVal,
+            yearsExp, relevantExp,
+            techSkills, skillLevel,
+            projects,
+            portScore: portVal,
+            leadership,
+            commSkills: commVal,
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        document.getElementById('spinner').classList.remove('show');
+        if (!data.success) { alert('Error: ' + (data.message || 'Calculation failed')); return; }
 
-        const projectCount = +document.getElementById('projects').value;
-        const portVal = Array.from(document.querySelectorAll('input[id^="port"]:checked')).reduce((sum, cb) => sum + parseFloat(cb.dataset.val), 0);
-        const portScore = Math.min(100, (projectCount / 10 * 100 * 0.4) + (portVal / 60 * 100 * 0.6));
+        const total = data.readinessScore;
+        const bd    = data.breakdown;
 
-        const lead = +document.getElementById('leadership').value;
-        const commVal = Array.from(document.querySelectorAll('input[id^="comm"]:checked')).reduce((sum, cb) => sum + parseFloat(cb.dataset.val), 0);
-        const softScore = (lead * 0.5) + (commVal / 50 * 100 * 0.5);
-
-        const total = Math.round((eduScore * 0.2) + (expScore * 0.3) + (skillScore * 0.25) + (portScore * 0.15) + (softScore * 0.1));
-
+        // ── Score ring ────────────────────────────────────────────────
         document.getElementById('scoreNum').textContent = total;
-        const circ = 553 - (553 * total / 100);
+        var circ = 553 - (553 * total / 100);
         document.getElementById('scoreRing').style.strokeDashoffset = circ;
 
-        const statusEl = document.getElementById('scoreStatus');
+        var statusEl = document.getElementById('scoreStatus');
         statusEl.className = 'ring-status';
-        if (total >= 80) statusEl.classList.add('s-excellent'), statusEl.textContent = 'Excellent';
-        else if (total >= 60) statusEl.classList.add('s-good'), statusEl.textContent = 'Good';
-        else if (total >= 40) statusEl.classList.add('s-average'), statusEl.textContent = 'Average';
-        else statusEl.classList.add('s-poor'), statusEl.textContent = 'Poor';
+        if      (total >= 85) { statusEl.classList.add('s-excellent'); statusEl.textContent = '🎉 Excellent — Job Ready!'; }
+        else if (total >= 70) { statusEl.classList.add('s-good');      statusEl.textContent = '👍 Good — Nearly Ready'; }
+        else if (total >= 55) { statusEl.classList.add('s-average');   statusEl.textContent = '📝 Average — Needs Work'; }
+        else                  { statusEl.classList.add('s-poor');      statusEl.textContent = '⚠️ Below Average'; }
 
-        document.getElementById('eduVal').textContent = Math.round(eduScore);
-        document.getElementById('eduBar').style.width = eduScore + '%';
-        document.getElementById('expVal').textContent = Math.round(expScore);
-        document.getElementById('expBar').style.width = expScore + '%';
-        document.getElementById('skillVal').textContent = Math.round(skillScore);
-        document.getElementById('skillBar').style.width = skillScore + '%';
-        document.getElementById('portVal').textContent = Math.round(portScore);
-        document.getElementById('portBar').style.width = portScore + '%';
-        document.getElementById('softVal').textContent = Math.round(softScore);
-        document.getElementById('softBar').style.width = softScore + '%';
+        // ── Breakdown bars ────────────────────────────────────────────
+        document.getElementById('eduVal').textContent  = bd.education;  document.getElementById('eduBar').style.width  = bd.education  + '%';
+        document.getElementById('expVal').textContent  = bd.experience; document.getElementById('expBar').style.width  = bd.experience + '%';
+        document.getElementById('skillVal').textContent= bd.skills;     document.getElementById('skillBar').style.width= bd.skills     + '%';
+        document.getElementById('portVal').textContent = bd.portfolio;  document.getElementById('portBar').style.width = bd.portfolio  + '%';
+        document.getElementById('softVal').textContent = bd.softSkills; document.getElementById('softBar').style.width = bd.softSkills + '%';
 
-        let reco = [];
-        if (eduScore < 60) reco.push('<div class="ritem"><span class="rpill rp-high">High</span><span class="rtext">Consider pursuing advanced certifications or degrees to boost credibility</span></div>');
-        if (expScore < 50) reco.push('<div class="ritem"><span class="rpill rp-high">High</span><span class="rtext">Gain more work experience, especially in your target domain</span></div>');
-        if (skillScore < 50) reco.push('<div class="ritem"><span class="rpill rp-high">High</span><span class="rtext">Learn more in-demand technical skills through courses or self-study</span></div>');
-        if (portScore < 50) reco.push('<div class="ritem"><span class="rpill rp-med">Medium</span><span class="rtext">Build a portfolio with personal projects, GitHub repos, or case studies</span></div>');
-        if (softScore < 50) reco.push('<div class="ritem"><span class="rpill rp-med">Medium</span><span class="rtext">Develop leadership and communication skills through volunteering or public speaking</span></div>');
-        if (reco.length === 0) reco.push('<div class="ritem"><span class="rpill rp-low">Success</span><span class="rtext">Excellent profile! Focus on networking and applying to top-tier roles</span></div>');
-
+        // ── Rule-based recommendations ────────────────────────────────
+        var reco = (data.recommendations || []).map(function(r) {
+            return '<div class="ritem"><span class="rpill rp-' + (r.priority === 'high' ? 'high' : r.priority === 'medium' ? 'med' : 'low') + '">'
+                + r.priority + '</span><span class="rtext">' + r.text + '</span></div>';
+        });
+        if (!reco.length) reco.push('<div class="ritem"><span class="rpill rp-low">✅</span><span class="rtext">Excellent profile! Focus on networking and applying to top-tier roles.</span></div>');
         document.getElementById('recoList').innerHTML = reco.join('');
+
+        // ── Groq AI Insights card ─────────────────────────────────────
+        renderAIInsightsCard(data.aiInsights, total);
+    })
+    .catch(function(err) {
         document.getElementById('spinner').classList.remove('show');
-    }, 1800);
+        // Fallback: calculate locally if backend fails
+        var edu   = education;
+        var cVal  = certVal;
+        var eduSc = Math.min(100, ((cgpa / 10) * 100 * 0.5) + (edu * 0.3) + (cVal * 4));
+        var expSc = Math.min(100, (yearsExp / 20 * 100) * (relevantExp / 100));
+        var skSc  = Math.min(100, (techSkills / 20 * 100 * 0.55) + (skillLevel * 0.45));
+        var poSc  = Math.min(100, (projects / 10 * 100 * 0.6) + (portVal * 0.4));
+        var soSc  = Math.min(100, (leadership * 0.5) + (commVal / 50 * 100 * 0.5));
+        var tot   = Math.round((eduSc * 0.2) + (expSc * 0.3) + (skSc * 0.25) + (poSc * 0.15) + (soSc * 0.1));
+
+        document.getElementById('scoreNum').textContent = tot;
+        document.getElementById('scoreRing').style.strokeDashoffset = 553 - (553 * tot / 100);
+        var st = document.getElementById('scoreStatus');
+        st.className = 'ring-status';
+        if (tot >= 80) { st.classList.add('s-excellent'); st.textContent = 'Excellent'; }
+        else if (tot >= 60) { st.classList.add('s-good'); st.textContent = 'Good'; }
+        else if (tot >= 40) { st.classList.add('s-average'); st.textContent = 'Average'; }
+        else { st.classList.add('s-poor'); st.textContent = 'Poor'; }
+
+        document.getElementById('eduVal').textContent  = Math.round(eduSc); document.getElementById('eduBar').style.width  = eduSc + '%';
+        document.getElementById('expVal').textContent  = Math.round(expSc); document.getElementById('expBar').style.width  = expSc + '%';
+        document.getElementById('skillVal').textContent= Math.round(skSc);  document.getElementById('skillBar').style.width= skSc  + '%';
+        document.getElementById('portVal').textContent = Math.round(poSc);  document.getElementById('portBar').style.width = poSc  + '%';
+        document.getElementById('softVal').textContent = Math.round(soSc);  document.getElementById('softBar').style.width = soSc  + '%';
+
+        document.getElementById('recoList').innerHTML = '<div class="ritem"><span class="rpill rp-low">Info</span><span class="rtext">AI insights unavailable offline. Score calculated locally.</span></div>';
+    });
+}
+
+function renderAIInsightsCard(ins, score) {
+    // Remove existing card
+    var existing = document.getElementById('aiReadinessCard');
+    if (existing) existing.remove();
+    if (!ins) return;
+
+    var scoreColor = score >= 70 ? '#10B981' : score >= 55 ? '#F59E0B' : '#EF4444';
+
+    var html = '<div id="aiReadinessCard" style="margin-top:20px;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#0f2744 100%);border:1px solid rgba(99,102,241,0.35);border-radius:20px;padding:28px 32px;color:#e0e7ff;">'
+
+    // Header
+    + '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;">'
+    + '<span style="font-size:12px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.2);padding:4px 14px;border-radius:20px;letter-spacing:.5px;">🤖 AI COACH · Llama-3.3-70b</span>'
+    + '<div style="margin-left:auto;display:flex;align-items:center;gap:8px;">'
+    + '<span style="font-size:22px;font-weight:800;color:' + scoreColor + ';">' + score + '/100</span>'
+    + '</div></div>'
+
+    // Headline + verdict
+    + '<h3 style="font-size:17px;font-weight:700;color:#f0f4ff;margin:0 0 10px;">&ldquo;' + ins.headline + '&rdquo;</h3>'
+    + '<p style="font-size:13px;line-height:1.75;color:#c7d2fe;margin:0 0 18px;">' + ins.overallVerdict + '</p>';
+
+    // Strongest + Weakest factor
+    if (ins.strongestFactor || ins.weakestFactor) {
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">';
+        if (ins.strongestFactor)
+            html += '<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);border-radius:10px;padding:13px;">'
+                + '<div style="font-size:10px;color:#6ee7b7;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">💪 Strongest: ' + ins.strongestFactor.name + '</div>'
+                + '<div style="font-size:12px;color:#d1fae5;">' + ins.strongestFactor.insight + '</div></div>';
+        if (ins.weakestFactor)
+            html += '<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:13px;">'
+                + '<div style="font-size:10px;color:#fca5a5;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;">⚠️ Needs Work: ' + ins.weakestFactor.name + '</div>'
+                + '<div style="font-size:12px;color:#fef2f2;">' + ins.weakestFactor.insight + '</div></div>';
+        html += '</div>';
+    }
+
+    // Top actions
+    if (ins.topActions && ins.topActions.length) {
+        html += '<div style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px;margin-bottom:16px;">'
+            + '<div style="font-size:10px;color:#818cf8;text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;">🎯 Top Actions</div>';
+        ins.topActions.forEach(function(a, i) {
+            html += '<div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;' + (i < ins.topActions.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '') + '">'
+                + '<span style="font-size:11px;font-weight:700;color:#818cf8;min-width:18px;">' + (i + 1) + '.</span>'
+                + '<div style="flex:1;">'
+                + '<span style="font-size:13px;color:#e0e7ff;">' + a.action + '</span>'
+                + '<span style="font-size:11px;color:#6b7280;margin-left:8px;">· ' + a.timeframe + '</span>'
+                + '</div>'
+                + '<span style="font-size:10px;color:' + (a.impact === 'High' ? '#34d399' : '#fbbf24') + ';background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:8px;white-space:nowrap;">' + a.impact + '</span>'
+                + '</div>';
+        });
+        html += '</div>';
+    }
+
+    // Market reality + time to ready
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:#c7d2fe;margin-bottom:' + (ins.cgpaNote ? '12px' : '0') + ';">'
+        + '<div><span style="color:#a5b4fc;">📊 Market reality: </span>' + ins.marketReality + '</div>'
+        + '<div><span style="color:#a5b4fc;">⏱ Time to 80+: </span>' + ins.timeToReady + '</div>'
+        + '</div>';
+
+    if (ins.cgpaNote)
+        html += '<div style="font-size:12px;color:#c7d2fe;margin-top:4px;"><span style="color:#fbbf24;">🎓 CGPA note: </span>' + ins.cgpaNote + '</div>';
+
+    html += '</div>';
+
+    // Insert after score panel
+    var scorePanel = document.querySelector('.score-panel');
+    if (scorePanel) scorePanel.insertAdjacentHTML('afterend', html);
+    else document.querySelector('.grid-layout').insertAdjacentHTML('beforeend', html);
 }
 </script>
 
