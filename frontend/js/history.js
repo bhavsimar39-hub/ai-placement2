@@ -111,8 +111,12 @@ function displayActivities(activities) {
 function buildMetaChips(a) {
     if (!a.metadata) return "";
     const chips = [];
-    if (typeof a.metadata.score === "number")
-        chips.push(`<span class="meta-chip chip-${scoreClass(a.metadata.score)}">ATS ${a.metadata.score}</span>`);
+    // Handle both score and atsScore field names
+    const atsVal = a.metadata.score ?? a.metadata.atsScore ?? a.metadata.ats_score;
+    if (typeof atsVal === "number" || (typeof atsVal === "string" && !isNaN(parseFloat(atsVal)))) {
+        const n = typeof atsVal === "number" ? atsVal : parseFloat(atsVal);
+        chips.push(`<span class="meta-chip chip-${scoreClass(n)}">ATS ${n}</span>`);
+    }
     if (typeof a.metadata.readinessScore === "number")
         chips.push(`<span class="meta-chip chip-good">Readiness ${a.metadata.readinessScore}%</span>`);
     if (typeof a.metadata.matchScore === "number" || typeof a.metadata.topScore === "number") {
@@ -259,13 +263,23 @@ function drawChart(scores) {
               font-size="11" fill="#9CA3AF" font-family="JetBrains Mono,monospace">${val}</text>`;
     });
 
-    // Coordinate points — FIX: step=0 when single point → centre horizontally
+    // Coordinate points
+    // When multiple points share the same date, spread them evenly across the axis
     const step = scores.length > 1 ? cW / (scores.length - 1) : 0;
     const pts  = scores.map((s, i) => ({
         x:     scores.length === 1 ? PAD.left + cW / 2 : PAD.left + i * step,
         y:     PAD.top + cH - (Math.min(100, Math.max(0, s.score)) / 100) * cH,
         score: s.score,
-        date:  new Date(s.timestamp).toLocaleDateString("en-US", { month:"short", day:"numeric" }),
+        // Show time (HH:MM) if multiple entries on same date, else show date
+        date:  (() => {
+            const d    = new Date(s.timestamp);
+            const same = scores.filter(o =>
+                new Date(o.timestamp).toDateString() === d.toDateString()
+            ).length > 1;
+            return same
+                ? d.toLocaleString("en-US", { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" })
+                : d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+        })(),
     }));
 
     // X labels — max 8, sampled to avoid overlap

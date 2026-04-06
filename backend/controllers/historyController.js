@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import { semanticSimilarity } from "../services/bertService.js";
 
 // ── Helpers ────────────────────────────────────────────────
-const ATS_TYPES     = new Set(["ats_check", "ats"]);
+const ATS_TYPES     = new Set(["ats_check", "ats", "ats_analysis"]);
 const RESUME_TYPES  = new Set(["resume_upload", "upload", "resume"]);
 const SKILL_TYPES   = new Set(["skill_gap"]);
 const JOB_TYPES     = new Set(["job_match"]);
@@ -13,6 +13,15 @@ const NLP_TYPES     = new Set(["nlp_analysis", "nlp"]);
 
 function isAts(type)    { return ATS_TYPES.has(type); }
 function isResume(type) { return RESUME_TYPES.has(type); }
+
+// Extract numeric ATS score from any metadata field variant
+// Controllers save as: score, atsScore, ats_score — handle all
+function extractAtsScore(metadata) {
+    if (!metadata) return null;
+    const raw = metadata.score ?? metadata.atsScore ?? metadata.ats_score ?? null;
+    const n   = typeof raw === "number" ? raw : parseFloat(raw);
+    return isNaN(n) ? null : n;
+}
 
 // ═══════════════════════════════════════════════════════════
 // GET /api/history/my-history
@@ -25,11 +34,13 @@ export const getPersonalHistory = async (req, res) => {
         const activity = user.activityHistory || [];
         const logins   = user.loginHistory    || [];
 
-        // ── ATS sub-list (has a numeric score in metadata) ──
-        const atsItems = activity.filter(
-            a => isAts(a.type) && typeof a.metadata?.score === "number"
-        );
-        const atsScores = atsItems.map(a => a.metadata.score);
+        // ── All ATS activities (count) + scored subset (analytics) ──
+        // Count ALL ats_check activities regardless of score presence
+        const allAtsItems    = activity.filter(a => isAts(a.type));
+
+        // For score analytics, use items that have a numeric score in any field
+        const scoredAtsItems = allAtsItems.filter(a => extractAtsScore(a.metadata) !== null);
+        const atsScores      = scoredAtsItems.map(a => extractAtsScore(a.metadata));
 
         // ── Logins today ────────────────────────────────────
         const todayStart = new Date();
@@ -49,7 +60,7 @@ export const getPersonalHistory = async (req, res) => {
         const stats = {
             totalLogins:    logins.length,
             loginsToday,
-            atsChecks:      atsItems.length,
+            atsChecks:      allAtsItems.length,           // ALL ats checks, not just scored
             latestAtsScore: atsScores.length ? atsScores[atsScores.length - 1] : null,
             avgAtsScore:    atsScores.length
                                 ? Math.round(atsScores.reduce((s, n) => s + n, 0) / atsScores.length)
@@ -73,10 +84,10 @@ export const getPersonalHistory = async (req, res) => {
             .slice(0, 10);
 
         // ── ATS history — all scored checks, oldest→newest ──
-        const atsHistory = [...atsItems]
+        const atsHistory = [...scoredAtsItems]
             .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
             .map(a => ({
-                score:       a.metadata.score,
+                score:       extractAtsScore(a.metadata),
                 title:       a.title       || "ATS Analysis",
                 description: a.description || "",
                 timestamp:   a.timestamp,
@@ -178,8 +189,8 @@ async function buildSessionClusters(activities) {
                 end,
                 // Collect any ATS scores within this session for quick summary
                 atsScores: c
-                    .filter(a => isAts(a.type) && typeof a.metadata?.score === "number")
-                    .map(a => a.metadata.score),
+                    .filter(a => isAts(a.type) && extractAtsScore(a.metadata) !== null)
+                    .map(a => extractAtsScore(a.metadata)),
             };
         });
 }
