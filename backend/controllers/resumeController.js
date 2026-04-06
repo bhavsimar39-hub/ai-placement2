@@ -22,11 +22,21 @@ const _require = createRequire(import.meta.url);
 let pdfParse = null;
 try {
     const mod = _require("pdf-parse");
-    pdfParse = typeof mod === "function" ? mod : (mod?.default || mod?.parse || null);
-    if (typeof pdfParse !== "function") {
-        console.warn("⚠  pdf-parse loaded but is not a function, type:", typeof mod);
-        pdfParse = null;
+    if (typeof mod === "function") {
+        pdfParse = mod;
+    } else if (typeof mod?.default === "function") {
+        pdfParse = mod.default;
+    } else if (typeof mod?.parse === "function") {
+        pdfParse = mod.parse;
+    } else {
+        // Direct path fallback
+        try {
+            const lib = _require("pdf-parse/lib/pdf-parse.js");
+            pdfParse = typeof lib === "function" ? lib : null;
+        } catch (_) {}
     }
+    if (pdfParse) console.log("✅ pdf-parse loaded successfully");
+    else console.warn("⚠  pdf-parse loaded but not callable, type:", typeof mod);
 } catch (e) {
     console.warn("⚠  pdf-parse not found:", e.message, "— run: npm install pdf-parse");
 }
@@ -748,7 +758,7 @@ function generateImprovements(atsScore, skills, contact, quant, weakVerbs, exper
 
 async function extractWithPdfjs(buf, filePath, mammoth) {
 
-    // ── Strategy 1: pdf-parse (module-level, most reliable) ──────────
+    // ── Strategy 1: pdf-parse ─────────────────────────────────────────
     if (pdfParse) {
         try {
             const data = await pdfParse(buf);
@@ -756,12 +766,13 @@ async function extractWithPdfjs(buf, filePath, mammoth) {
                 console.log("✅ PDF extracted via pdf-parse —", data.text.trim().length, "chars");
                 return data.text.replace(/\s+/g, " ").trim();
             }
+            console.warn("⚠  pdf-parse returned empty text, trying next strategy");
         } catch (e) {
             console.warn("⚠  pdf-parse error:", e.message);
         }
     }
 
-    // ── Strategy 2: pdfjs-dist (no workerSrc — use flags to disable worker) ──
+    // ── Strategy 2: pdfjs-dist ────────────────────────────────────────
     let getDocument, GlobalWorkerOptions;
     for (const mod of ["pdfjs-dist/legacy/build/pdf.mjs", "pdfjs-dist/build/pdf.mjs"]) {
         try {
@@ -774,7 +785,7 @@ async function extractWithPdfjs(buf, filePath, mammoth) {
 
     if (getDocument && GlobalWorkerOptions) {
         try {
-            // Do NOT set workerSrc — use disableRange+disableStream+useWorkerFetch:false instead
+            GlobalWorkerOptions.workerSrc = "";
             const pdf = await getDocument({
                 data:            new Uint8Array(buf),
                 useWorkerFetch:  false,
@@ -799,9 +810,76 @@ async function extractWithPdfjs(buf, filePath, mammoth) {
         }
     }
 
-    // mammoth is DOCX-only — never use it for PDFs
+    // ── Strategy 3: pdf2json ──────────────────────────────────────────
+    try {
+        const { default: PDFParser } = await import("pdf2json");
+        const text = await new Promise((resolve, reject) => {
+            const parser = new PDFParser(null, 1);
+            parser.on("pdfParser_dataReady", (data) => {
+                try {
+                    const pages = data?.Pages || data?.formImage?.Pages || [];
+                    const extracted = pages.map(page =>
+                        (page.Texts || []).map(t =>
+                            decodeURIComponent(t.R?.map(r => r.T || "").join("") || "")
+                        ).join(" ")
+                    ).join("\n");
+                    resolve(extracted);
+                } catch (e) { reject(e); }
+            });
+            parser.on("pdfParser_dataError", (err) => reject(new Error(err.parserError || "pdf2json error")));
+            parser.parseBuffer(buf);
+        });
+        if (text && text.trim().length > 30) {
+            console.log("✅ PDF extracted via pdf2json —", text.trim().length, "chars");
+            return text.replace(/\s+/g, " ").trim();
+        }
+    } catch (e) {
+        console.warn("⚠  pdf2json error:", e.message, "— run: npm install pdf2json");
+    }
+
+    // ── Strategy 4: Raw text extraction (last resort) ─────────────────
+    try {
+        const raw = buf.toString("latin1");
+        const textBlocks = [];
+        const btEtRegex = /BT([\s\S]*?)ET/g;
+        let match;
+        while ((match = btEtRegex.exec(raw)) !== null) {
+            const block = match[1];
+            const strRegex = /\(([^)]{1,500})\)\s*(?:Tj|'|")/g;
+            let strMatch;
+            while ((strMatch = strRegex.exec(block)) !== null) {
+                const decoded = strMatch[1]
+                    .replace(/\\n/g, " ").replace(/\\r/g, " ").replace(/\\t/g, " ")
+                    .replace(/\\\(/g, "(").replace(/\\\)/g, ")").replace(/\\\\/g, "\\")
+                    .replace(/[^\x20-\x7E]/g, " ");
+                if (decoded.trim()) textBlocks.push(decoded.trim());
+            }
+            const arrRegex = /\[([^\]]*)\]\s*TJ/g;
+            let arrMatch;
+            while ((arrMatch = arrRegex.exec(block)) !== null) {
+                const parts = [];
+                const partRegex = /\(([^)]{1,500})\)/g;
+                let partMatch;
+                while ((partMatch = partRegex.exec(arrMatch[1])) !== null) {
+                    const decoded = partMatch[1]
+                        .replace(/\\n/g, " ").replace(/\\t/g, " ")
+                        .replace(/[^\x20-\x7E]/g, " ");
+                    if (decoded.trim()) parts.push(decoded.trim());
+                }
+                if (parts.length) textBlocks.push(parts.join(" "));
+            }
+        }
+        const result = textBlocks.join(" ").replace(/\s+/g, " ").trim();
+        if (result.length > 50) {
+            console.log("✅ PDF extracted via raw strategy —", result.length, "chars");
+            return result;
+        }
+    } catch (e) {
+        console.warn("⚠  Raw PDF extraction failed:", e.message);
+    }
+
     throw new Error(
-        "Could not extract text from this PDF. Please upload as DOCX or TXT instead."
+        "Could not extract text from this PDF. The PDF may be image-based or password-protected. Please try uploading as DOCX or TXT, or use an image (JPG/PNG) of your resume."
     );
 }
 

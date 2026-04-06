@@ -26,6 +26,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.13",
     "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.2",
     "pdfjs-dist": "^5.5.207",
     "pdfreader": "^3.0.8",
     "string-similarity": "^4.0.4",
