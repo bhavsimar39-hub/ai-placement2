@@ -295,7 +295,7 @@ export const forgotPassword = async (req, res) => {
         const { email } = req.body;
 
         const { error } = await supabaseAnon.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password.html`
+            redirectTo: `${process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com"}/reset-password.html`
         });
 
         if (error) throw new Error(error.message);
