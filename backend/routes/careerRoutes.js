@@ -3,7 +3,7 @@
 import express  from "express";
 import multer   from "multer";
 import path     from "path";
-import { analyzeCareerDNAController } from "../controllers/Careerdnacontroller.js";
+import { analyzeCareerDNAController } from "../controllers/careerDnaController.js";
 import { careerInsightsController }   from "../controllers/careerController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
