@@ -17,7 +17,7 @@ import learningRoutes  from "./routes/learningRoutes.js";
 import historyRoutes   from "./routes/historyRoutes.js";
 import atsRoutes       from "./routes/atsRoutes.js";
 import careerRoutes    from "./routes/careerRoutes.js";       // Career DNA
-import roadmapRoutes   from "./routes/roadmapRoutes.js";
+import roadmapRoutes from "./routes/Roadmaproutes.js";
 import nlpRoutes       from "./routes/nlpRoutes.js";          // NLP + /claude Groq proxy
 import skillRoutes     from "./routes/skillRoutes.js";        // Skill gap + BERT
 import matchRoutes     from "./routes/matchRoutes.js";        // Job match
