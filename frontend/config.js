@@ -7,7 +7,7 @@
 const API_BASE_URL = window.location.hostname === "localhost" ||
                      window.location.hostname === "127.0.0.1"
   ? "http://localhost:5000"
-  : "https://ai-placement2.onrender.com";
+  : "https://ai-placement-ihu6.onrender.com";
 
 // Expose as both names used across your files
 const API      = API_BASE_URL + "/api";
