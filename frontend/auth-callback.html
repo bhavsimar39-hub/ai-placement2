@@ -69,6 +69,10 @@
     );
 
     try {
+        // Handle PKCE code exchange
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        if (code) { await _supabase.auth.exchangeCodeForSession(code); }
         // Get session from the URL hash that Supabase appended after Google redirect
         const { data: { session }, error } = await _supabase.auth.getSession();
 
@@ -88,13 +92,13 @@
         localStorage.setItem('userName', userName);
 
         // Redirect to dashboard
-        window.location.href = '/dashboard';
+        window.location.href = '/dashboard.html';
 
     } catch (err) {
         const errEl = document.getElementById('errMsg');
         errEl.style.display = 'block';
         errEl.textContent = 'Login failed: ' + err.message + '. Redirecting to login...';
-        setTimeout(() => { window.location.href = '/login'; }, 3000);
+        setTimeout(() => { window.location.href = '/login.html'; }, 3000);
     }
 })();
 </script>
