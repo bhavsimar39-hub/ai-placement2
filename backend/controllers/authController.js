@@ -51,7 +51,7 @@ export const signup = async (req, res) => {
             password,
             options: {
                 data: { name },
-                emailRedirectTo: `${process.env.FRONTEND_URL || "http://localhost:3000"}/confirm-email.html`
+                emailRedirectTo: `${process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com"}/confirm-email.html`
             }
         });
 
@@ -205,7 +205,7 @@ export const resendConfirmation = async (req, res) => {
             type: "signup",
             email,
             options: {
-                emailRedirectTo: `${process.env.FRONTEND_URL || "http://localhost:3000"}/confirm-email.html`
+                emailRedirectTo: `${process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com"}/confirm-email.html`
             }
         });
 
