@@ -1,5 +1,5 @@
 // backend/controllers/authController.js
-// ✅ FIXED VERSION WITH PROPER LOGIN TRACKING
+// ✅ FULLY UPDATED VERSION - Fixed redirects + invite user added
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -7,6 +7,8 @@ dotenv.config();
 import { createClient } from "@supabase/supabase-js";
 import User from "../models/User.js";
 import nodemailer from "nodemailer";
+
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com";
 
 const supabaseAnon  = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 const supabaseAdmin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -51,7 +53,7 @@ export const signup = async (req, res) => {
             password,
             options: {
                 data: { name },
-                emailRedirectTo: `${process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com"}/confirm-email.html`
+                emailRedirectTo: `${FRONTEND_URL}/confirm-email.html`
             }
         });
 
@@ -78,7 +80,7 @@ export const signup = async (req, res) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// LOGIN - FIXED WITH PROPER TRACKING
+// LOGIN
 // ═══════════════════════════════════════════════════════════════
 export const login = async (req, res) => {
     try {
@@ -103,7 +105,6 @@ export const login = async (req, res) => {
         const { user: supabaseUser, session } = data;
         console.log("✅ Supabase login OK:", supabaseUser.email);
 
-        // ✅ TRACK LOGIN PROPERLY
         const ipAddress = req.ip || req.connection?.remoteAddress || "Unknown";
         const userAgent = req.headers["user-agent"] || "Unknown";
         const loginTime = new Date();
@@ -112,50 +113,35 @@ export const login = async (req, res) => {
         let mongoUser = await User.findOne({ email });
 
         if (!mongoUser) {
-            // ✅ CREATE USER WITH ALL DEFAULT FIELDS
             mongoUser = await User.create({
                 name,
                 email,
                 password: "supabase_managed",
                 lastLogin: loginTime,
-                loginHistory: [{
-                    timestamp: loginTime,
-                    ipAddress,
-                    userAgent
-                }],
-                // ✅ INITIALIZE TRACKING FIELDS
+                loginHistory: [{ timestamp: loginTime, ipAddress, userAgent }],
                 resumeCount: 0,
                 resumeHistory: [],
                 activityHistory: []
             });
             console.log("✅ MongoDB user created on first login");
         } else {
-            // ✅ UPDATE EXISTING USER
             mongoUser.lastLogin = loginTime;
-            
-            // Initialize arrays if they don't exist
-            if (!mongoUser.loginHistory) mongoUser.loginHistory = [];
-            if (!mongoUser.resumeHistory) mongoUser.resumeHistory = [];
+
+            if (!mongoUser.loginHistory)    mongoUser.loginHistory    = [];
+            if (!mongoUser.resumeHistory)   mongoUser.resumeHistory   = [];
             if (!mongoUser.activityHistory) mongoUser.activityHistory = [];
             if (mongoUser.resumeCount === undefined) mongoUser.resumeCount = 0;
-            
-            // Add login record
-            mongoUser.loginHistory.push({
-                timestamp: loginTime,
-                ipAddress,
-                userAgent
-            });
-            
-            // Keep last 50 logins
+
+            mongoUser.loginHistory.push({ timestamp: loginTime, ipAddress, userAgent });
+
             if (mongoUser.loginHistory.length > 50) {
                 mongoUser.loginHistory = mongoUser.loginHistory.slice(-50);
             }
         }
 
-        // ✅ SAVE TO DATABASE
         await mongoUser.save();
 
-        console.log('✅ Login tracked:', {
+        console.log("✅ Login tracked:", {
             user: mongoUser.email,
             totalLogins: mongoUser.loginHistory.length,
             resumeCount: mongoUser.resumeCount
@@ -205,7 +191,7 @@ export const resendConfirmation = async (req, res) => {
             type: "signup",
             email,
             options: {
-                emailRedirectTo: `${process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com"}/confirm-email.html`
+                emailRedirectTo: `${FRONTEND_URL}/confirm-email.html`
             }
         });
 
@@ -226,21 +212,15 @@ export const resendConfirmation = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
-        
+
         if (!authHeader) {
-            return res.status(200).json({ 
-                success: true, 
-                message: "Logged out (client-side)" 
-            });
+            return res.status(200).json({ success: true, message: "Logged out (client-side)" });
         }
 
         const token = authHeader.split(" ")[1];
-        
-        if (!token || token === 'null') {
-            return res.status(200).json({ 
-                success: true, 
-                message: "Logged out" 
-            });
+
+        if (!token || token === "null") {
+            return res.status(200).json({ success: true, message: "Logged out" });
         }
 
         try {
@@ -248,42 +228,24 @@ export const logout = async (req, res) => {
             const userSupabase = mkClient(
                 process.env.SUPABASE_URL,
                 process.env.SUPABASE_ANON_KEY,
-                { 
-                    global: { 
-                        headers: { 
-                            Authorization: `Bearer ${token}` 
-                        } 
-                    } 
-                }
+                { global: { headers: { Authorization: `Bearer ${token}` } } }
             );
 
             const { error } = await userSupabase.auth.signOut();
-            
+
             if (error) {
-                return res.status(200).json({ 
-                    success: true, 
-                    message: "Logged out (with warnings)" 
-                });
+                return res.status(200).json({ success: true, message: "Logged out (with warnings)" });
             }
 
-            console.log('✅ Supabase session invalidated');
-            return res.status(200).json({ 
-                success: true, 
-                message: "Logged out successfully" 
-            });
+            console.log("✅ Supabase session invalidated");
+            return res.status(200).json({ success: true, message: "Logged out successfully" });
 
         } catch (supabaseError) {
-            return res.status(200).json({ 
-                success: true, 
-                message: "Logged out" 
-            });
+            return res.status(200).json({ success: true, message: "Logged out" });
         }
 
     } catch (error) {
-        return res.status(200).json({ 
-            success: true, 
-            message: "Logged out" 
-        });
+        return res.status(200).json({ success: true, message: "Logged out" });
     }
 };
 
@@ -295,7 +257,7 @@ export const forgotPassword = async (req, res) => {
         const { email } = req.body;
 
         const { error } = await supabaseAnon.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.FRONTEND_URL || "https://ai-placement-ihu6.onrender.com"}/reset-password.html`
+            redirectTo: `${FRONTEND_URL}/reset-password.html`
         });
 
         if (error) throw new Error(error.message);
@@ -320,7 +282,7 @@ export const updatePassword = async (req, res) => {
         if (!token) {
             return res.status(401).json({ success: false, message: "No token provided" });
         }
-        
+
         if (!newPassword || newPassword.length < 6) {
             return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
         }
@@ -338,6 +300,38 @@ export const updatePassword = async (req, res) => {
 
         return res.json({ success: true, message: "Password updated successfully" });
     } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// INVITE USER  ✅ NEW
+// ═══════════════════════════════════════════════════════════════
+export const inviteUser = async (req, res) => {
+    try {
+        const { email, name } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Email is required" });
+        }
+
+        const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+            redirectTo: `${FRONTEND_URL}/confirm-email.html`,
+            data: { name: name || email.split("@")[0] }
+        });
+
+        if (error) throw new Error(error.message);
+
+        console.log("✅ Invite sent to:", email);
+
+        return res.status(200).json({
+            success: true,
+            message: `Invite email sent to ${email}. They will receive a link to set up their account.`,
+            user: data?.user || null
+        });
+
+    } catch (err) {
+        console.error("Invite error:", err.message);
         res.status(500).json({ success: false, message: err.message });
     }
 };
@@ -369,7 +363,7 @@ export const getUserAnalytics = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Analytics error:', error);
+        console.error("Analytics error:", error);
         res.status(500).json({ success: false, message: "Failed to load analytics" });
     }
 };
