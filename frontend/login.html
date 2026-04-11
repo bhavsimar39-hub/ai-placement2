@@ -126,6 +126,18 @@
             margin-bottom: 40px;
         }
 
+        .logo-section a {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            display: block;
+        }
+
+        .logo-section a:hover .logo-text {
+            color: var(--primary);
+            transition: color 0.2s ease;
+        }
+
         .logo {
             display: inline-flex;
             align-items: center;
@@ -622,11 +634,13 @@
     <div class="login-wrapper">
         <!-- LOGO -->
         <div class="logo-section">
+            <a href="/index.html" style="text-decoration: none; color: inherit;">
             <div class="logo">
                 <div class="logo-icon">⚡</div>
                 <div class="logo-text">AI•Placement</div>
             </div>
             <p class="logo-tagline">Elite Career Intelligence Platform</p>
+            </a>
         </div>
 
         <!-- LOGIN CARD -->
