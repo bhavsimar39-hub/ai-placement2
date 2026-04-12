@@ -617,177 +617,6 @@
         .btn-google:active { transform: translateY(0); }
         .btn-google:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .btn-google svg { flex-shrink: 0; }
-
-        /* ═══════════════════════════════════════════════
-           POLISH: Background · Card · Inputs · Micro-UX
-           ═══════════════════════════════════════════════ */
-
-        /* Cursor orb */
-        #cursor-orb {
-            position: fixed; pointer-events: none; z-index: 9998;
-            width: 56px; height: 56px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(16,185,129,0.38) 0%, transparent 70%);
-            transform: translate(-50%,-50%);
-            transition: left 0.07s linear, top 0.07s linear;
-            filter: blur(14px); mix-blend-mode: multiply;
-        }
-
-        /* Constellation canvas */
-        #constellation-canvas {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        }
-
-        /* Morphing blob */
-        .morph-blob {
-            position: fixed; z-index: 0; pointer-events: none;
-            width: 520px; height: 520px; top: 50%; left: 50%;
-            transform: translate(-50%,-50%);
-            opacity: 0.035;
-            background: linear-gradient(135deg, #10B981 0%, #6366F1 100%);
-            animation: blobMorph 14s ease-in-out infinite;
-        }
-        @keyframes blobMorph {
-            0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-            25%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-            50%      { border-radius: 50% 60% 30% 60% / 40% 50% 60% 50%; }
-            75%      { border-radius: 40% 60% 60% 40% / 60% 40% 60% 40%; }
-        }
-
-        /* Aurora layer */
-        .aurora-layer {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background: linear-gradient(125deg,
-                rgba(16,185,129,0.045) 0%, rgba(99,102,241,0.035) 40%,
-                rgba(245,158,11,0.025) 80%, rgba(16,185,129,0.035) 100%);
-            background-size: 400% 400%;
-            animation: auroraShift 20s ease-in-out infinite;
-        }
-        @keyframes auroraShift {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Animated rainbow top border */
-        .login-card::before {
-            background: linear-gradient(90deg,
-                #10B981,#34D399,#6366F1,#A78BFA,#F59E0B,#10B981) !important;
-            background-size: 400% 100% !important;
-            animation: rainbowShift 5s linear infinite !important;
-            height: 3px !important;
-        }
-        @keyframes rainbowShift {
-            0%   { background-position: 0% 50%; }
-            100% { background-position: 400% 50%; }
-        }
-
-        /* 3D tilt smooth */
-        .login-card {
-            transform-style: preserve-3d;
-            will-change: transform;
-        }
-
-        /* Input wrapper */
-        .input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .input-icon {
-            position: absolute; left: 15px; font-size: 15px;
-            z-index: 2; pointer-events: none; line-height: 1;
-            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .input-wrap:focus-within .input-icon { transform: scale(1.18) rotate(-6deg); }
-        .input-wrap .form-input { padding-left: 44px; padding-right: 46px; width: 100%; }
-
-        /* Email checkmark */
-        .input-check {
-            position: absolute; right: 14px; font-size: 14px;
-            font-weight: 800; color: #10B981; opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-            transform: scale(0.4);
-        }
-        .input-check.show { opacity: 1; transform: scale(1); }
-
-        /* Eye toggle */
-        .eye-btn {
-            position: absolute; right: 12px; background: none; border: none;
-            cursor: pointer; font-size: 15px; padding: 4px 6px;
-            border-radius: 6px; line-height: 1; z-index: 3;
-            opacity: 0.55; transition: transform 0.2s, opacity 0.2s;
-        }
-        .eye-btn:hover { transform: scale(1.15); opacity: 1; }
-
-        /* Caps lock warning */
-        .caps-warn {
-            display: none; margin-top: 7px; font-size: 12px; font-weight: 600;
-            color: #D97706; padding: 5px 11px; border-radius: 7px;
-            background: rgba(245,158,11,0.09); border: 1px solid rgba(245,158,11,0.22);
-            animation: fadeIn .2s ease; align-items: center; gap: 5px;
-        }
-        .caps-warn.show { display: flex; }
-
-        /* Valid/invalid input states */
-        .form-input.valid   { border-color: #10B981 !important; animation: flashValid 0.4s ease; }
-        .form-input.invalid { border-color: #EF4444 !important; }
-        @keyframes flashValid {
-            0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
-            50%  { box-shadow: 0 0 0 7px rgba(16,185,129,0.08); }
-            100% { box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
-        }
-
-        /* Neon glow on focus */
-        .input-wrap:focus-within .form-input {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(16,185,129,0.13),
-                        0 0 22px rgba(16,185,129,0.08) !important;
-        }
-
-        /* Shake */
-        @keyframes shake {
-            0%,100% { transform: translateX(0); }
-            15%      { transform: translateX(-10px); }
-            30%      { transform: translateX(10px); }
-            45%      { transform: translateX(-7px); }
-            60%      { transform: translateX(7px); }
-            75%      { transform: translateX(-3px); }
-            90%      { transform: translateX(3px); }
-        }
-        .shake { animation: shake 0.55s cubic-bezier(.36,.07,.19,.97) both; }
-
-        /* Button spinner */
-        .btn-spinner {
-            display: inline-block; width: 15px; height: 15px;
-            border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
-            border-radius: 50%; animation: btnSpin .6s linear infinite;
-            margin-right: 9px; vertical-align: middle;
-        }
-        @keyframes btnSpin { to { transform: rotate(360deg); } }
-
-        /* Ripple */
-        .btn-primary, .btn-google { overflow: hidden !important; position: relative !important; }
-        .ripple-fx {
-            position: absolute; border-radius: 50%;
-            background: rgba(255,255,255,0.28);
-            transform: scale(0);
-            animation: rippleFx 0.55s linear;
-            pointer-events: none;
-        }
-        @keyframes rippleFx { to { transform: scale(4.5); opacity: 0; } }
-
-        /* Typing ripple */
-        .type-ripple {
-            position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-            border: 1.5px solid rgba(16,185,129,0.22);
-            transform: translate(-50%,-50%);
-            animation: typeRippleFx 0.85s ease-out forwards;
-        }
-        @keyframes typeRippleFx {
-            0%   { width: 0; height: 0; opacity: 0.65; }
-            100% { width: 170px; height: 170px; opacity: 0; }
-        }
     </style>
 <script src="/config.js"></script>
 </head>
@@ -850,34 +679,26 @@
             <form onsubmit="return false;">
                     <div class="form-group">
                         <label class="form-label" for="email">Email Address</label>
-                        <div class="input-wrap">
-                            <span class="input-icon">✉️</span>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                class="form-input" 
-                                placeholder="you@example.com" 
-                                required 
-                                autocomplete="email"
-                            >
-                            <span class="input-check" id="emailCheckIcon">✓</span>
-                        </div>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            class="form-input" 
+                            placeholder="you@example.com" 
+                            required 
+                            autocomplete="email"
+                        >
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="password">Password</label>
-                        <div class="input-wrap">
-                            <span class="input-icon">🔒</span>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                class="form-input" 
-                                placeholder="Enter your password" 
-                                required
-                                autocomplete="current-password"
-                            >
-                        </div>
-                        <div class="caps-warn" id="capsWarnMain">⚠️ Caps Lock is on</div>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="Enter your password" 
+                            required
+                            autocomplete="current-password"
+                        >
                     </div>
 
                     <div class="form-extras">
@@ -930,17 +751,14 @@
                 <form id="forgotForm" onsubmit="return false;">
                     <div class="form-group">
                         <label class="form-label" for="resetEmail">Email Address</label>
-                        <div class="input-wrap">
-                            <span class="input-icon">✉️</span>
-                            <input 
-                                type="email" 
-                                id="resetEmail" 
-                                class="form-input" 
-                                placeholder="you@example.com" 
-                                required 
-                                autocomplete="email"
-                            >
-                        </div>
+                        <input 
+                            type="email" 
+                            id="resetEmail" 
+                            class="form-input" 
+                            placeholder="you@example.com" 
+                            required 
+                            autocomplete="email"
+                        >
                     </div>
 
                     <button type="submit" class="btn-primary" id="sendOtpBtn" onclick="sendResetLink()">
@@ -992,17 +810,14 @@
                 <form id="resetForm" onsubmit="return false;">
                     <div class="form-group">
                         <label class="form-label" for="newPassword">New Password</label>
-                        <div class="input-wrap">
-                            <span class="input-icon">🔒</span>
-                            <input 
-                                type="password" 
-                                id="newPassword" 
-                                class="form-input" 
-                                placeholder="Enter new password" 
-                                required
-                                oninput="checkPasswordStrength()"
-                            >
-                        </div>
+                        <input 
+                            type="password" 
+                            id="newPassword" 
+                            class="form-input" 
+                            placeholder="Enter new password" 
+                            required
+                            oninput="checkPasswordStrength()"
+                        >
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
                         </div>
@@ -1010,16 +825,13 @@
 
                     <div class="form-group">
                         <label class="form-label" for="confirmPassword">Confirm Password</label>
-                        <div class="input-wrap">
-                            <span class="input-icon">🔒</span>
-                            <input 
-                                type="password" 
-                                id="confirmPassword" 
-                                class="form-input" 
-                                placeholder="Confirm new password" 
-                                required
-                            >
-                        </div>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            class="form-input" 
+                            placeholder="Confirm new password" 
+                            required
+                        >
                     </div>
 
                     <button type="submit" class="btn-primary" id="resetPasswordBtn" onclick="resetPassword()">
@@ -1086,7 +898,7 @@
             }
 
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="btn-spinner"></span>Signing in...';
+            loginBtn.textContent = "Signing in...";
 
             try {
                 const res = await fetch(API + "/auth/login", {
@@ -1124,7 +936,7 @@
             const btn = document.getElementById("sendOtpBtn");
             if (!email) { alert("Please enter your email!"); return; }
             btn.disabled = true;
-            btn.innerHTML = '<span class="btn-spinner"></span>Sending...';
+            btn.textContent = "Sending...";
             try {
                 await fetch(API + "/auth/forgot-password", {
                     method: "POST",
@@ -1248,9 +1060,6 @@
             b.textContent = "⚠️ " + msg;
             b.classList.add("show");
             document.getElementById("confirmBanner").classList.remove("show");
-            // Shake card
-            const card = document.querySelector('.login-card');
-            if (card) { card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake'); }
         }
 
         // ── RESEND CONFIRMATION EMAIL ──────────────────────────────
@@ -1294,182 +1103,5 @@
         })();
     </script>
 <script src="/polish.js"></script>
-<script>
-/* ═══ POLISH ENHANCEMENTS — login.html ═══ */
-(function() {
-
-    // ── 1. Cursor Orb ──────────────────────────────────────────
-    var orb = document.createElement('div');
-    orb.id = 'cursor-orb';
-    document.body.appendChild(orb);
-    document.addEventListener('mousemove', function(e) {
-        orb.style.left = e.clientX + 'px';
-        orb.style.top  = e.clientY + 'px';
-    });
-
-    // ── 2. Constellation Canvas ────────────────────────────────
-    var canvas = document.createElement('canvas');
-    canvas.id = 'constellation-canvas';
-    document.body.appendChild(canvas);
-    var ctx = canvas.getContext('2d');
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    var dots = [];
-    for (var i = 0; i < 55; i++) {
-        dots.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.28,
-            vy: (Math.random() - 0.5) * 0.28,
-            r: Math.random() * 1.8 + 0.8
-        });
-    }
-    var mouse = { x: canvas.width / 2, y: canvas.height / 2 };
-    document.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-    function drawConstellation() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (var i = 0; i < dots.length; i++) {
-            var d = dots[i];
-            d.x += d.vx; d.y += d.vy;
-            if (d.x < 0 || d.x > canvas.width)  d.vx *= -1;
-            if (d.y < 0 || d.y > canvas.height) d.vy *= -1;
-            ctx.beginPath();
-            ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(16,185,129,0.45)';
-            ctx.fill();
-            for (var j = i + 1; j < dots.length; j++) {
-                var dx = d.x - dots[j].x, dy = d.y - dots[j].y;
-                var dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < 115) {
-                    ctx.beginPath();
-                    ctx.moveTo(d.x, d.y);
-                    ctx.lineTo(dots[j].x, dots[j].y);
-                    ctx.strokeStyle = 'rgba(16,185,129,' + (0.14 * (1 - dist/115)) + ')';
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-            var mdx = d.x - mouse.x, mdy = d.y - mouse.y;
-            var mdist = Math.sqrt(mdx*mdx + mdy*mdy);
-            if (mdist < 140) {
-                ctx.beginPath();
-                ctx.moveTo(d.x, d.y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.strokeStyle = 'rgba(99,102,241,' + (0.22 * (1 - mdist/140)) + ')';
-                ctx.lineWidth = 0.7;
-                ctx.stroke();
-            }
-        }
-        requestAnimationFrame(drawConstellation);
-    }
-    drawConstellation();
-
-    // ── 3. Aurora Layer ────────────────────────────────────────
-    var aurora = document.createElement('div');
-    aurora.className = 'aurora-layer';
-    document.body.appendChild(aurora);
-
-    // ── 4. Morphing Blob ───────────────────────────────────────
-    var blob = document.createElement('div');
-    blob.className = 'morph-blob';
-    document.body.insertBefore(blob, document.body.firstChild);
-
-    // ── 5. 3D Card Tilt ────────────────────────────────────────
-    var card = document.querySelector('.login-card');
-    if (card) {
-        card.addEventListener('mousemove', function(e) {
-            var rect = card.getBoundingClientRect();
-            var x = (e.clientX - rect.left) / rect.width  - 0.5;
-            var y = (e.clientY - rect.top)  / rect.height - 0.5;
-            card.style.transform = 'perspective(1000px) rotateY(' + (x*7) + 'deg) rotateX(' + (-y*7) + 'deg) scale(1.012)';
-            card.style.boxShadow = (-x*18) + 'px ' + (-y*18) + 'px 60px rgba(0,0,0,0.11), 0 24px 64px rgba(0,0,0,0.08)';
-        });
-        card.addEventListener('mouseleave', function() {
-            card.style.transform = '';
-            card.style.boxShadow = '';
-        });
-    }
-
-    // ── 6. Typing Ripple ───────────────────────────────────────
-    document.addEventListener('keydown', function(e) {
-        var focused = document.activeElement;
-        if (!focused || !focused.classList.contains('form-input')) return;
-        var rect = focused.getBoundingClientRect();
-        var ripple = document.createElement('div');
-        ripple.className = 'type-ripple';
-        ripple.style.left = (rect.left + rect.width / 2) + 'px';
-        ripple.style.top  = (rect.top  + rect.height / 2) + 'px';
-        document.body.appendChild(ripple);
-        setTimeout(function() { if (ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 900);
-    });
-
-    // ── 7. Ripple on Buttons ───────────────────────────────────
-    function addRipple(btn) {
-        btn.addEventListener('click', function(e) {
-            var rect = btn.getBoundingClientRect();
-            var r = document.createElement('span');
-            r.className = 'ripple-fx';
-            var size = Math.max(rect.width, rect.height);
-            r.style.width = r.style.height = size + 'px';
-            r.style.left = (e.clientX - rect.left - size/2) + 'px';
-            r.style.top  = (e.clientY - rect.top  - size/2) + 'px';
-            btn.appendChild(r);
-            setTimeout(function() { if (r.parentNode) r.parentNode.removeChild(r); }, 600);
-        });
-    }
-    document.querySelectorAll('.btn-primary, .btn-google').forEach(addRipple);
-
-    // ── 8. Password Show/Hide ──────────────────────────────────
-    function addEye(inputId) {
-        var input = document.getElementById(inputId);
-        if (!input) return;
-        var wrap = input.closest('.input-wrap');
-        if (!wrap) return;
-        var eye = document.createElement('button');
-        eye.type = 'button'; eye.className = 'eye-btn'; eye.innerHTML = '👁';
-        eye.addEventListener('click', function() {
-            input.type = input.type === 'password' ? 'text' : 'password';
-            eye.innerHTML = input.type === 'password' ? '👁' : '🙈';
-        });
-        wrap.appendChild(eye);
-    }
-    addEye('password');
-    addEye('newPassword');
-    addEye('confirmPassword');
-
-    // ── 9. Caps Lock Warning ───────────────────────────────────
-    var pwdInput = document.getElementById('password');
-    var capsWarn = document.getElementById('capsWarnMain');
-    if (pwdInput && capsWarn) {
-        pwdInput.addEventListener('keyup', function(e) {
-            capsWarn.classList.toggle('show', e.getModifierState && e.getModifierState('CapsLock'));
-        });
-    }
-
-    // ── 10. Live Email Validation ──────────────────────────────
-    function addEmailValidation(inputId, checkId) {
-        var inp = document.getElementById(inputId);
-        var chk = document.getElementById(checkId);
-        if (!inp) return;
-        inp.addEventListener('input', function() {
-            var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
-            inp.classList.toggle('valid',   valid);
-            inp.classList.toggle('invalid', inp.value.length > 0 && !valid);
-            if (chk) chk.classList.toggle('show', valid);
-        });
-    }
-    addEmailValidation('email', 'emailCheckIcon');
-
-    // ── 11. Auto-focus ─────────────────────────────────────────
-    setTimeout(function() {
-        var first = document.getElementById('email');
-        if (first) first.focus();
-    }, 350);
-
-})();
-</script>
 </body>
 </html>
