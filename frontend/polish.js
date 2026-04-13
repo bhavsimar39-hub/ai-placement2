@@ -658,24 +658,150 @@
         'transition:all 0.25s ease;' +
       '}' +
       '#ai-dm-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}' +
-      'body.ai-dark{' +
+
+      /* ── Root & page shell ──────────────────────────────── */
+      'html.ai-dark,body.ai-dark{' +
+        'background:#0F1419 !important;color:#F9FAFB !important;' +
+        'color-scheme:dark;' +
+      '}' +
+
+      /* ── Layout regions ─────────────────────────────────── */
+      'body.ai-dark main,' +
+      'body.ai-dark section,' +
+      'body.ai-dark article,' +
+      'body.ai-dark aside,' +
+      'body.ai-dark header,' +
+      'body.ai-dark footer,' +
+      'body.ai-dark nav,' +
+      'body.ai-dark .navbar,' +
+      'body.ai-dark .sidebar,' +
+      'body.ai-dark #sidebar-container,' +
+      'body.ai-dark .page-wrapper,' +
+      'body.ai-dark .page-content,' +
+      'body.ai-dark .hero,' +
+      'body.ai-dark .hero-section,' +
+      'body.ai-dark .landing-hero,' +
+      'body.ai-dark .features-section,' +
+      'body.ai-dark .solutions-section,' +
+      'body.ai-dark .pricing-section,' +
+      'body.ai-dark .about-section,' +
+      'body.ai-dark .contact-section,' +
+      'body.ai-dark .wrap,' +
+      'body.ai-dark .wrapper,' +
+      'body.ai-dark .container,' +
+      'body.ai-dark .content{' +
         'background:#0F1419 !important;color:#F9FAFB !important;' +
       '}' +
+
+      /* ── Cards & surfaces ───────────────────────────────── */
       'body.ai-dark .metric-card,' +
+      'body.ai-dark .stat-card,' +
+      'body.ai-dark .feature-card,' +
       'body.ai-dark .skills-card,' +
+      'body.ai-dark .glass-card,' +
+      'body.ai-dark .info-card,' +
+      'body.ai-dark .result-card,' +
+      'body.ai-dark .analysis-card,' +
+      'body.ai-dark .blog-card,' +
+      'body.ai-dark .solution-card,' +
+      'body.ai-dark .pricing-card,' +
       'body.ai-dark .welcome-header,' +
+      'body.ai-dark .dashboard-header,' +
       'body.ai-dark .login-card,' +
-      'body.ai-dark .signup-card{' +
-        'background:#1A1F26 !important;border-color:rgba(255,255,255,0.08) !important;' +
+      'body.ai-dark .signup-card,' +
+      'body.ai-dark .auth-card,' +
+      'body.ai-dark .modal,' +
+      'body.ai-dark .modal-content,' +
+      'body.ai-dark .dropdown,' +
+      'body.ai-dark .dropdown-menu,' +
+      'body.ai-dark .panel,' +
+      'body.ai-dark .card{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.08) !important;' +
         'color:#F9FAFB !important;' +
       '}' +
+
+      /* ── Navigation bar ─────────────────────────────────── */
+      'body.ai-dark .navbar,' +
+      'body.ai-dark .top-nav,' +
+      'body.ai-dark .nav-bar,' +
+      'body.ai-dark nav{' +
+        'background:rgba(15,20,25,0.95) !important;' +
+        'border-bottom-color:rgba(255,255,255,0.07) !important;' +
+      '}' +
+      'body.ai-dark nav a,' +
+      'body.ai-dark .navbar a,' +
+      'body.ai-dark .nav-link{color:#D1D5DB !important;}' +
+      'body.ai-dark nav a:hover,' +
+      'body.ai-dark .nav-link:hover{color:#10B981 !important;}' +
+
+      /* ── Typography ─────────────────────────────────────── */
+      'body.ai-dark h1,body.ai-dark h2,body.ai-dark h3,' +
+      'body.ai-dark h4,body.ai-dark h5,body.ai-dark h6{color:#F9FAFB !important;}' +
+      'body.ai-dark p,body.ai-dark li,body.ai-dark span:not(.ai-sc-kbd),' +
+      'body.ai-dark label{color:#D1D5DB !important;}' +
       'body.ai-dark .metric-label,' +
       'body.ai-dark .greeting,' +
       'body.ai-dark .welcome-subtitle,' +
-      'body.ai-dark .metric-subtitle{color:#9CA3AF !important;}' +
+      'body.ai-dark .metric-subtitle,' +
+      'body.ai-dark .hero-subtitle,' +
+      'body.ai-dark .section-subtitle,' +
+      'body.ai-dark .text-muted,' +
+      'body.ai-dark .text-gray,' +
+      'body.ai-dark small{color:#9CA3AF !important;}' +
       'body.ai-dark .metric-value,' +
-      'body.ai-dark .user-name{color:#F9FAFB !important;}' +
-      'body.ai-dark .skills-card-title{color:#F9FAFB !important;}',
+      'body.ai-dark .stat-value,' +
+      'body.ai-dark .user-name,' +
+      'body.ai-dark .skills-card-title,' +
+      'body.ai-dark .hero-title,' +
+      'body.ai-dark .section-title{color:#F9FAFB !important;}' +
+
+      /* ── Forms & inputs ─────────────────────────────────── */
+      'body.ai-dark input,' +
+      'body.ai-dark textarea,' +
+      'body.ai-dark select{' +
+        'background:#1A1F26 !important;' +
+        'color:#F9FAFB !important;' +
+        'border-color:rgba(255,255,255,0.12) !important;' +
+      '}' +
+      'body.ai-dark input::placeholder,' +
+      'body.ai-dark textarea::placeholder{color:#6B7280 !important;}' +
+
+      /* ── Tables ─────────────────────────────────────────── */
+      'body.ai-dark table,' +
+      'body.ai-dark thead,' +
+      'body.ai-dark tbody,' +
+      'body.ai-dark th,' +
+      'body.ai-dark td{' +
+        'background:#1A1F26 !important;' +
+        'color:#F9FAFB !important;' +
+        'border-color:rgba(255,255,255,0.07) !important;' +
+      '}' +
+      'body.ai-dark thead,' +
+      'body.ai-dark thead th{background:#12181F !important;}' +
+
+      /* ── Buttons (non-primary) ───────────────────────────── */
+      'body.ai-dark .btn-secondary,' +
+      'body.ai-dark button:not(.btn-primary):not(#ai-btt):not(#ai-dm-btn):not(.ai-sc-close):not(.ai-idle-btn){' +
+        'background:#1A1F26 !important;' +
+        'color:#D1D5DB !important;' +
+        'border-color:rgba(255,255,255,0.12) !important;' +
+      '}' +
+
+      /* ── Utility backgrounds ─────────────────────────────── */
+      'body.ai-dark .bg-white,' +
+      'body.ai-dark .bg-gray-50,' +
+      'body.ai-dark .bg-gray-100,' +
+      'body.ai-dark [class*="bg-white"],[class*="bg-light"]{' +
+        'background:#1A1F26 !important;' +
+      '}' +
+      'body.ai-dark hr,' +
+      'body.ai-dark .divider{border-color:rgba(255,255,255,0.07) !important;}' +
+
+      /* ── Scrollbar ───────────────────────────────────────── */
+      'body.ai-dark ::-webkit-scrollbar-track{background:#0F1419;}' +
+      'body.ai-dark ::-webkit-scrollbar-thumb{background:#374151;}' +
+      'body.ai-dark ::-webkit-scrollbar-thumb:hover{background:#4B5563;}',
     'polish-darkmode');
 
     var btn = document.createElement('button');
@@ -684,6 +810,7 @@
     var isDark = localStorage.getItem('ai-dark') === '1' ||
       (!localStorage.getItem('ai-dark') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     function apply(dark) {
+      document.documentElement.classList.toggle('ai-dark', dark);
       document.body.classList.toggle('ai-dark', dark);
       btn.innerHTML = dark ? '☀️' : '🌙';
       localStorage.setItem('ai-dark', dark ? '1' : '0');
@@ -881,48 +1008,26 @@
 
 
   /* ─── 19. PRINT MODE ─────────────────────────────────── */
-  (function() {
-    injectStyle(
-      '@media print{' +
-        '#sidebar-container,#ai-btt,#ai-dm-btn,#ai-ctx-menu,' +
-        '#ai-load-bar,#ai-scroll-prog,#toast-container,' +
-        '#ai-shortcuts-overlay,#ai-idle-overlay,' +
-        '#ai-net-banner,#ai-perf-badge,' +
-        'nav,.sidebar,.navbar,button.refresh-btn{display:none !important;}' +
-        'body{background:#fff !important;color:#000 !important;}' +
-        '.content{margin-left:0 !important;padding:20px !important;}' +
-        '.metric-card,.skills-card,.welcome-header{' +
-          'box-shadow:none !important;border:1px solid #ddd !important;' +
-          'break-inside:avoid;' +
-        '}' +
-        '.dashboard-grid{grid-template-columns:repeat(3,1fr) !important;}' +
-        '.metric-value{color:#000 !important;}' +
-        '.skill-tag{border:1px solid #10B981 !important;color:#059669 !important;' +
-          'background:#f0fdf4 !important;}' +
-      '}',
-    'polish-print');
-
-    injectStyle(
-      '#ai-print-btn{' +
-        'position:fixed;bottom:140px;right:28px;z-index:99990;' +
-        'width:44px;height:44px;border-radius:50%;' +
-        'background:var(--bg-card,#fff);' +
-        'border:1.5px solid var(--border,#E2E8F0);' +
-        'cursor:pointer;font-size:17px;' +
-        'display:flex;align-items:center;justify-content:center;' +
-        'box-shadow:0 4px 16px rgba(0,0,0,0.1);' +
-        'transition:all 0.25s ease;' +
+  /* Print button removed. @media print styles kept for clean browser printing. */
+  injectStyle(
+    '@media print{' +
+      '#sidebar-container,#ai-btt,#ai-dm-btn,#ai-ctx-menu,' +
+      '#ai-load-bar,#ai-scroll-prog,#toast-container,' +
+      '#ai-shortcuts-overlay,#ai-idle-overlay,' +
+      '#ai-net-banner,#ai-perf-badge,' +
+      'nav,.sidebar,.navbar,button.refresh-btn{display:none !important;}' +
+      'body{background:#fff !important;color:#000 !important;}' +
+      '.content{margin-left:0 !important;padding:20px !important;}' +
+      '.metric-card,.skills-card,.welcome-header{' +
+        'box-shadow:none !important;border:1px solid #ddd !important;' +
+        'break-inside:avoid;' +
       '}' +
-      '#ai-print-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}',
-    'polish-printbtn');
-
-    var printBtn = document.createElement('button');
-    printBtn.id = 'ai-print-btn';
-    printBtn.title = 'Print this page';
-    printBtn.innerHTML = '🖨️';
-    document.body.appendChild(printBtn);
-    printBtn.addEventListener('click', function() { window.print(); });
-  })();
+      '.dashboard-grid{grid-template-columns:repeat(3,1fr) !important;}' +
+      '.metric-value{color:#000 !important;}' +
+      '.skill-tag{border:1px solid #10B981 !important;color:#059669 !important;' +
+        'background:#f0fdf4 !important;}' +
+    '}',
+  'polish-print');
 
 
   /* ─── 20. TYPING PAUSE INDICATOR ─────────────────────── */
