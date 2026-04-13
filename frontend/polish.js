@@ -644,7 +644,7 @@
   })();
 
 
-  /* ─── 12. DARK MODE TOGGLE (full-page via data-theme) ─── */
+  /* ─── 12. DARK MODE TOGGLE ───────────────────────────── */
   (function() {
     injectStyle(
       '#ai-dm-btn{' +
@@ -657,59 +657,41 @@
         'box-shadow:0 4px 16px rgba(0,0,0,0.1);' +
         'transition:all 0.25s ease;' +
       '}' +
-      '#ai-dm-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}',
+      '#ai-dm-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}' +
+      'body.ai-dark{' +
+        'background:#0F1419 !important;color:#F9FAFB !important;' +
+      '}' +
+      'body.ai-dark .metric-card,' +
+      'body.ai-dark .skills-card,' +
+      'body.ai-dark .welcome-header,' +
+      'body.ai-dark .login-card,' +
+      'body.ai-dark .signup-card{' +
+        'background:#1A1F26 !important;border-color:rgba(255,255,255,0.08) !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+      'body.ai-dark .metric-label,' +
+      'body.ai-dark .greeting,' +
+      'body.ai-dark .welcome-subtitle,' +
+      'body.ai-dark .metric-subtitle{color:#9CA3AF !important;}' +
+      'body.ai-dark .metric-value,' +
+      'body.ai-dark .user-name{color:#F9FAFB !important;}' +
+      'body.ai-dark .skills-card-title{color:#F9FAFB !important;}',
     'polish-darkmode');
-
-    // Full-page dark CSS using html[data-theme="dark"] — unified with sidebar system
-    injectStyle(
-      'html[data-theme="dark"] body{background:#0f172a !important;color:#e2e8f0 !important;}' +
-      'html[data-theme="dark"] header,html[data-theme="dark"] nav,html[data-theme="dark"] footer,' +
-      'html[data-theme="dark"] main,html[data-theme="dark"] section,html[data-theme="dark"] aside{' +
-        'background:#0f172a !important;color:#e2e8f0 !important;}' +
-      'html[data-theme="dark"] [class*="card"],html[data-theme="dark"] [class*="panel"],' +
-      'html[data-theme="dark"] [class*="section"],html[data-theme="dark"] [class*="box"],' +
-      'html[data-theme="dark"] [class*="wrap"],html[data-theme="dark"] [class*="container"]{' +
-        'background:#1e293b !important;border-color:rgba(148,163,184,0.12) !important;color:#e2e8f0 !important;}' +
-      'html[data-theme="dark"] h1,html[data-theme="dark"] h2,html[data-theme="dark"] h3,' +
-      'html[data-theme="dark"] h4,html[data-theme="dark"] h5,html[data-theme="dark"] h6{color:#f1f5f9 !important;}' +
-      'html[data-theme="dark"] p,html[data-theme="dark"] li,html[data-theme="dark"] label{color:#cbd5e1 !important;}' +
-      'html[data-theme="dark"] nav a{color:#e2e8f0 !important;}' +
-      'html[data-theme="dark"] input,html[data-theme="dark"] textarea,html[data-theme="dark"] select{' +
-        'background:#0f172a !important;border-color:rgba(148,163,184,0.2) !important;color:#e2e8f0 !important;}' +
-      'html[data-theme="dark"] input::placeholder,html[data-theme="dark"] textarea::placeholder{color:#475569 !important;}' +
-      'html[data-theme="dark"] [style*="background:white"],html[data-theme="dark"] [style*="background: white"],' +
-      'html[data-theme="dark"] [style*="background:#fff"],html[data-theme="dark"] [style*="background: #fff"],' +
-      'html[data-theme="dark"] [style*="background:#FFFFFF"],html[data-theme="dark"] [style*="background:#F9FAFB"],' +
-      'html[data-theme="dark"] [style*="background:#F3F4F6"],html[data-theme="dark"] [style*="background:#ECFDF5"],' +
-      'html[data-theme="dark"] [style*="background:#EFF6FF"],html[data-theme="dark"] [style*="background:#F0FDF4"],' +
-      'html[data-theme="dark"] [style*="background:#EDE9FE"]{background:#1e293b !important;}' +
-      'html[data-theme="dark"] [style*="color:#111827"],html[data-theme="dark"] [style*="color:#1F2937"],' +
-      'html[data-theme="dark"] [style*="color:#374151"],html[data-theme="dark"] [style*="color:#4B5563"],' +
-      'html[data-theme="dark"] [style*="color:#6B7280"]{color:#94a3b8 !important;}' +
-      'html[data-theme="dark"] ::-webkit-scrollbar-track{background:#0f172a;}' +
-      'html[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}',
-    'polish-darkmode-full');
 
     var btn = document.createElement('button');
     btn.id = 'ai-dm-btn';
     btn.title = 'Toggle dark mode';
-    // Unified with sidebar: both use localStorage key "theme" + html[data-theme]
-    var isDark = localStorage.getItem('theme') === 'dark' ||
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var isDark = localStorage.getItem('ai-dark') === '1' ||
+      (!localStorage.getItem('ai-dark') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     function apply(dark) {
-      if (dark) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-      }
-      btn.innerHTML = dark ? '\u2600\uFE0F' : '\uD83C\uDF19';
-      localStorage.setItem('theme', dark ? 'dark' : 'light');
+      document.body.classList.toggle('ai-dark', dark);
+      btn.innerHTML = dark ? '☀️' : '🌙';
       localStorage.setItem('ai-dark', dark ? '1' : '0');
     }
     apply(isDark);
     document.body.appendChild(btn);
     btn.addEventListener('click', function() {
-      apply(document.documentElement.getAttribute('data-theme') !== 'dark');
+      apply(!document.body.classList.contains('ai-dark'));
     });
   })();
 
@@ -920,6 +902,27 @@
       '}',
     'polish-print');
 
+    injectStyle(
+      '#ai-print-btn{' +
+        'position:fixed;bottom:140px;right:28px;z-index:99990;' +
+        'width:44px;height:44px;border-radius:50%;' +
+        'background:var(--bg-card,#fff);' +
+        'border:1.5px solid var(--border,#E2E8F0);' +
+        'cursor:pointer;font-size:17px;' +
+        'display:flex;align-items:center;justify-content:center;' +
+        'box-shadow:0 4px 16px rgba(0,0,0,0.1);' +
+        'transition:all 0.25s ease;' +
+      '}' +
+      '#ai-print-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}',
+    'polish-printbtn');
+
+    var printBtn = document.createElement('button');
+    printBtn.id = 'ai-print-btn';
+    printBtn.title = 'Print this page';
+    printBtn.innerHTML = '🖨️';
+    document.body.appendChild(printBtn);
+    printBtn.addEventListener('click', function() { window.print(); });
+  })();
 
 
   /* ─── 20. TYPING PAUSE INDICATOR ─────────────────────── */
@@ -976,99 +979,3 @@
 
 
 })();
-
-  /* ─── 21. SESSION ACTIVITY TRACKER (Company-level) ─────── */
-  (function() {
-    var pageStart = Date.now();
-    var maxScroll = 0;
-    var clickCount = 0;
-    window.addEventListener('scroll', function() {
-      var doc = document.documentElement;
-      var pct = Math.round((doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100);
-      if (pct > maxScroll) maxScroll = pct;
-    }, { passive: true });
-    document.addEventListener('click', function() { clickCount++; });
-    window.addEventListener('beforeunload', function() {
-      var duration = Math.round((Date.now() - pageStart) / 1000);
-      var token = localStorage.getItem('token');
-      if (!token || duration < 3) return;
-      var payload = JSON.stringify({
-        page: window.location.pathname, duration: duration,
-        scrollDepth: maxScroll, clicks: clickCount, ts: new Date().toISOString()
-      });
-      if (navigator.sendBeacon && window.API_BASE) {
-        navigator.sendBeacon(window.API_BASE + '/analytics/session', payload);
-      }
-    });
-  })();
-
-
-  /* ─── 22. FEATURE ANNOUNCEMENT BANNER (Company-level) ───── */
-  (function() {
-    var ANNOUNCEMENTS = [
-      { id: 'ann-careerdna-v2', msg: '🧬 Career DNA is now smarter — with industry benchmarking!', page: '/career-dna.html' },
-      { id: 'ann-jobmatch-ai',  msg: '💼 Job Match now pulls real-time listings from 500+ companies.', page: '/job-match.html' },
-      { id: 'ann-ats-v3',       msg: '✅ ATS Checker v3 launched — higher accuracy, faster results.', page: '/ats-checker.html' },
-    ];
-    injectStyle(
-      '#ai-ann-banner{position:fixed;top:0;left:0;right:0;z-index:999997;' +
-        'background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff;' +
-        'font-family:"Plus Jakarta Sans","Inter",sans-serif;font-size:13px;font-weight:600;' +
-        'padding:10px 20px;display:flex;align-items:center;justify-content:center;gap:12px;' +
-        'transform:translateY(-100%);transition:transform 0.4s cubic-bezier(0.34,1.2,0.64,1);}' +
-      '#ai-ann-banner.show{transform:translateY(0);}' +
-      '#ai-ann-close{background:rgba(255,255,255,0.2);border:none;border-radius:6px;' +
-        'color:#fff;font-size:14px;font-weight:800;cursor:pointer;padding:2px 10px;flex-shrink:0;}' +
-      '#ai-ann-close:hover{background:rgba(255,255,255,0.35);}' +
-      '.ai-ann-link{color:#a5f3fc;text-decoration:underline;cursor:pointer;white-space:nowrap;}',
-    'polish-ann');
-    var currentPage = window.location.pathname;
-    var ann = null;
-    for (var i = 0; i < ANNOUNCEMENTS.length; i++) {
-      var a = ANNOUNCEMENTS[i];
-      if (!localStorage.getItem('dismissed-' + a.id) &&
-          (a.page === currentPage || currentPage === '/dashboard.html')) { ann = a; break; }
-    }
-    if (!ann) return;
-    var banner = document.createElement('div');
-    banner.id = 'ai-ann-banner';
-    var linkHtml = ann.page !== currentPage
-      ? '<span class="ai-ann-link" onclick="window.location.href=\'' + ann.page + '\'">Try it →</span>' : '';
-    banner.innerHTML = '<span>' + ann.msg + '</span>' + linkHtml +
-      '<button id="ai-ann-close" title="Dismiss">✕</button>';
-    document.body.appendChild(banner);
-    setTimeout(function() { banner.classList.add('show'); }, 1200);
-    document.getElementById('ai-ann-close').addEventListener('click', function() {
-      banner.style.transform = 'translateY(-100%)';
-      localStorage.setItem('dismissed-' + ann.id, '1');
-    });
-  })();
-
-
-  /* ─── 23. ENTERPRISE AUDIT LOG (Company-level) ──────────── */
-  (function() {
-    var MAX_LOGS = 200;
-    var AUDIT_KEY = 'ai_audit_log';
-    var token = localStorage.getItem('token');
-    if (!token) return;
-    function writeAudit(action, detail) {
-      try {
-        var logs = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
-        logs.push({ ts: new Date().toISOString(), page: window.location.pathname, action: action, detail: detail || '' });
-        if (logs.length > MAX_LOGS) logs = logs.slice(-MAX_LOGS);
-        localStorage.setItem(AUDIT_KEY, JSON.stringify(logs));
-      } catch(e) {}
-    }
-    window.auditLog = writeAudit;
-    writeAudit('page_view', window.location.pathname);
-    document.addEventListener('click', function(e) {
-      var btn = e.target.closest('button[id], a.btn-primary, button.btn-primary');
-      if (!btn) return;
-      var label = btn.id || btn.textContent.trim().slice(0, 40);
-      if (label && label.indexOf('ai-') === -1) writeAudit('button_click', label);
-    });
-    document.addEventListener('submit', function(e) {
-      var form = e.target;
-      writeAudit('form_submit', form.id || form.className.split(' ')[0] || 'form');
-    }, true);
-  })();
