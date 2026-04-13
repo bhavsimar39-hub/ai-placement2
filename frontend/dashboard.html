@@ -412,6 +412,26 @@
             .content { padding: 10px; padding-top: 68px; }
             .user-name { font-size: 22px; }
         }
+
+        /* ── EXTRA MOBILE POLISH ── */
+        @media (max-width: 600px) {
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .quick-stats { flex-wrap: wrap; gap: 10px; }
+            .stat-pill { font-size: 12px; padding: 9px 14px; }
+            .metric-card { padding: 20px 16px; border-radius: 16px; }
+            .metric-value { font-size: 28px; }
+            .metric-label { font-size: 12px; }
+            .metric-subtitle { font-size: 12px; }
+            .welcome-subtitle { font-size: 13px; }
+            .current-time { font-size: 26px; }
+            .skills-card { padding: 20px 16px; border-radius: 16px; }
+            .skills-card-title { font-size: 15px; }
+            .refresh-btn { padding: 9px 14px; font-size: 13px; }
+        }
+        @media (max-width: 360px) {
+            .dashboard-grid { grid-template-columns: 1fr !important; }
+            .metric-card { padding: 16px; }
+        }
     </style>
 <script src="/config.js"></script>
 </head>
