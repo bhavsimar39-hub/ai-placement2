@@ -607,4 +607,375 @@
     };
   })();
 
+
+  /* ══════════════════════════════════════════════════════════
+     NEW FEATURES 11–20
+  ══════════════════════════════════════════════════════════ */
+
+  /* ─── 11. BACK-TO-TOP BUTTON ─────────────────────────── */
+  (function() {
+    injectStyle(
+      '#ai-btt{' +
+        'position:fixed;bottom:32px;right:28px;z-index:99990;' +
+        'width:44px;height:44px;border-radius:50%;' +
+        'background:linear-gradient(135deg,#10B981,#059669);' +
+        'border:none;cursor:pointer;color:#fff;font-size:18px;' +
+        'display:flex;align-items:center;justify-content:center;' +
+        'box-shadow:0 4px 16px rgba(16,185,129,0.4);' +
+        'opacity:0;transform:translateY(12px) scale(0.85);pointer-events:none;' +
+        'transition:opacity 0.28s ease,transform 0.28s cubic-bezier(0.34,1.2,0.64,1);' +
+        'font-family:inherit;' +
+      '}' +
+      '#ai-btt.show{opacity:1;transform:translateY(0) scale(1);pointer-events:all;}' +
+      '#ai-btt:hover{transform:translateY(-3px) scale(1.08);box-shadow:0 8px 24px rgba(16,185,129,0.5);}',
+    'polish-btt');
+    var btn = document.createElement('button');
+    btn.id = 'ai-btt';
+    btn.title = 'Back to top';
+    btn.innerHTML = '↑';
+    document.body.appendChild(btn);
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 300) btn.classList.add('show');
+      else btn.classList.remove('show');
+    }, { passive: true });
+    btn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+
+
+  /* ─── 12. DARK MODE TOGGLE ───────────────────────────── */
+  (function() {
+    injectStyle(
+      '#ai-dm-btn{' +
+        'position:fixed;bottom:86px;right:28px;z-index:99990;' +
+        'width:44px;height:44px;border-radius:50%;' +
+        'background:var(--bg-card,#fff);' +
+        'border:1.5px solid var(--border,#E2E8F0);' +
+        'cursor:pointer;font-size:18px;' +
+        'display:flex;align-items:center;justify-content:center;' +
+        'box-shadow:0 4px 16px rgba(0,0,0,0.1);' +
+        'transition:all 0.25s ease;' +
+      '}' +
+      '#ai-dm-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}' +
+      'body.ai-dark{' +
+        'background:#0F1419 !important;color:#F9FAFB !important;' +
+      '}' +
+      'body.ai-dark .metric-card,' +
+      'body.ai-dark .skills-card,' +
+      'body.ai-dark .welcome-header,' +
+      'body.ai-dark .login-card,' +
+      'body.ai-dark .signup-card{' +
+        'background:#1A1F26 !important;border-color:rgba(255,255,255,0.08) !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+      'body.ai-dark .metric-label,' +
+      'body.ai-dark .greeting,' +
+      'body.ai-dark .welcome-subtitle,' +
+      'body.ai-dark .metric-subtitle{color:#9CA3AF !important;}' +
+      'body.ai-dark .metric-value,' +
+      'body.ai-dark .user-name{color:#F9FAFB !important;}' +
+      'body.ai-dark .skills-card-title{color:#F9FAFB !important;}',
+    'polish-darkmode');
+
+    var btn = document.createElement('button');
+    btn.id = 'ai-dm-btn';
+    btn.title = 'Toggle dark mode';
+    var isDark = localStorage.getItem('ai-dark') === '1' ||
+      (!localStorage.getItem('ai-dark') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    function apply(dark) {
+      document.body.classList.toggle('ai-dark', dark);
+      btn.innerHTML = dark ? '☀️' : '🌙';
+      localStorage.setItem('ai-dark', dark ? '1' : '0');
+    }
+    apply(isDark);
+    document.body.appendChild(btn);
+    btn.addEventListener('click', function() {
+      apply(!document.body.classList.contains('ai-dark'));
+    });
+  })();
+
+
+  /* ─── 13. CLICK-TO-COPY ──────────────────────────────── */
+  (function() {
+    injectStyle(
+      '[data-copy]{cursor:pointer;position:relative;}' +
+      '[data-copy]:hover::after{' +
+        'content:"Click to copy";position:absolute;bottom:100%;left:50%;' +
+        'transform:translateX(-50%);background:rgba(15,20,25,0.9);' +
+        'color:#fff;font-size:11px;font-weight:600;padding:4px 8px;' +
+        'border-radius:6px;white-space:nowrap;pointer-events:none;margin-bottom:4px;' +
+        'font-family:"Plus Jakarta Sans","Inter",sans-serif;' +
+      '}',
+    'polish-copy');
+    document.addEventListener('click', function(e) {
+      var el = e.target.closest('[data-copy]');
+      if (!el) return;
+      var text = el.getAttribute('data-copy') || el.textContent;
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(text.trim()).then(function() {
+        if (window.toast) window.toast('Copied to clipboard!', 'success', 2000);
+      });
+    });
+  })();
+
+
+  /* ─── 14. BUTTON RIPPLE EFFECT ───────────────────────── */
+  (function() {
+    injectStyle(
+      '.ai-ripple-host{position:relative;overflow:hidden;}' +
+      '.ai-ripple{' +
+        'position:absolute;border-radius:50%;' +
+        'background:rgba(255,255,255,0.35);' +
+        'transform:scale(0);pointer-events:none;' +
+        'animation:ai-ripple-anim 0.55s linear forwards;' +
+      '}' +
+      '@keyframes ai-ripple-anim{' +
+        'to{transform:scale(4);opacity:0;}' +
+      '}',
+    'polish-ripple');
+
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('button, .btn-primary, .btn-secondary, .btn-google, [role="button"]');
+      if (!btn) return;
+      btn.classList.add('ai-ripple-host');
+      var rect = btn.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      var r = document.createElement('span');
+      r.className = 'ai-ripple';
+      r.style.cssText =
+        'width:' + size + 'px;height:' + size + 'px;' +
+        'left:' + (e.clientX - rect.left - size/2) + 'px;' +
+        'top:'  + (e.clientY - rect.top  - size/2) + 'px;';
+      btn.appendChild(r);
+      setTimeout(function() { if (r.parentNode) r.parentNode.removeChild(r); }, 600);
+    });
+  })();
+
+
+  /* ─── 15. GLOBAL ERROR CATCHER ───────────────────────── */
+  (function() {
+    window.addEventListener('error', function(e) {
+      console.error('[AI Placement Error]', e.message, e.filename, e.lineno);
+      if (window.toast) {
+        window.toast('Something went wrong. Please refresh if issues persist.', 'warn', 4000);
+      }
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('[AI Placement Promise Error]', e.reason);
+      if (e.reason && e.reason.message && e.reason.message.includes('fetch')) {
+        if (window.toast) window.toast('Network request failed. Check your connection.', 'error', 4000);
+      }
+    });
+  })();
+
+
+  /* ─── 16. RIGHT-CLICK CONTEXT MENU ──────────────────── */
+  (function() {
+    injectStyle(
+      '#ai-ctx-menu{' +
+        'position:fixed;z-index:999996;' +
+        'background:#1A1F26;border:1px solid rgba(16,185,129,0.2);' +
+        'border-radius:12px;padding:6px;min-width:200px;' +
+        'box-shadow:0 16px 48px rgba(0,0,0,0.4);' +
+        'font-family:"Plus Jakarta Sans","Inter",sans-serif;' +
+        'opacity:0;transform:scale(0.92);pointer-events:none;' +
+        'transition:opacity 0.18s ease,transform 0.18s cubic-bezier(0.34,1.2,0.64,1);' +
+        'transform-origin:top left;' +
+      '}' +
+      '#ai-ctx-menu.show{opacity:1;transform:scale(1);pointer-events:all;}' +
+      '.ai-ctx-item{' +
+        'display:flex;align-items:center;gap:10px;' +
+        'padding:9px 14px;border-radius:8px;cursor:pointer;' +
+        'font-size:13px;font-weight:600;color:#D1D5DB;' +
+        'transition:background 0.15s;' +
+      '}' +
+      '.ai-ctx-item:hover{background:rgba(16,185,129,0.12);color:#10B981;}' +
+      '.ai-ctx-sep{height:1px;background:rgba(255,255,255,0.06);margin:4px 0;}',
+    'polish-ctx');
+
+    var menu = document.createElement('div');
+    menu.id = 'ai-ctx-menu';
+    var pages = [
+      { icon:'📊', label:'Dashboard',     href:'/dashboard.html' },
+      { icon:'📄', label:'Resume Upload',  href:'/resume-upload.html' },
+      { icon:'✅', label:'ATS Checker',    href:'/ats-checker.html' },
+      { icon:'🧬', label:'Career DNA',     href:'/career-dna.html' },
+      { icon:'💼', label:'Job Match',      href:'/job-match.html' },
+    ];
+    menu.innerHTML =
+      pages.map(function(p) {
+        return '<div class="ai-ctx-item" data-href="' + p.href + '">' +
+          '<span>' + p.icon + '</span><span>' + p.label + '</span></div>';
+      }).join('<div class="ai-ctx-sep"></div>') +
+      '<div class="ai-ctx-sep"></div>' +
+      '<div class="ai-ctx-item" id="ai-ctx-top"><span>↑</span><span>Back to Top</span></div>';
+    document.body.appendChild(menu);
+
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      var x = Math.min(e.clientX, window.innerWidth  - 220);
+      var y = Math.min(e.clientY, window.innerHeight - 260);
+      menu.style.left = x + 'px';
+      menu.style.top  = y + 'px';
+      menu.classList.add('show');
+    });
+    document.addEventListener('click', function() { menu.classList.remove('show'); });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') menu.classList.remove('show');
+    });
+    menu.addEventListener('click', function(e) {
+      var item = e.target.closest('.ai-ctx-item');
+      if (!item) return;
+      if (item.id === 'ai-ctx-top') { window.scrollTo({ top:0, behavior:'smooth' }); return; }
+      var href = item.getAttribute('data-href');
+      if (href) window.location.href = href;
+    });
+  })();
+
+
+  /* ─── 17. PAGE LOAD TIME BADGE ───────────────────────── */
+  (function() {
+    injectStyle(
+      '#ai-perf-badge{' +
+        'position:fixed;bottom:32px;left:24px;z-index:99989;' +
+        'background:rgba(15,20,25,0.82);backdrop-filter:blur(8px);' +
+        'border:1px solid rgba(16,185,129,0.2);border-radius:8px;' +
+        'padding:5px 12px;font-size:11px;font-weight:700;' +
+        'font-family:"JetBrains Mono",monospace;color:#10B981;' +
+        'opacity:0;transition:opacity 0.4s ease;pointer-events:none;' +
+      '}',
+    'polish-perf');
+    var badge = document.createElement('div');
+    badge.id = 'ai-perf-badge';
+    document.body.appendChild(badge);
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var nav = performance && performance.getEntriesByType &&
+                  performance.getEntriesByType('navigation')[0];
+        if (!nav) return;
+        var ms = Math.round(nav.loadEventEnd - nav.startTime);
+        if (ms <= 0 || ms > 30000) return;
+        badge.textContent = '⚡ ' + ms + 'ms';
+        badge.style.opacity = '1';
+        setTimeout(function() { badge.style.opacity = '0'; }, 5000);
+      }, 300);
+    });
+  })();
+
+
+  /* ─── 18. INPUT FOCUS SHIMMER ────────────────────────── */
+  (function() {
+    injectStyle(
+      '@keyframes ai-input-pulse{' +
+        '0%{box-shadow:0 0 0 0px rgba(16,185,129,0.25);}' +
+        '70%{box-shadow:0 0 0 6px rgba(16,185,129,0);}' +
+        '100%{box-shadow:0 0 0 0px rgba(16,185,129,0);}' +
+      '}' +
+      'input:focus,textarea:focus,select:focus{' +
+        'animation:ai-input-pulse 0.7s ease !important;' +
+        'outline:none !important;' +
+      '}',
+    'polish-inputshimmer');
+  })();
+
+
+  /* ─── 19. PRINT MODE ─────────────────────────────────── */
+  (function() {
+    injectStyle(
+      '@media print{' +
+        '#sidebar-container,#ai-btt,#ai-dm-btn,#ai-ctx-menu,' +
+        '#ai-load-bar,#ai-scroll-prog,#toast-container,' +
+        '#ai-shortcuts-overlay,#ai-idle-overlay,' +
+        '#ai-net-banner,#ai-perf-badge,' +
+        'nav,.sidebar,.navbar,button.refresh-btn{display:none !important;}' +
+        'body{background:#fff !important;color:#000 !important;}' +
+        '.content{margin-left:0 !important;padding:20px !important;}' +
+        '.metric-card,.skills-card,.welcome-header{' +
+          'box-shadow:none !important;border:1px solid #ddd !important;' +
+          'break-inside:avoid;' +
+        '}' +
+        '.dashboard-grid{grid-template-columns:repeat(3,1fr) !important;}' +
+        '.metric-value{color:#000 !important;}' +
+        '.skill-tag{border:1px solid #10B981 !important;color:#059669 !important;' +
+          'background:#f0fdf4 !important;}' +
+      '}',
+    'polish-print');
+
+    injectStyle(
+      '#ai-print-btn{' +
+        'position:fixed;bottom:140px;right:28px;z-index:99990;' +
+        'width:44px;height:44px;border-radius:50%;' +
+        'background:var(--bg-card,#fff);' +
+        'border:1.5px solid var(--border,#E2E8F0);' +
+        'cursor:pointer;font-size:17px;' +
+        'display:flex;align-items:center;justify-content:center;' +
+        'box-shadow:0 4px 16px rgba(0,0,0,0.1);' +
+        'transition:all 0.25s ease;' +
+      '}' +
+      '#ai-print-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.15);}',
+    'polish-printbtn');
+
+    var printBtn = document.createElement('button');
+    printBtn.id = 'ai-print-btn';
+    printBtn.title = 'Print this page';
+    printBtn.innerHTML = '🖨️';
+    document.body.appendChild(printBtn);
+    printBtn.addEventListener('click', function() { window.print(); });
+  })();
+
+
+  /* ─── 20. TYPING PAUSE INDICATOR ─────────────────────── */
+  (function() {
+    injectStyle(
+      '#ai-typing-indicator{' +
+        'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+        'z-index:99988;background:rgba(15,20,25,0.85);backdrop-filter:blur(8px);' +
+        'border:1px solid rgba(16,185,129,0.25);border-radius:50px;' +
+        'padding:8px 18px;font-size:12px;font-weight:600;color:#10B981;' +
+        'font-family:"Plus Jakarta Sans","Inter",sans-serif;' +
+        'display:flex;align-items:center;gap:8px;' +
+        'opacity:0;transform:translateX(-50%) translateY(8px);pointer-events:none;' +
+        'transition:opacity 0.25s ease,transform 0.25s ease;' +
+      '}' +
+      '#ai-typing-indicator.show{opacity:1;transform:translateX(-50%) translateY(0);}' +
+      '.ai-typing-dots{display:flex;gap:4px;align-items:center;}' +
+      '.ai-typing-dots span{' +
+        'width:5px;height:5px;border-radius:50%;background:#10B981;' +
+        'animation:ai-dot-bounce 1.2s infinite;' +
+      '}' +
+      '.ai-typing-dots span:nth-child(2){animation-delay:0.2s;}' +
+      '.ai-typing-dots span:nth-child(3){animation-delay:0.4s;}' +
+      '@keyframes ai-dot-bounce{' +
+        '0%,60%,100%{transform:translateY(0);}' +
+        '30%{transform:translateY(-5px);}' +
+      '}',
+    'polish-typing');
+
+    var indicator = document.createElement('div');
+    indicator.id = 'ai-typing-indicator';
+    indicator.innerHTML =
+      '<div class="ai-typing-dots">' +
+        '<span></span><span></span><span></span>' +
+      '</div>' +
+      '<span>AI is ready to analyze…</span>';
+    document.body.appendChild(indicator);
+
+    var typingTimer;
+    document.addEventListener('input', function(e) {
+      if (!['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+      var t = e.target;
+      if (t.type === 'checkbox' || t.type === 'radio') return;
+      clearTimeout(typingTimer);
+      indicator.classList.remove('show');
+      if (t.value && t.value.length > 3) {
+        typingTimer = setTimeout(function() {
+          indicator.classList.add('show');
+          setTimeout(function() { indicator.classList.remove('show'); }, 2200);
+        }, 800);
+      }
+    });
+  })();
+
+
 })();
