@@ -807,107 +807,16 @@
     var btn = document.createElement('button');
     btn.id = 'ai-dm-btn';
     btn.title = 'Toggle dark mode';
-
-    // ── Colours that count as "light" (white / near-white / light-gray) ──────
-    var DARK_SURFACE = '#1A1F26';
-    var DARK_TEXT    = '#F9FAFB';
-
-    // Parse "rgb(r,g,b)" / "rgba(r,g,b,a)" → {r,g,b,a}
-    function parseRgb(str) {
-      var m = str.match(/rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)/);
-      if (!m) return null;
-      return { r: +m[1], g: +m[2], b: +m[3], a: m[4] != null ? +m[4] : 1 };
-    }
-
-    // Perceived lightness (0–255): > 200 = very light, < 50 = very dark
-    function luminance(c) { return 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; }
-
-    // Block-level tags whose backgrounds we care about
-    var SCAN_TAGS = 'div,section,main,article,aside,header,footer,form,ul,ol,li,table,thead,tbody,tr,td,th';
-
-    function scanAndDarken() {
-      document.querySelectorAll(SCAN_TAGS).forEach(function(el) {
-        // Skip elements that already have a dark inline override from us
-        if (el.getAttribute('data-dm-overridden')) return;
-
-        var bg = window.getComputedStyle(el).backgroundColor;
-        var c  = parseRgb(bg);
-        if (!c) return;
-        // Skip fully transparent (alpha 0) — the element has no real background
-        if (c.a === 0) return;
-        // Only override if the computed colour is clearly light (lum > 200)
-        if (luminance(c) <= 200) return;
-
-        // Save originals so we can restore on light-mode toggle
-        el.setAttribute('data-dm-orig-bg',    el.style.backgroundColor    || '');
-        el.setAttribute('data-dm-orig-color',  el.style.color              || '');
-        el.setAttribute('data-dm-orig-border', el.style.borderColor        || '');
-        el.setAttribute('data-dm-overridden',  '1');
-
-        el.style.setProperty('background-color', DARK_SURFACE, 'important');
-        el.style.setProperty('color',            DARK_TEXT,    'important');
-        el.style.setProperty('border-color',     'rgba(255,255,255,0.08)', 'important');
-      });
-    }
-
-    function restoreLight() {
-      document.querySelectorAll('[data-dm-overridden]').forEach(function(el) {
-        el.style.backgroundColor = el.getAttribute('data-dm-orig-bg')    || '';
-        el.style.color           = el.getAttribute('data-dm-orig-color')  || '';
-        el.style.borderColor     = el.getAttribute('data-dm-orig-border') || '';
-        el.removeAttribute('data-dm-overridden');
-        el.removeAttribute('data-dm-orig-bg');
-        el.removeAttribute('data-dm-orig-color');
-        el.removeAttribute('data-dm-orig-border');
-      });
-    }
-
-    // Re-run the scan after dynamic content loads (SPA route changes, etc.)
-    var _dmObserver = null;
-    function watchDom(dark) {
-      if (_dmObserver) { _dmObserver.disconnect(); _dmObserver = null; }
-      if (!dark) return;
-      if (!window.MutationObserver) return;
-      _dmObserver = new MutationObserver(function(mutations) {
-        var added = false;
-        mutations.forEach(function(m) { if (m.addedNodes.length) added = true; });
-        if (added) setTimeout(scanAndDarken, 80); // slight delay for paint
-      });
-      _dmObserver.observe(document.body, { childList: true, subtree: true });
-    }
-
+    var isDark = localStorage.getItem('ai-dark') === '1' ||
+      (!localStorage.getItem('ai-dark') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     function apply(dark) {
       document.documentElement.classList.toggle('ai-dark', dark);
       document.body.classList.toggle('ai-dark', dark);
       btn.innerHTML = dark ? '☀️' : '🌙';
       localStorage.setItem('ai-dark', dark ? '1' : '0');
-
-      if (dark) {
-        // Run after current paint so computed styles are final
-        requestAnimationFrame(function() {
-          setTimeout(scanAndDarken, 60);
-        });
-        watchDom(true);
-      } else {
-        watchDom(false);
-        restoreLight();
-      }
     }
-
-    var isDark = localStorage.getItem('ai-dark') === '1' ||
-      (!localStorage.getItem('ai-dark') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-    // On page load, wait for DOM to finish painting before scanning
-    if (isDark) {
-      document.documentElement.classList.add('ai-dark');
-      document.body.classList.add('ai-dark');
-      window.addEventListener('load', function() {
-        setTimeout(function() { apply(true); }, 120);
-      });
-    }
-
+    apply(isDark);
     document.body.appendChild(btn);
-    btn.innerHTML = isDark ? '☀️' : '🌙';
     btn.addEventListener('click', function() {
       apply(!document.body.classList.contains('ai-dark'));
     });
@@ -1121,57 +1030,7 @@
   'polish-print');
 
 
-  /* ─── 20. TYPING PAUSE INDICATOR ─────────────────────── */
-  (function() {
-    injectStyle(
-      '#ai-typing-indicator{' +
-        'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
-        'z-index:99988;background:rgba(15,20,25,0.85);backdrop-filter:blur(8px);' +
-        'border:1px solid rgba(16,185,129,0.25);border-radius:50px;' +
-        'padding:8px 18px;font-size:12px;font-weight:600;color:#10B981;' +
-        'font-family:"Plus Jakarta Sans","Inter",sans-serif;' +
-        'display:flex;align-items:center;gap:8px;' +
-        'opacity:0;transform:translateX(-50%) translateY(8px);pointer-events:none;' +
-        'transition:opacity 0.25s ease,transform 0.25s ease;' +
-      '}' +
-      '#ai-typing-indicator.show{opacity:1;transform:translateX(-50%) translateY(0);}' +
-      '.ai-typing-dots{display:flex;gap:4px;align-items:center;}' +
-      '.ai-typing-dots span{' +
-        'width:5px;height:5px;border-radius:50%;background:#10B981;' +
-        'animation:ai-dot-bounce 1.2s infinite;' +
-      '}' +
-      '.ai-typing-dots span:nth-child(2){animation-delay:0.2s;}' +
-      '.ai-typing-dots span:nth-child(3){animation-delay:0.4s;}' +
-      '@keyframes ai-dot-bounce{' +
-        '0%,60%,100%{transform:translateY(0);}' +
-        '30%{transform:translateY(-5px);}' +
-      '}',
-    'polish-typing');
-
-    var indicator = document.createElement('div');
-    indicator.id = 'ai-typing-indicator';
-    indicator.innerHTML =
-      '<div class="ai-typing-dots">' +
-        '<span></span><span></span><span></span>' +
-      '</div>' +
-      '<span>AI is ready to analyze…</span>';
-    document.body.appendChild(indicator);
-
-    var typingTimer;
-    document.addEventListener('input', function(e) {
-      if (!['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-      var t = e.target;
-      if (t.type === 'checkbox' || t.type === 'radio') return;
-      clearTimeout(typingTimer);
-      indicator.classList.remove('show');
-      if (t.value && t.value.length > 3) {
-        typingTimer = setTimeout(function() {
-          indicator.classList.add('show');
-          setTimeout(function() { indicator.classList.remove('show'); }, 2200);
-        }, 800);
-      }
-    });
-  })();
+  /* ─── 20. TYPING PAUSE INDICATOR — removed ──────────────── */
 
 
 })();
