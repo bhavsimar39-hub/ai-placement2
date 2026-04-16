@@ -882,15 +882,48 @@
 
   /* ─── 15. GLOBAL ERROR CATCHER ───────────────────────── */
   (function() {
+    // Errors to silently ignore — non-critical, 3rd-party or browser noise
+    var IGNORE_PATTERNS = [
+      'ResizeObserver loop',
+      'Script error',
+      'Non-Error promise rejection',
+      'Load failed',
+      'cancelled',
+      'AbortError',
+      'NetworkError',
+      'ChunkLoadError',
+      'Importing a module script failed',
+      'Extension context',
+      'cross-origin',
+      'pdfjs',
+      'worker',
+    ];
+
+    function shouldIgnore(msg) {
+      if (!msg) return true;
+      var lower = String(msg).toLowerCase();
+      return IGNORE_PATTERNS.some(function(p) {
+        return lower.includes(p.toLowerCase());
+      });
+    }
+
     window.addEventListener('error', function(e) {
+      if (shouldIgnore(e.message)) return;
       console.error('[AI Placement Error]', e.message, e.filename, e.lineno);
-      if (window.toast) {
-        window.toast('Something went wrong. Please refresh if issues persist.', 'warn', 4000);
+      // Only show toast for errors in our own files, not 3rd-party scripts
+      if (e.filename && e.filename.includes(window.location.hostname)) {
+        if (window.toast) {
+          window.toast('Something went wrong. Please refresh if issues persist.', 'warn', 4000);
+        }
       }
     });
+
     window.addEventListener('unhandledrejection', function(e) {
+      var reason = e.reason && (e.reason.message || String(e.reason));
+      if (shouldIgnore(reason)) return;
       console.error('[AI Placement Promise Error]', e.reason);
-      if (e.reason && e.reason.message && e.reason.message.includes('fetch')) {
+      // Only show toast for actual failed fetch calls, not background rejections
+      if (reason && reason.includes('fetch') && navigator.onLine === false) {
         if (window.toast) window.toast('Network request failed. Check your connection.', 'error', 4000);
       }
     });
