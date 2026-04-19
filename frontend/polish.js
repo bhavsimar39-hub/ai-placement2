@@ -801,7 +801,214 @@
       /* ── Scrollbar ───────────────────────────────────────── */
       'body.ai-dark ::-webkit-scrollbar-track{background:#0F1419;}' +
       'body.ai-dark ::-webkit-scrollbar-thumb{background:#374151;}' +
-      'body.ai-dark ::-webkit-scrollbar-thumb:hover{background:#4B5563;}',
+      'body.ai-dark ::-webkit-scrollbar-thumb:hover{background:#4B5563;}' +
+
+      /* ── Page headers / banners ──────────────────────────── */
+      'body.ai-dark .page-header,' +
+      'body.ai-dark .top-banner,' +
+      'body.ai-dark .upload-header,' +
+      'body.ai-dark .header-inner,' +
+      'body.ai-dark .welcome-header,' +
+      'body.ai-dark .dashboard-header,' +
+      'body.ai-dark .ph{' +
+        'background:#12181F !important;' +
+        'border-color:rgba(255,255,255,0.08) !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+
+      /* ── Card inner sections ─────────────────────────────── */
+      'body.ai-dark .card-head,' +
+      'body.ai-dark .card-body,' +
+      'body.ai-dark .calc-bar,' +
+      'body.ai-dark .score-top,' +
+      'body.ai-dark .breakdown,' +
+      'body.ai-dark .card-footer,' +
+      'body.ai-dark .qc-top,' +
+      'body.ai-dark .qc-body,' +
+      'body.ai-dark .qc-foot,' +
+      'body.ai-dark .jc-top,' +
+      'body.ai-dark .jc-body,' +
+      'body.ai-dark .jc-footer,' +
+      'body.ai-dark .nlp-card-header,' +
+      'body.ai-dark .nlp-ats-header,' +
+      'body.ai-dark .dna-nlp-header{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.07) !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+
+      /* ── All cards & upload panels ───────────────────────── */
+      'body.ai-dark .upload-card,' +
+      'body.ai-dark .upload-grid,' +
+      'body.ai-dark .results-card,' +
+      'body.ai-dark .score-panel,' +
+      'body.ai-dark .score-card,' +
+      'body.ai-dark .form-card,' +
+      'body.ai-dark .main-card,' +
+      'body.ai-dark .nlp-card,' +
+      'body.ai-dark .nlp-ats-card,' +
+      'body.ai-dark .dna-nlp-card,' +
+      'body.ai-dark .section,' +
+      'body.ai-dark .glass-card,' +
+      'body.ai-dark .qc,' +
+      'body.ai-dark .jc,' +
+      'body.ai-dark .factor,' +
+      'body.ai-dark .hstat,' +
+      'body.ai-dark .stat-card,' +
+      'body.ai-dark .activity-item,' +
+      'body.ai-dark .login-item,' +
+      'body.ai-dark .timeline-item,' +
+      'body.ai-dark .ats-chart-wrapper,' +
+      'body.ai-dark .trending-item,' +
+      'body.ai-dark .trending-panel,' +
+      'body.ai-dark .chart-box,' +
+      'body.ai-dark .settings-section,' +
+      'body.ai-dark .profile-section{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.08) !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+
+      /* ── File upload drop zone ───────────────────────────── */
+      'body.ai-dark .file-upload-wrapper,' +
+      'body.ai-dark .upload-zone,' +
+      'body.ai-dark .drop-zone{' +
+        'background:#12181F !important;' +
+        'border-color:rgba(16,185,129,0.25) !important;' +
+        'color:#9CA3AF !important;' +
+      '}' +
+
+      /* ── Empty states ────────────────────────────────────── */
+      'body.ai-dark .empty-state,' +
+      'body.ai-dark .empty-panel,' +
+      'body.ai-dark .placeholder-state{' +
+        'background:#1A1F26 !important;' +
+        'color:#6B7280 !important;' +
+      '}' +
+
+      /* ── Backgrounds on light utility classes ────────────── */
+      'body.ai-dark .bg-white,' +
+      'body.ai-dark [style*="background:#F9FAFB"],' +
+      'body.ai-dark [style*="background: #F9FAFB"],' +
+      'body.ai-dark [style*="background:#FFFFFF"],' +
+      'body.ai-dark [style*="background: #FFFFFF"],' +
+      'body.ai-dark [style*="background:white"],' +
+      'body.ai-dark [style*="background: white"],' +
+      'body.ai-dark .bg-light{' +
+        'background:#1A1F26 !important;' +
+      '}' +
+
+      /* ── Section backgrounds (full page sections) ────────── */
+      'body.ai-dark .features,' +
+      'body.ai-dark .contact-section,' +
+      'body.ai-dark .about-section,' +
+      'body.ai-dark .cta,' +
+      'body.ai-dark .main-wrap,' +
+      'body.ai-dark .main,' +
+      'body.ai-dark .layout{' +
+        'background:#0F1419 !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+
+      /* ── Progress/score bars track ───────────────────────── */
+      'body.ai-dark .bd-track,' +
+      'body.ai-dark .prog-strip,' +
+      'body.ai-dark .skill-track,' +
+      'body.ai-dark [class*="bar-track"],' +
+      'body.ai-dark [class*="bar-bg"]{' +
+        'background:rgba(255,255,255,0.07) !important;' +
+      '}' +
+
+      /* ── Stats bar items ─────────────────────────────────── */
+      'body.ai-dark .sb,' +
+      'body.ai-dark .stats-bar .sb,' +
+      'body.ai-dark .trust-item,' +
+      'body.ai-dark .trust-grid{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.08) !important;' +
+      '}' +
+
+      /* ── Feature/interest grids ──────────────────────────── */
+      'body.ai-dark .feature-card,' +
+      'body.ai-dark .interest-pill,' +
+      'body.ai-dark .interest-grid .interest-pill,' +
+      'body.ai-dark .role-card,' +
+      'body.ai-dark .trait-card,' +
+      'body.ai-dark .style-row,' +
+      'body.ai-dark .icard{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.08) !important;' +
+        'color:#D1D5DB !important;' +
+      '}' +
+
+      /* ── Blog cards ──────────────────────────────────────── */
+      'body.ai-dark .blog-card,' +
+      'body.ai-dark .blog-stack .blog-card{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.08) !important;' +
+        'color:#D1D5DB !important;' +
+      '}' +
+
+      /* ── Contact info card ───────────────────────────────── */
+      'body.ai-dark .contact-form-card{background:#1A1F26 !important;}' +
+
+      /* ── Footer ──────────────────────────────────────────── */
+      'body.ai-dark .footer,' +
+      'body.ai-dark .footer-container,' +
+      'body.ai-dark .footer-top{' +
+        'background:#0D1117 !important;' +
+        'border-color:rgba(255,255,255,0.06) !important;' +
+      '}' +
+
+      /* ── Tab buttons / filter controls ───────────────────── */
+      'body.ai-dark .cbtn,' +
+      'body.ai-dark .tab-btn,' +
+      'body.ai-dark .filter-btn,' +
+      'body.ai-dark .rb-filter{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.1) !important;' +
+        'color:#9CA3AF !important;' +
+      '}' +
+
+      /* ── Checklist / checkbox labels ─────────────────────── */
+      'body.ai-dark .clabel,' +
+      'body.ai-dark .citem .clabel{' +
+        'background:#1A1F26 !important;' +
+        'border-color:rgba(255,255,255,0.1) !important;' +
+        'color:#D1D5DB !important;' +
+      '}' +
+
+      /* ── Select dropdowns ────────────────────────────────── */
+      'body.ai-dark select option{' +
+        'background:#1A1F26 !important;' +
+        'color:#F9FAFB !important;' +
+      '}' +
+
+      /* ── Hint / info boxes ───────────────────────────────── */
+      'body.ai-dark .hint-box,' +
+      'body.ai-dark .info-box,' +
+      'body.ai-dark .alert{' +
+        'background:rgba(99,102,241,0.1) !important;' +
+        'border-color:rgba(99,102,241,0.2) !important;' +
+      '}' +
+
+      /* ── Muted text colours ──────────────────────────────── */
+      'body.ai-dark .text-muted,' +
+      'body.ai-dark .muted,' +
+      'body.ai-dark [class*="muted"]{color:#9CA3AF !important;}' +
+
+      /* ── Section headers inside cards ───────────────────── */
+      'body.ai-dark .section-header,' +
+      'body.ai-dark .section-title,' +
+      'body.ai-dark .card-head-title,' +
+      'body.ai-dark .page-title,' +
+      'body.ai-dark .banner-title,' +
+      'body.ai-dark .banner-subtitle{color:#F9FAFB !important;}' +
+
+      /* ── Border lines ────────────────────────────────────── */
+      'body.ai-dark .divider,' +
+      'body.ai-dark hr,' +
+      'body.ai-dark .border{border-color:rgba(255,255,255,0.07) !important;}',
     'polish-darkmode');
 
     var btn = document.createElement('button');
