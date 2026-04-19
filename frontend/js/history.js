@@ -40,7 +40,7 @@ async function loadHistory() {
         displayActivities(data.recentActivity);
         displayLogins(data.recentLogins);
         displayAtsSection(data.atsHistory || []);
-        displaySessionClusters(data.sessionClusters || []);
+        try { displaySessionClusters(data.sessionClusters || []); } catch(e) { console.warn("Session clusters error:", e.message); }
 
     } catch (err) {
         showError("Failed to load history: " + err.message);
@@ -217,8 +217,8 @@ function displayAtsSection(atsHistory) {
 
     // Double rAF ensures clientWidth is available after paint
     requestAnimationFrame(() => requestAnimationFrame(() => {
-        drawChart(chronological);
-        drawTimeline(chronological);
+        try { drawChart(chronological); } catch(e) { console.warn("Chart render error:", e.message); }
+        try { drawTimeline(chronological); } catch(e) { console.warn("Timeline render error:", e.message); }
     }));
 }
 
@@ -379,6 +379,7 @@ function drawTimeline(scores) {
 // BERT SESSION CLUSTERS
 // ═══════════════════════════════════════════════════════════
 function displaySessionClusters(clusters) {
+    try {
     const container = document.getElementById("sessionClusters");
     const section   = container && container.closest(".section");
     if (!container) return;
@@ -427,6 +428,7 @@ function displaySessionClusters(clusters) {
             <div class="session-badge">🧠 BERT</div>
         </div>`;
     }).join("");
+    } catch(e) { console.warn("Session clusters render error:", e.message); }
 }
 
 // ═══════════════════════════════════════════════════════════
